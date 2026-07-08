@@ -29,6 +29,7 @@ import {
 import { jsPDF } from "jspdf";
 import { motion, AnimatePresence } from "motion/react";
 import { PeaceGarden } from "./PeaceGarden";
+import { ShareCard } from "./ShareCard";
 import { COACH_CATEGORIES, analyzeUserMessage, GENERIC_SUPPORT_RESPONSE } from "../data/coachData";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
 import {
@@ -1565,49 +1566,14 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {shareAssets.map((asset, index) => (
-                  <div key={index} className="bg-white p-4 rounded-xl border-2 border-[#6E488A]/15 border-b-4 border-b-[#6E488A]/25 flex flex-col justify-between space-y-4 shadow-[0_4px_12px_rgba(110,72,138,0.02)] text-left hover:scale-[1.01] transition-all hover:border-[#6E488A]/30">
-                    <div>
-                      <h5 className="font-extrabold text-xs uppercase tracking-wider text-[#6E488A] mb-2 font-mono">
-                        {asset.title}
-                      </h5>
-                      <p className="text-xs text-[#56346F]/90 italic line-clamp-6 leading-relaxed bg-[#EDE0F0]/20 p-2.5 rounded-lg border border-[#6E488A]/10 font-medium">
-                        "{asset.text}"
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => copyToClipboard(asset.text, index)}
-                        className={`w-full py-2 rounded-lg text-xs font-bold font-mono transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                          copiedIndex === index
-                            ? "bg-[#36C4D8]/10 text-[#36C4D8] border border-[#36C4D8]/20"
-                            : "bg-gradient-to-r from-[#6E488A] to-[#E36DB4] hover:opacity-90 text-white shadow-sm"
-                        }`}
-                      >
-                        {copiedIndex === index ? (
-                          <>
-                            <Check className="w-3.5 h-3.5" /> ¡Copiado con Éxito!
-                          </>
-                        ) : (
-                          <>
-                            Copiar para Compartir 📋
-                          </>
-                        )}
-                      </button>
-
-                      {/* Social media direct icons helpers */}
-                      <div className="flex gap-2 justify-center">
-                        <a
-                          href={`https://api.whatsapp.com/send?text=${encodeURIComponent(asset.text)}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-3 py-1 bg-[#36C4D8]/10 hover:bg-[#36C4D8]/20 border border-[#36C4D8]/25 text-[#36C4D8] rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer"
-                        >
-                          Compartir WhatsApp 📱
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                  <ShareCard
+                    key={index}
+                    title={asset.title}
+                    text={asset.text}
+                    index={index}
+                    isCopied={copiedIndex === index}
+                    onCopy={() => copyToClipboard(asset.text, index)}
+                  />
                 ))}
               </div>
             </div>

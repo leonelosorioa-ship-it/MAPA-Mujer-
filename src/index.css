@@ -68,6 +68,52 @@
     box-shadow: 0 0 25px rgba(54, 196, 216, 0.5);
     transform: translateY(-2px);
   }
+
+  /* Premium Buttons Standardized Suite */
+  .btn-premium-purple {
+    background-color: #6E488A;
+    border: 2px solid #8D65AA;
+    color: #FFFFFF;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-premium-purple:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(110, 72, 138, 0.45);
+  }
+  .btn-premium-purple:active {
+    transform: scale(0.98);
+  }
+
+  .btn-premium-magenta {
+    background-color: #E36DB4;
+    border: 2px solid #F08ECA;
+    color: #FFFFFF;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-premium-magenta:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(227, 109, 180, 0.45);
+  }
+  .btn-premium-magenta:active {
+    transform: scale(0.98);
+  }
+
+  .btn-premium-cyan {
+    background-color: #36C4D8;
+    border: 2px solid #59D6E8;
+    color: #FFFFFF;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-premium-cyan:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(54, 196, 216, 0.45);
+  }
+  .btn-premium-cyan:active {
+    transform: scale(0.98);
+  }
 }
 
 body {
