@@ -15,7 +15,9 @@ import {
   Activity, 
   Info,
   CheckCircle2,
-  Music
+  Music,
+  BookOpen,
+  ExternalLink
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -883,13 +885,48 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
               />
             )}
             {unlockedAudios.includes("day7") && (
-              <PremiumAudioPlayer
-                src="URL_DE_TU_STORAGE_DIA_7"
-                title="Audio de PAZ Absoluta"
-                subtitle="Sintonía de integración profunda de los 7 Días"
-                badge="Paz Absoluta • Programa Completo"
-                themeColor="#36C4D8"
-              />
+              <>
+                <PremiumAudioPlayer
+                  src="https://f005.backblazeb2.com/file/M.A.P.A/El+Despertar+de+Tu+Calma+Victoria+y+Resiliencia+Sostenible.mp3"
+                  title="El Despertar de Tu Calma: Victoria y Resiliencia Sostenible"
+                  subtitle="Sintonía terapéutica de integración profunda y neuroplasticidad"
+                  badge="Paz Absoluta • Tu Graduación (Día 7) 🎓"
+                  themeColor="#E36DB4"
+                />
+                
+                {/* Book Companion Card */}
+                <div className="bg-[#FAF7F9] hover:bg-white border-2 border-dashed border-[#E36DB4]/30 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:shadow-md transition-all">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-mono font-black text-[#E36DB4] uppercase tracking-widest bg-[#E36DB4]/10 px-2 py-0.5 rounded border border-[#E36DB4]/15">
+                        Segundo Recurso • Regalo Especial 📚
+                      </span>
+                      <BookOpen className="w-4.5 h-4.5 text-[#E36DB4]" />
+                    </div>
+                    
+                    <h4 className="font-display font-black text-sm text-[#56346F] leading-snug">
+                      Libro "Cuídate para Crecer"
+                    </h4>
+                    <p className="text-[10px] text-[#56346F]/60 font-sans italic font-bold">
+                      Por la maravillosa escritora Ana Pérez
+                    </p>
+                    
+                    <p className="text-xs text-[#56346F]/80 leading-relaxed font-sans bg-[#EDE0F0]/15 p-2.5 rounded-lg border border-[#6E488A]/5 font-medium italic">
+                      "Es una lectura consciente que se convertirá en el complemento perfecto para este nuevo ritmo de vida sostenible que hoy empiezas a edificar."
+                    </p>
+                  </div>
+                  
+                  <a
+                    href="https://f005.backblazeb2.com/file/M.A.P.A/Cu%C3%ADdate+para+Crecer.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 bg-gradient-to-r from-[#6E488A] to-[#E36DB4] hover:shadow-[0_0_12px_rgba(227,109,180,0.3)] hover:scale-[1.01] active:scale-[0.98] border border-[#F08ECA]/40 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-300 ease-in-out"
+                  >
+                    <span>Leer Libro (PDF) 📖</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </>
             )}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Sparkles, Award, Trophy, X, Play, Pause, Volume2, Music, CheckCircle, Download, Share2, Save, Loader2 } from "lucide-react";
+import { Sparkles, Award, Trophy, X, Play, Pause, Volume2, Music, CheckCircle, Download, Share2, Save, Loader2, BookOpen, ExternalLink } from "lucide-react";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
 
 interface RewardModalProps {
@@ -50,11 +50,11 @@ export const RewardModal: React.FC<RewardModalProps> = ({
     audioSubtitle = "Voz de nuestra mentora, Clara";
   } else if (isDay7) {
     title = "Paz Absoluta • Tu Graduación";
-    badge = "Reconocimiento de Transformación de 7 Días";
-    themeColor = "#36C4D8";
-    audioSrc = "https://f005.backblazeb2.com/file/M.A.P.A/Tu+mapa.mp3"; // Or fallback URL
-    audioTitle = "Audio de PAZ Absoluta";
-    audioSubtitle = "Sintonía de integración profunda de Mentora Clara";
+    badge = "Día 7 — Paz Absoluta (Tu Graduación) 🎓";
+    themeColor = "#E36DB4";
+    audioSrc = "https://f005.backblazeb2.com/file/M.A.P.A/El+Despertar+de+Tu+Calma+Victoria+y+Resiliencia+Sostenible.mp3";
+    audioTitle = "El Despertar de Tu Calma: Victoria y Resiliencia Sostenible";
+    audioSubtitle = "Audio de Clara Mentora • Sintonía de integración y neuroplasticidad";
   }
 
   // HTML5 audio state management
@@ -219,7 +219,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({
           ? "MAPA_Mujer_Centinela_de_la_Calma.mp3" 
           : isDay4 
             ? "MAPA_Mujer_Audiolibro.mp3" 
-            : "MAPA_Mujer_Audio_PAZ_Absoluta.mp3";
+            : "MAPA_Mujer_El_Despertar_de_Tu_Calma.mp3";
       a.download = fileName;
       document.body.appendChild(a);
       a.click();
@@ -358,9 +358,14 @@ export const RewardModal: React.FC<RewardModalProps> = ({
                     ¡Lo lograste, <strong style={{ color: themeColor }}>{nameToShow}</strong>! Has superado la mitad de tu viaje de transformación. Llegar al Día 4 requiere un compromiso inmenso con tu paz mental, y tu persistencia merece ser honrada.
                   </p>
                 ) : (
-                  <p>
-                    ¡Felicidades, mi querida <strong style={{ color: themeColor }}>{nameToShow}</strong>! Has concluido con éxito los 7 días de tu Mapa de Activación y Protección Emocional. Hoy celebro con profunda admiración tu constancia, tu resiliencia y el infinito amor que te has demostrado al completar este viaje terapéutico. Te entrego tu reconocimiento final y libero para ti el <strong className="text-white">Audio de PAZ Absoluta</strong>, para que esta sintonía te acompañe indefinidamente a lo largo de tu vida. Siempre estará disponible en tu perfil. ¡Lo lograste!
-                  </p>
+                  <div className="space-y-3">
+                    <p>
+                      ¡Felicidades, mi querida <strong style={{ color: themeColor }}>{nameToShow}</strong>! Has concluido con éxito los 7 días de tu Mapa de Activación y Protección Emocional. Hoy celebro con profunda admiración tu constancia, tu resiliencia y el infinito amor que te has demostrado al completar este viaje terapéutico.
+                    </p>
+                    <p className="text-xs text-white/80">
+                      Para tu graduación, la Mentora Clara ha liberado dos valiosos recursos que te ayudarán a mantener la paz en el largo plazo. Disfrútalos a continuación. ¡Lo lograste!
+                    </p>
+                  </div>
                 )}
                 <span className="absolute -bottom-7 -right-1 text-4xl text-white/10 font-serif">”</span>
               </div>
@@ -441,6 +446,44 @@ export const RewardModal: React.FC<RewardModalProps> = ({
                   </div>
                 </div>
               </div>
+
+              {/* SECOND RESOURCE (COMPANION BOOK): ONLY FOR DAY 7 */}
+              {isDay7 && (
+                <div className="bg-gradient-to-r from-[#E36DB4]/10 via-[#6E488A]/10 to-[#36C4D8]/10 border border-[#E36DB4]/30 rounded-2xl p-4 sm:p-5 text-left flex flex-col gap-4 shadow-lg animate-fadeIn relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-[#E36DB4]/5 rounded-full blur-lg pointer-events-none" />
+                  
+                  <div className="flex items-start space-x-3.5 relative z-10">
+                    <div className="w-12 h-12 rounded-xl bg-[#E36DB4]/20 flex items-center justify-center shrink-0 border border-[#E36DB4]/30">
+                      <BookOpen className="w-6 h-6 text-[#E36DB4]" />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-mono font-black text-[#E36DB4] uppercase tracking-widest bg-[#E36DB4]/10 px-2 py-0.5 rounded border border-[#E36DB4]/15">
+                        Segundo Recurso • Regalo Especial 📚
+                      </span>
+                      <h4 className="font-display font-black text-base text-white mt-1">
+                        Libro "Cuídate para Crecer"
+                      </h4>
+                      <p className="text-[11px] text-white/50 font-sans italic font-bold">
+                        Por la maravillosa escritora Ana Pérez
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-white/80 leading-relaxed font-sans font-medium relative z-10 bg-black/10 p-3 rounded-lg border border-white/5">
+                    "Es una lectura consciente que se convertirá en el complemento perfecto para este nuevo ritmo de vida sostenible que hoy empiezas a edificar."
+                  </p>
+
+                  <a
+                    href="https://f005.backblazeb2.com/file/M.A.P.A/Cu%C3%ADdate+para+Crecer.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 bg-gradient-to-r from-[#6E488A] to-[#E36DB4] hover:shadow-[0_0_15px_rgba(227,109,180,0.4)] hover:scale-[1.02] active:scale-[0.98] border border-[#F08ECA]/40 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 ease-in-out relative z-10"
+                  >
+                    <span>Leer Libro Digital 📖</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
 
               {/* Utility Tools Actions Panel */}
               <div className="grid grid-cols-3 gap-2 pt-2">
