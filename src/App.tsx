@@ -3388,7 +3388,7 @@ export default function App() {
                     );
                   })()}
 
-                  {/* Nombre Completo - Solo para no-administradores */}
+                  {/* ¿Cómo quieres que te llamemos? - Solo para no-administradores */}
                   {(() => {
                     const emailKey = loginEmail.toLowerCase().trim();
                     const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
@@ -3398,36 +3398,20 @@ export default function App() {
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
-                            Nombre Completo
+                            ¿Cómo quieres que te llamemos?
                           </label>
                           <div className="relative">
                             <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E488A]/60" />
                             <input 
                               type="text" 
                               required
-                              placeholder="Ej. Pedro Picapiedra"
-                              value={loginNombre}
-                              onChange={(e) => setLoginNombre(e.target.value)}
-                              className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all font-sans font-medium"
-                            />
-                          </div>
-                          <span className="block text-[10px] text-[#56346F]/70 font-mono mt-0.5">
-                            Indispensable para generar tus informes y PDFs oficiales a tu nombre.
-                          </span>
-                        </div>
-
-                        <div className="space-y-1">
-                          <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
-                            ¿Cómo quieres que te llamemos? (Alias o Nombre Corto)
-                          </label>
-                          <div className="relative">
-                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#EDE0F0] text-[#6E488A]/60" />
-                            <input 
-                              type="text" 
-                              required
-                              placeholder="Ej. Pedro"
+                              placeholder="Ej. María"
                               value={loginAlias}
-                              onChange={(e) => setLoginAlias(e.target.value)}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setLoginAlias(val);
+                                setLoginNombre(val);
+                              }}
                               className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all font-sans font-medium"
                             />
                           </div>
