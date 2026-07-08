@@ -3837,7 +3837,7 @@ export default function App() {
                           return (
                             <div
                               key={dayNum}
-                              className={`p-6 rounded-3xl text-left border-2 transition-all relative flex flex-col justify-between min-h-[250px] w-full shadow-xs ${
+                              className={`p-6 rounded-3xl text-left border-2 transition-all duration-300 ease-out hover:scale-[1.02] hover:opacity-100 hover:shadow-md relative flex flex-col justify-between min-h-[250px] w-full shadow-xs ${
                                 isActive
                                   ? isChronologicallyLocked
                                     ? "bg-[#FFFDF6] border-amber-300 border-b-4 border-b-amber-400 text-black shadow-md ring-1 ring-amber-300/40"
