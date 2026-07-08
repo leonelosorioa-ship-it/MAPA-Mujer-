@@ -504,6 +504,33 @@ export default function App() {
     }
   };
 
+  const triggerPushNotificationOnly = (reason: string) => {
+    if ("serviceWorker" in navigator && "Notification" in window) {
+      if (Notification.permission === "granted") {
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.showNotification("🔔 M.A.P.A.™ Mujer", {
+            body: reason,
+            icon: "/icon-512.png",
+            badge: "/icon-512.png",
+            vibrate: [300, 100, 300, 100, 300],
+            tag: "mapa-test-ready",
+            requireInteraction: false
+          } as any);
+        }).catch((err) => {
+          console.warn("Could not register background notification in Service Worker:", err);
+          try {
+            new Notification("🔔 M.A.P.A.™ Mujer", {
+              body: reason,
+              icon: "/icon-512.png"
+            });
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      }
+    }
+  };
+
   const stopAlarm = () => {
     if (alarmAudio) {
       alarmAudio.pause();
@@ -554,7 +581,7 @@ export default function App() {
     // If next day is unlocked (isLocked is false), total days completed is less than 7, reminder is enabled, and reminder hasn't fired yet
     const completedCount = programProgress.completedDays?.length || 0;
     if (!chrono.isLocked && completedCount < 7 && testReminderAlarmEnabled && !testReminderFired) {
-      triggerAlarm(`¡Tu prueba diaria M.A.P.A. del Día ${programProgress.currentDay} ya está disponible!`);
+      triggerPushNotificationOnly(`¡Tu prueba diaria M.A.P.A. del Día ${programProgress.currentDay} ya está disponible!`);
       setTestReminderFired(true);
     }
 
@@ -5468,7 +5495,7 @@ export default function App() {
                   <div className="space-y-0.5 text-left">
                     <span className="text-xs font-bold text-[#411F66] block">Avisar cuando mi test esté disponible</span>
                     <span className="text-[10px] text-gray-500 block leading-tight">
-                      Recibe una sutil alerta sonora del sintonizador de calma tan pronto termine la cuenta regresiva de 24h.
+                      Recibe una notificación push silenciosa tan pronto termine la cuenta regresiva de 24h.
                     </span>
                   </div>
                 </label>
@@ -5503,42 +5530,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* ACTIVE ALARM OVERLAY BANNER */}
-      <AnimatePresence>
-        {isAlarmPlaying && (
-          <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            className="fixed top-0 inset-x-0 z-[99999] p-4 bg-gradient-to-r from-[#E86FA3] via-[#411F66] to-[#E86FA3] text-white shadow-2xl border-b-2 border-white flex flex-col items-center justify-center text-center gap-3.5 py-6 sm:py-8"
-          >
-            <motion.div
-              animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
-            >
-              <Bell className="w-6 h-6 text-white" />
-            </motion.div>
-            <div className="space-y-1 max-w-lg">
-              <h3 className="text-sm sm:text-base font-display font-black tracking-wider uppercase">
-                🔔 SINTONIZADOR DE CALMA: ALARMA ACTIVA
-              </h3>
-              <p className="text-xs font-sans font-bold text-pink-100">
-                {alarmReason || "¡Es hora de conectar con tu bienestar!"}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 items-center justify-center">
-              <button
-                onClick={stopAlarm}
-                className="px-6 py-3 rounded-full bg-white text-[#411F66] hover:bg-[#FFF0F5] font-display font-black text-xs sm:text-sm uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer border-2 border-transparent"
-              >
-                <VolumeX className="w-4 h-4 text-[#411F66]" />
-                <span>ANULAR NOTIFICACIÓN / APAGAR ALARMA</span>
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ACTIVE ALARM OVERLAY BANNER REMOVED */}
 
     </div>
   );
