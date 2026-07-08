@@ -19,6 +19,8 @@ import {
   Smile,
   AlertTriangle,
   ArrowRight,
+  ArrowLeft,
+  ChevronLeft,
   User,
   HeartHandshake,
   Mail,
@@ -249,7 +251,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   const { getShareText, shareToWhatsApp, shareWithFallback } = useWhatsAppShare();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<"coach" | "garden" | "challenges" | "evolution" | "share" | "milestones" | "diary">("coach");
+  const [activeTab, setActiveTab] = useState<"menu" | "coach" | "garden" | "challenges" | "evolution" | "share" | "milestones" | "diary">("menu");
   const [geminiActive, setGeminiActive] = useState<boolean>(false);
   const [lastMatchedCategory, setLastMatchedCategory] = useState<any | null>(null);
 
@@ -841,204 +843,256 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
       <div className="absolute top-0 right-0 w-80 h-80 bg-[#36C4D8]/5 rounded-full blur-3xl -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#E36DB4]/5 rounded-full blur-3xl -z-10 pointer-events-none" />
 
-      {/* Header Panel */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#6E488A]/12 pb-6">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="px-3 py-1 text-xs uppercase font-black tracking-widest text-[#E36DB4] bg-[#EDE0F0] border border-[#E36DB4]/25 rounded-full shadow-sm">
-              ✨ MIEMBRO PREMIUM ACTIVO
+      {/* Wayfinding Header for Dedicated Views */}
+      {activeTab !== "menu" && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#6E488A]/12 pb-4 mb-6 gap-3 animate-fadeIn">
+          <button 
+            onClick={() => setActiveTab("menu")}
+            className="flex items-center gap-2 text-[#6E488A] hover:text-[#E36DB4] font-extrabold text-xs sm:text-sm font-sans transition-all group shrink-0 cursor-pointer"
+          >
+            <ChevronLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1 text-[#6E488A]" />
+            <span>Volver al Menú Principal</span>
+          </button>
+          
+          <div className="flex items-center gap-2 justify-end">
+            <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest text-[#E36DB4] bg-[#EDE0F0] border border-[#E36DB4]/25 px-2.5 py-1 rounded-full shadow-sm font-mono">
+              M.A.P.A.™ Ecosistema de Calma
             </span>
-            <div className="flex items-center gap-1.5 text-[#6E488A]/70 text-sm font-mono font-bold">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#36C4D8] animate-pulse" />
-              Sincronizado con M.A.P.A.™
+          </div>
+        </div>
+      )}
+
+      {/* Main Menu Dashboard: Visible ONLY when in "menu" state */}
+      {activeTab === "menu" && (
+        <div className="space-y-8 animate-fadeIn">
+          {/* Header Panel */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#6E488A]/12 pb-6">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="px-3 py-1 text-xs uppercase font-black tracking-widest text-[#E36DB4] bg-[#EDE0F0] border border-[#E36DB4]/25 rounded-full shadow-sm">
+                  ✨ MIEMBRO PREMIUM ACTIVO
+                </span>
+                <div className="flex items-center gap-1.5 text-[#6E488A]/70 text-sm font-mono font-bold">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#36C4D8] animate-pulse" />
+                  Sincronizado con M.A.P.A.™
+                </div>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#6E488A] flex items-center gap-2.5">
+                Espacio Premium M.A.P.A.™ <Sparkles className="w-6 h-6 text-[#36C4D8] animate-pulse" />
+              </h2>
+              <p className="text-base text-[#56346F]/80">
+                Bienvenida, <strong className="text-[#6E488A] font-extrabold">{userName}</strong>. Tu programa personalizado de regulación e intercepción neural está activo y optimizado.
+              </p>
+              {currentDay && (
+                <div className="mt-3 bg-gradient-to-r from-[#EDE0F0] to-[#E36DB4]/10 border-l-4 border-[#E36DB4] p-3.5 rounded-r-2xl text-left shadow-sm animate-fadeIn">
+                  <span className="text-[10px] font-mono uppercase text-[#6E488A] tracking-wider font-extrabold block mb-1">
+                    📅 RUTA DE 7 DÍAS CONSECUTIVOS • ENFOQUE DE HOY
+                  </span>
+                  <p className="text-xs sm:text-sm text-[#56346F] leading-relaxed font-bold">
+                    {getDayThemeMessage(currentDay, userName)}
+                  </p>
+                  <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#56346F]/70 font-semibold font-mono">
+                    <span>Días completados: </span>
+                    <span className="px-1.5 py-0.5 rounded bg-[#EDE0F0] text-[#6E488A] font-extrabold">
+                      {completedDays?.length || 0} de 7
+                    </span>
+                    <span>• Cada paso que das te devuelve el control de tu vida. ¡Estamos contigo!</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 🚨 BOTÓN DE PÁNICO: Siempre disponible y destacado en color de urgencia */}
+            <div>
+              <button
+                id="emergency_panic_button"
+                onClick={startCalmMode}
+                className="flex items-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white font-extrabold text-base border-b-4 border-red-700 shadow-[0_8px_16px_rgba(239,68,68,0.25)] hover:border-b-2 hover:translate-y-[2px] active:border-b-0 active:translate-y-[4px] hover:shadow-[0_4px_8px_rgba(239,68,68,0.25)] transition-all cursor-pointer group"
+              >
+                <AlertTriangle className="w-6 h-6 text-white animate-bounce" />
+                <span>NECESITO CALMARME AHORA</span>
+                <span className="text-xs bg-red-950/20 px-2 py-0.5 rounded border border-white/30">SOS</span>
+              </button>
             </div>
           </div>
-          <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#6E488A] flex items-center gap-2.5">
-            Espacio Premium M.A.P.A.™ <Sparkles className="w-6 h-6 text-[#36C4D8] animate-pulse" />
-          </h2>
-          <p className="text-base text-[#56346F]/80">
-            Bienvenida, <strong className="text-[#6E488A] font-extrabold">{userName}</strong>. Tu programa personalizado de regulación e intercepción neural está activo y optimizado.
-          </p>
-          {currentDay && (
-            <div className="mt-3 bg-gradient-to-r from-[#EDE0F0] to-[#E36DB4]/10 border-l-4 border-[#E36DB4] p-3.5 rounded-r-2xl text-left shadow-sm animate-fadeIn">
-              <span className="text-[10px] font-mono uppercase text-[#6E488A] tracking-wider font-extrabold block mb-1">
-                📅 RUTA DE 7 DÍAS CONSECUTIVOS • ENFOQUE DE HOY
-              </span>
-              <p className="text-xs sm:text-sm text-[#56346F] leading-relaxed font-bold">
-                {getDayThemeMessage(currentDay, userName)}
-              </p>
-              <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#56346F]/70 font-semibold font-mono">
-                <span>Días completados: </span>
-                <span className="px-1.5 py-0.5 rounded bg-[#EDE0F0] text-[#6E488A] font-extrabold">
-                  {completedDays?.length || 0} de 7
+
+          {/* Gamificación: Sistema de Niveles */}
+          <div className="p-5 rounded-2xl border-2 border-[#6E488A]/20 border-b-4 border-b-[#6E488A]/30 bg-[#EDE0F0]/30 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 shadow-[0_8px_20px_rgba(110,72,138,0.04)] hover:scale-[1.005] hover:shadow-[0_12px_24px_rgba(110,72,138,0.06)]">
+            <div className="flex items-center gap-4 w-full md:w-auto">
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#6E488A] to-[#E36DB4] flex items-center justify-center text-white font-black text-2xl shadow-md relative shrink-0">
+                {levelInfo.level}
+                <Trophy className="absolute -bottom-1 -right-1 w-4 h-4 text-amber-300 drop-shadow" />
+              </div>
+              <div className="space-y-1 w-full text-left">
+                <span className="text-[10px] tracking-wider text-[#56346F]/70 uppercase font-mono block font-bold">Nivel de Regulación</span>
+                <div className="text-lg font-extrabold text-[#6E488A] leading-tight flex items-center gap-2">
+                  {levelInfo.title}
+                  <span className="text-xs text-[#E36DB4] font-mono">({premiumData.points} XP)</span>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="w-full md:w-64 h-2 bg-[#EDE0F0] rounded-full overflow-hidden border border-[#6E488A]/10">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#36C4D8] to-[#E36DB4] transition-all duration-500"
+                    style={{ width: `${levelInfo.progress}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-[#56346F]/70 block font-medium">
+                  Próximo nivel al alcanzar los {levelInfo.nextXP} XP
                 </span>
-                <span>• Cada paso que das te devuelve el control de tu vida. ¡Estamos contigo!</span>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* 🚨 BOTÓN DE PÁNICO: Siempre disponible y destacado en color de urgencia */}
-        <div>
-          <button
-            id="emergency_panic_button"
-            onClick={startCalmMode}
-            className="flex items-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white font-extrabold text-base border-b-4 border-red-700 shadow-[0_8px_16px_rgba(239,68,68,0.25)] hover:border-b-2 hover:translate-y-[2px] active:border-b-0 active:translate-y-[4px] hover:shadow-[0_4px_8px_rgba(239,68,68,0.25)] transition-all cursor-pointer group"
-          >
-            <AlertTriangle className="w-6 h-6 text-white animate-bounce" />
-            <span>NECESITO CALMARME AHORA</span>
-            <span className="text-xs bg-red-950/20 px-2 py-0.5 rounded border border-white/30">SOS</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Gamificación: Sistema de Niveles */}
-      <div className="p-5 rounded-2xl border-2 border-[#6E488A]/20 border-b-4 border-b-[#6E488A]/30 bg-[#EDE0F0]/30 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 shadow-[0_8px_20px_rgba(110,72,138,0.04)] hover:scale-[1.005] hover:shadow-[0_12px_24px_rgba(110,72,138,0.06)]">
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#6E488A] to-[#E36DB4] flex items-center justify-center text-white font-black text-2xl shadow-md relative shrink-0">
-            {levelInfo.level}
-            <Trophy className="absolute -bottom-1 -right-1 w-4 h-4 text-amber-300 drop-shadow" />
-          </div>
-          <div className="space-y-1 w-full text-left">
-            <span className="text-[10px] tracking-wider text-[#56346F]/70 uppercase font-mono block font-bold">Nivel de Regulación</span>
-            <div className="text-lg font-extrabold text-[#6E488A] leading-tight flex items-center gap-2">
-              {levelInfo.title}
-              <span className="text-xs text-[#E36DB4] font-mono">({premiumData.points} XP)</span>
+            {/* Level description & dynamic stats */}
+            <div className="flex items-center gap-6 text-center md:text-right shrink-0">
+              <div>
+                <div className="text-2xl font-black text-[#6E488A] font-mono">{challenges.filter(c => c.completed).length}/5</div>
+                <span className="text-[10px] text-[#56346F]/70 uppercase tracking-widest block font-bold">Retos Diarios</span>
+              </div>
+              <div className="w-px h-8 bg-[#6E488A]/20" />
+              <div>
+                <div className="text-2xl font-black text-[#6E488A] font-mono">{premiumData.coachHistory.filter(m => m.role === "user").length}</div>
+                <span className="text-[10px] text-[#56346F]/70 uppercase tracking-widest block font-bold">Interacciones IA</span>
+              </div>
             </div>
-            
-            {/* Progress Bar */}
-            <div className="w-full md:w-64 h-2 bg-[#EDE0F0] rounded-full overflow-hidden border border-[#6E488A]/10">
-              <div 
-                className="h-full bg-gradient-to-r from-[#36C4D8] to-[#E36DB4] transition-all duration-500"
-                style={{ width: `${levelInfo.progress}%` }}
-              />
+          </div>
+
+          {/* Premium Tools Bento Grid */}
+          <div className="space-y-6">
+            <div className="text-left space-y-1">
+              <h3 className="text-sm font-black text-[#6E488A] tracking-widest uppercase font-mono">
+                Suite de Herramientas de Descompresión
+              </h3>
+              <p className="text-xs text-[#56346F]/70 font-sans font-semibold">
+                Elige un recurso especializado de alto valor para tu regulación neuro-cognitiva y protección emocional.
+              </p>
             </div>
-            <span className="text-[10px] text-[#56346F]/70 block font-medium">
-              Próximo nivel al alcanzar los {levelInfo.nextXP} XP
-            </span>
+
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.05 }
+                }
+              }}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+            >
+              {[
+                {
+                  id: "coach",
+                  title: "MENTORA CLARA",
+                  emoji: "🧠",
+                  desc: "Asistencia clínica interactiva con tu guía experta en tiempo real.",
+                  icon: Brain,
+                  bgColor: "bg-[#EDE0F0]/30 hover:bg-[#EDE0F0]/50",
+                  borderColor: "border-2 border-[#6E488A]/20 hover:border-[#6E488A]/50 shadow-sm",
+                  iconColor: "text-[#6E488A]"
+                },
+                {
+                  id: "garden",
+                  title: "JARDÍN DE PAZ",
+                  emoji: "🌿",
+                  desc: "Un espacio de calma express para desacelerar tu ritmo nervioso.",
+                  icon: Smile,
+                  bgColor: "bg-[#E6F8F9]/40 hover:bg-[#E6F8F9]/60",
+                  borderColor: "border-2 border-[#36C4D8]/20 hover:border-[#36C4D8]/50 shadow-sm",
+                  iconColor: "text-[#36C4D8]"
+                },
+                {
+                  id: "challenges",
+                  title: "RETOS ACTIVOS™",
+                  emoji: "🎯",
+                  desc: "Tus misiones diarias personalizadas para consolidar nuevos hábitos.",
+                  icon: Award,
+                  bgColor: "bg-[#FDF2F7]/40 hover:bg-[#FDF2F7]/60",
+                  borderColor: "border-2 border-[#E36DB4]/20 hover:border-[#E36DB4]/50 shadow-sm",
+                  iconColor: "text-[#E36DB4]",
+                  badge: challenges.filter(c => !c.completed).length
+                },
+                {
+                  id: "evolution",
+                  title: "MI EVOLUCIÓN™",
+                  emoji: "📈",
+                  desc: "Gráficas visuales de tu progreso y balance emocional en las 5 dimensiones.",
+                  icon: Activity,
+                  bgColor: "bg-[#EDEBF7]/30 hover:bg-[#EDEBF7]/55",
+                  borderColor: "border-2 border-[#5B21B6]/20 hover:border-[#5B21B6]/50 shadow-sm",
+                  iconColor: "text-[#5B21B6]"
+                },
+                {
+                  id: "diary",
+                  title: "DIARIO",
+                  emoji: "📖",
+                  desc: "Tu espacio seguro de escritura introspectiva y descarga mental diaria.",
+                  icon: BookOpen,
+                  bgColor: "bg-[#FAF5FF]/40 hover:bg-[#FAF5FF]/65",
+                  borderColor: "border-2 border-purple-400/20 hover:border-purple-500/50 shadow-sm",
+                  iconColor: "text-purple-600"
+                },
+                {
+                  id: "share",
+                  title: "COMPARTIR",
+                  emoji: "🏆",
+                  desc: "Inspira a otras mujeres extendiendo tus victorias emocionales con un clic.",
+                  icon: Share2,
+                  bgColor: "bg-[#F0FDFA]/40 hover:bg-[#F0FDFA]/60",
+                  borderColor: "border-2 border-teal-400/20 hover:border-teal-500/50 shadow-sm",
+                  iconColor: "text-teal-600"
+                },
+                {
+                  id: "milestones",
+                  title: "MIS LOGROS",
+                  emoji: "🏅",
+                  desc: "Tu vitrina de medallas y niveles alcanzados por tu constancia.",
+                  icon: Trophy,
+                  bgColor: "bg-[#FFFBEB]/40 hover:bg-[#FFFBEB]/60",
+                  borderColor: "border-2 border-amber-400/20 hover:border-amber-500/50 shadow-sm",
+                  iconColor: "text-amber-600"
+                }
+              ].map((mod) => {
+                const IconComp = mod.icon;
+                return (
+                  <motion.button
+                    key={mod.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 10 },
+                      show: { opacity: 1, y: 0 }
+                    }}
+                    whileHover={{ scale: 1.025, y: -3 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveTab(mod.id as any)}
+                    className={`w-full text-left rounded-2xl p-5 ${mod.bgColor} ${mod.borderColor} transition-all duration-300 relative flex flex-col justify-between h-[165px] cursor-pointer group`}
+                  >
+                    <div className="flex items-start justify-between w-full">
+                      <div className={`p-3 rounded-xl bg-white ${mod.iconColor} shadow-sm border border-black/5 group-hover:scale-110 transition-transform duration-300`}>
+                        <IconComp className="w-5 h-5" />
+                      </div>
+                      {mod.badge !== undefined && mod.badge !== null && mod.badge > 0 && (
+                        <span className="px-2 py-0.5 rounded bg-[#E36DB4] text-white text-[10px] font-mono font-black animate-pulse shadow-sm">
+                          {mod.badge} ACTIVOS
+                        </span>
+                      )}
+                      <span className="text-xl filter drop-shadow-sm">{mod.emoji}</span>
+                    </div>
+
+                    <div className="space-y-1 mt-3">
+                      <h4 className={`font-display font-black text-xs uppercase tracking-wider ${mod.iconColor} flex items-center gap-1.5`}>
+                        {mod.title}
+                      </h4>
+                      <p className="text-[11px] text-[#56346F]/75 font-sans leading-relaxed font-semibold line-clamp-2">
+                        {mod.desc}
+                      </p>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </motion.div>
           </div>
         </div>
-
-        {/* Level description & dynamic stats */}
-        <div className="flex items-center gap-6 text-center md:text-right shrink-0">
-          <div>
-            <div className="text-2xl font-black text-[#6E488A] font-mono">{challenges.filter(c => c.completed).length}/5</div>
-            <span className="text-[10px] text-[#56346F]/70 uppercase tracking-widest block font-bold">Retos Diarios</span>
-          </div>
-          <div className="w-px h-8 bg-[#6E488A]/20" />
-          <div>
-            <div className="text-2xl font-black text-[#6E488A] font-mono">{premiumData.coachHistory.filter(m => m.role === "user").length}</div>
-            <span className="text-[10px] text-[#56346F]/70 uppercase tracking-widest block font-bold">Interacciones IA</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs Navigation */}
-      <div className="flex flex-wrap gap-2 sm:gap-3 border-b border-[#6E488A]/12 pb-4">
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("coach")}
-          className={`flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "coach"
-              ? "bg-[#EDE0F0] border-2 border-[#6E488A] text-[#6E488A] shadow-sm"
-              : "hover:bg-[#EDE0F0]/50 border border-transparent text-[#56346F]/80 hover:text-[#6E488A]"
-          }`}
-        >
-          <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-[#36C4D8]" />
-          <span>🧠 Mentora Clara</span>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("garden")}
-          className={`flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "garden"
-              ? "bg-[#EDE0F0]/70 border-2 border-[#36C4D8] text-[#36C4D8] shadow-sm"
-              : "hover:bg-[#EDE0F0]/50 border border-transparent text-[#56346F]/80 hover:text-[#6E488A]"
-          }`}
-        >
-          <Smile className="w-4 h-4 sm:w-5 sm:h-5 text-[#36C4D8]" />
-          <span>🌿 Jardín de Paz</span>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("challenges")}
-          className={`flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "challenges"
-              ? "bg-[#EDE0F0]/70 border-2 border-[#E36DB4] text-[#E36DB4] shadow-sm"
-              : "hover:bg-[#EDE0F0]/50 border border-transparent text-[#56346F]/80 hover:text-[#6E488A]"
-          }`}
-        >
-          <Award className="w-4 h-4 sm:w-5 sm:h-5 text-[#E36DB4]" />
-          <span>🎯 Retos Activos™</span>
-          {challenges.filter(c => !c.completed).length > 0 && (
-            <span className="px-1.5 py-0.5 rounded bg-[#EDE0F0] border border-[#E36DB4]/30 text-[10px] sm:text-xs font-mono font-black text-[#E36DB4]">
-              {challenges.filter(c => !c.completed).length}
-            </span>
-          )}
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("evolution")}
-          className={`flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "evolution"
-              ? "bg-[#EDE0F0] border-2 border-[#6E488A] text-[#6E488A] shadow-sm"
-              : "hover:bg-[#EDE0F0]/50 border border-transparent text-[#56346F]/80 hover:text-[#6E488A]"
-          }`}
-        >
-          <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-[#36C4D8]" />
-          <span>📈 Mi Evolución™</span>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("diary")}
-          className={`flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "diary"
-              ? "bg-[#EDE0F0] border-2 border-purple-500 text-[#6E488A] shadow-sm"
-              : "hover:bg-[#EDE0F0]/50 border border-transparent text-[#56346F]/80 hover:text-[#6E488A]"
-          }`}
-        >
-          <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
-          <span>📖 Diario</span>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("share")}
-          className={`flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "share"
-              ? "bg-[#EDE0F0]/70 border-2 border-[#36C4D8] text-[#36C4D8] shadow-sm"
-              : "hover:bg-[#EDE0F0]/50 border border-transparent text-[#56346F]/80 hover:text-[#6E488A]"
-          }`}
-        >
-          <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#36C4D8]" />
-          <span>🏆 Compartir</span>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab("milestones")}
-          className={`flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "milestones"
-              ? "bg-[#EDE0F0]/75 border-2 border-amber-500 text-amber-600 shadow-sm"
-              : "hover:bg-[#EDE0F0]/50 border border-transparent text-[#56346F]/80 hover:text-[#6E488A]"
-          }`}
-          id="tab-milestones-btn"
-        >
-          <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 animate-pulse" />
-          <span>🏅 Mis Logros</span>
-        </motion.button>
-      </div>
+      )}
 
       {/* Main Tab Contents */}
       {isLoading ? (
