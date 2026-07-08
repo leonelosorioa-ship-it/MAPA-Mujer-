@@ -34,6 +34,7 @@ export interface LeadInfo {
   nombre: string;
   email: string;
   whatsapp: string;
+  alias?: string;
 }
 
 export interface EmotionalProfile {

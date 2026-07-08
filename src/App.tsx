@@ -7,6 +7,7 @@ import {
   Heart, 
   Map, 
   ArrowRight, 
+  ArrowLeft,
   CheckCircle2, 
   Sparkles, 
   ChevronRight, 
@@ -204,6 +205,7 @@ export default function App() {
 
   const [loginEmail, setLoginEmail] = useState<string>("");
   const [loginNombre, setLoginNombre] = useState<string>("");
+  const [loginAlias, setLoginAlias] = useState<string>("");
   const [loginWhatsapp, setLoginWhatsapp] = useState<string>("");
   const [loginAccessCode, setLoginAccessCode] = useState<string>("");
   const [isRequestingCode, setIsRequestingCode] = useState<boolean>(false);
@@ -325,6 +327,45 @@ export default function App() {
       hours,
       minutes,
       seconds
+    };
+  };
+
+  const getUserShortName = (info: { nombre: string; alias?: string }) => {
+    if (info.alias && info.alias.trim()) {
+      return info.alias.trim();
+    }
+    if (!info.nombre) return "Usuaria";
+    const firstWord = info.nombre.trim().split(/\s+/)[0];
+    return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+  };
+
+  const getTimeRemainingForDay = (dayNum: number) => {
+    const { maxAllowedDay, isLocked, msRemaining } = getChronologicalState();
+    if (dayNum <= maxAllowedDay) {
+      return { isLocked: false, hours: 0, minutes: 0, seconds: 0, text: "" };
+    }
+    
+    const currentDay = programProgress.currentDay;
+    let dayMsRemaining = 0;
+    if (dayNum === currentDay) {
+      dayMsRemaining = msRemaining;
+    } else {
+      const daysOffset = dayNum - currentDay;
+      const baseRemaining = isLocked ? msRemaining : 0;
+      dayMsRemaining = baseRemaining + (daysOffset * 24 * 60 * 60 * 1000);
+    }
+    
+    const totalSeconds = Math.floor(dayMsRemaining / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    return {
+      isLocked: true,
+      hours,
+      minutes,
+      seconds,
+      text: `${String(hours).padStart(2, '0')}h : ${String(minutes).padStart(2, '0')}m`
     };
   };
 
@@ -712,6 +753,9 @@ export default function App() {
             if (parsed.leadInfo.nombre && !loginNombre) {
               setLoginNombre(parsed.leadInfo.nombre);
             }
+            if (parsed.leadInfo.alias && !loginAlias) {
+              setLoginAlias(parsed.leadInfo.alias);
+            }
             if (parsed.leadInfo.whatsapp && !loginWhatsapp) {
               setLoginWhatsapp(parsed.leadInfo.whatsapp);
             }
@@ -846,6 +890,11 @@ export default function App() {
 
       // Hydrate progress from server
       const loadedProgress = data.userProgress;
+      if (loadedProgress && loadedProgress.leadInfo) {
+        if (!loadedProgress.leadInfo.alias) {
+          loadedProgress.leadInfo.alias = loginAlias.trim() || getUserShortName({ nombre: loadedProgress.leadInfo.nombre });
+        }
+      }
       setProgramProgress(loadedProgress);
       localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(loadedProgress));
       
@@ -859,7 +908,8 @@ export default function App() {
         setPhase("ADMIN");
       } else {
         setPhase("DASHBOARD");
-        setDashboardNotice(`🎯 ¡Acceso concedido! Bienvenida a M.A.P.A.™ Mujer, ${loadedProgress.leadInfo.nombre || "Alumna"}.`);
+        const displayName = loadedProgress.leadInfo.alias || getUserShortName(loadedProgress.leadInfo);
+        setDashboardNotice(`🎯 ¡Acceso concedido! Bienvenida a M.A.P.A.™ Mujer, ${displayName}.`);
         setTimeout(() => setDashboardNotice(null), 4000);
       }
     })
@@ -1050,6 +1100,11 @@ export default function App() {
       setCurrentUserEmail(emailKey);
 
       const loadedProgress = data.userProgress;
+      if (loadedProgress && loadedProgress.leadInfo) {
+        if (!loadedProgress.leadInfo.alias) {
+          loadedProgress.leadInfo.alias = loginAlias.trim() || getUserShortName({ nombre: loadedProgress.leadInfo.nombre });
+        }
+      }
       setProgramProgress(loadedProgress);
       localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(loadedProgress));
       setLeadInfo(loadedProgress.leadInfo);
@@ -1061,7 +1116,8 @@ export default function App() {
         setPhase("ADMIN");
       } else {
         setPhase("DASHBOARD");
-        setDashboardNotice(`🎯 ¡M.A.P.A.™ Mujer iniciado con éxito! Bienvenida al programa, querida ${loadedProgress.leadInfo.nombre || "Alumna"}.`);
+        const displayName = loadedProgress.leadInfo.alias || getUserShortName(loadedProgress.leadInfo);
+        setDashboardNotice(`🎯 ¡M.A.P.A.™ Mujer iniciado con éxito! Bienvenida al programa, querida ${displayName}.`);
         setTimeout(() => setDashboardNotice(null), 6000);
       }
       setIsRegistering(false);
@@ -3312,24 +3368,46 @@ export default function App() {
                     const isAdm = adminEmails.includes(emailKey);
                     if (isAdm) return null;
                     return (
-                      <div className="space-y-1">
-                        <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
-                          Nombre Completo
-                        </label>
-                        <div className="relative">
-                          <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E488A]/60" />
-                          <input 
-                            type="text" 
-                            required
-                            placeholder="Ej. Pedro Picapiedra"
-                            value={loginNombre}
-                            onChange={(e) => setLoginNombre(e.target.value)}
-                            className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all font-sans font-medium"
-                          />
+                      <div className="space-y-4">
+                        <div className="space-y-1">
+                          <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
+                            Nombre Completo
+                          </label>
+                          <div className="relative">
+                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E488A]/60" />
+                            <input 
+                              type="text" 
+                              required
+                              placeholder="Ej. Pedro Picapiedra"
+                              value={loginNombre}
+                              onChange={(e) => setLoginNombre(e.target.value)}
+                              className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all font-sans font-medium"
+                            />
+                          </div>
+                          <span className="block text-[10px] text-[#56346F]/70 font-mono mt-0.5">
+                            Indispensable para generar tus informes y PDFs oficiales a tu nombre.
+                          </span>
                         </div>
-                        <span className="block text-[10px] text-[#56346F]/70 font-mono mt-0.5">
-                          Indispensable para generar tus informes y PDFs oficiales a tu nombre.
-                        </span>
+
+                        <div className="space-y-1">
+                          <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
+                            ¿Cómo quieres que te llamemos? (Alias o Nombre Corto)
+                          </label>
+                          <div className="relative">
+                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#EDE0F0] text-[#6E488A]/60" />
+                            <input 
+                              type="text" 
+                              required
+                              placeholder="Ej. Pedro"
+                              value={loginAlias}
+                              onChange={(e) => setLoginAlias(e.target.value)}
+                              className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all font-sans font-medium"
+                            />
+                          </div>
+                          <span className="block text-[10px] text-[#56346F]/70 font-mono mt-0.5">
+                            Se usará para personalizar tus saludos y tarjetas en la plataforma, respetando tu privacidad.
+                          </span>
+                        </div>
                       </div>
                     );
                   })()}
@@ -3463,409 +3541,401 @@ export default function App() {
 
               {/* The 7-Day Program Timeline Cards Grid */}
               <div id="emotional_timeline_section" className="space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-[#6E488A]/12 pb-4">
-                  <div>
-                    <h3 className="font-display font-semibold text-2xl text-[#6E488A] tracking-tight flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-[#E36DB4]" />
-                      Cronograma del Viaje Emocional
-                    </h3>
-                    <p className="text-xs text-[#56346F]/80 mt-1">Tu ruta estructurada de 7 días consecutivos para regular tu sistema nervioso y desactivar la ansiedad crónica.</p>
-                  </div>
-                  <span className="text-xs font-mono bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/15 px-3 py-1.5 rounded-full inline-block text-center whitespace-nowrap font-bold">
-                    📅 PROGRAMA DE 7 DÍAS
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
-                    const isCompleted = programProgress.completedDays.includes(dayNum);
-                    const isActive = programProgress.currentDay === dayNum;
-                    const { maxAllowedDay, hours, minutes, seconds } = getChronologicalState();
-                    const isChronologicallyLocked = dayNum > maxAllowedDay;
-
-                    const dayMeta = [
-                      { 
-                        icon: "🫁", 
-                        title: "Día 1", 
-                        sub: "Sintomatología Fisiológica", 
-                        desc: "Mide y libera la tensión corporal, el ritmo latente y la alerta acumulada.",
-                        tool: "Interrupción muscular M.A.P.A.™ (2 min)" 
-                      },
-                      { 
-                        icon: "⚡", 
-                        title: "Día 2", 
-                        sub: "Sensibilidad Ambiental", 
-                        desc: "Identifica la sobreestimulación sensorial y ruidos que agotan tu energía simpática.",
-                        tool: "Blindaje e inmersión vagal (5 min)" 
-                      },
-                      { 
-                        icon: "🧠", 
-                        title: "Día 3", 
-                        sub: "Rumia y Pensamiento Automático", 
-                        desc: "Debilita los bucles de escenarios catastróficos que mantienen alto el cortisol.",
-                        tool: "Tabla Hecho vs. Fantasía (3 min)" 
-                      },
-                      { 
-                        icon: "👥", 
-                        title: "Día 4", 
-                        sub: "Relaciones de Vínculo", 
-                        desc: "Gestiona la sobrecarga empática, complacencia y la batería de interacción social.",
-                        tool: "Contención de tres capas (4 min)" 
-                      },
-                      { 
-                        icon: "⚖️", 
-                        title: "Día 5", 
-                        sub: "Hábitos de Control Rígido", 
-                        desc: "Suelta la necesidad de anticipar todo para calmar tus miedos de forma ficticia.",
-                        tool: "Ancla 'Cajón Imperfecto' (3 min)" 
-                      },
-                      { 
-                        icon: "🛡️", 
-                        title: "Día 6", 
-                        sub: "Estrategias de Evitación", 
-                        desc: "Evita la evasión inercial digital y los escapes silenciosos en diálogos difíciles.",
-                        tool: "Acción de Micro-Segundos M.A.P.A.™ (2 min)" 
-                      },
-                      { 
-                        icon: "🕯️", 
-                        title: "Día 7", 
-                        sub: "Integración Sostenida y Cierre", 
-                        desc: "Consolida tus 49 marcadores biológicos y elabora pautas definitivas de calma.",
-                        tool: "Anclaje definitivo de tu mapa diario (5 min)" 
-                      }
-                    ][dayNum - 1];
-
-                    return (
-                      <button
-                        key={dayNum}
-                        onClick={() => setSelectedDayPreview(dayNum)}
-                        className={`p-6 rounded-3xl text-left border-2 transition-all relative flex flex-col justify-between min-h-[220px] cursor-pointer outline-none w-full hover:scale-[1.02] active:scale-[0.98] ${
-                          isActive
-                            ? isChronologicallyLocked
-                              ? "bg-[#FFFBEB] border-amber-300 border-b-4 border-b-amber-400 text-black shadow-[0_10px_25px_rgba(245,158,11,0.08)] ring-1 ring-amber-300"
-                              : "bg-white border-[#36C4D8] border-b-4 border-b-[#27A1B2] shadow-[0_15px_30px_rgba(54,196,216,0.15)] ring-1 ring-[#36C4D8] text-black"
-                            : isCompleted
-                            ? "bg-white border-[#6E488A]/12 border-b-4 border-b-emerald-400/80 text-black shadow-[0_8px_20px_rgba(110,72,138,0.04)]"
-                            : "bg-[#FDF9FE] border-[#6E488A]/35 border-b-4 border-b-[#EDE0F0] text-black shadow-[0_4px_12px_rgba(110,72,138,0.02)] hover:border-[#6E488A]/60"
-                        }`}
-                      >
-                        <div className="space-y-3 w-full animate-fadeIn">
-                          <div className="flex items-center justify-between w-full">
-                            <span className="text-3xl">{dayMeta.icon}</span>
-                            <div>
-                              {isCompleted ? (
-                                <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-bold">
-                                  <span>Completo</span>
-                                </span>
-                              ) : isActive ? (
-                                isChronologicallyLocked ? (
-                                  <span className="text-[10px] font-mono bg-amber-100 text-amber-800 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-bold">
-                                    <span>Bloqueado 🔒</span>
-                                  </span>
-                                ) : (
-                                  <span className="text-[10px] font-mono bg-[#36C4D8]/10 text-[#36C4D8] py-1 px-2.5 rounded-full inline-flex items-center gap-1 animate-pulse font-bold border border-[#36C4D8]/30">
-                                    <span>Activo Hoy</span>
-                                  </span>
-                                )
-                              ) : (
-                                <span className="text-[10px] font-mono bg-amber-100/80 text-amber-900 border border-amber-200/60 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-bold shadow-xs">
-                                  <span>Bloqueado 🔒</span>
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="space-y-1">
-                            <span className={`font-mono text-xs uppercase tracking-wider block font-extrabold ${isCompleted ? 'text-emerald-600' : 'text-[#E36DB4]'}`}>{dayMeta.title}</span>
-                            <h4 className="font-display font-bold text-lg text-black leading-tight block">{dayMeta.sub}</h4>
-                            <p className="text-sm text-black font-medium leading-relaxed block mt-1.5">{dayMeta.desc}</p>
-                          </div>
-
-                          {isActive && isChronologicallyLocked && (
-                            <div className="mt-3 p-3 bg-yellow-300 border border-yellow-500 text-black rounded-xl text-center space-y-1 shadow-xs animate-pulse">
-                              <span className="block text-[10px] font-mono font-black text-black uppercase tracking-widest">
-                                ⚠️ APERTURA EN CONSECUTIVO
-                              </span>
-                              <div className="font-mono text-base font-black text-black">
-                                {String(hours).padStart(2, '0')}h {String(minutes).padStart(2, '0')}m {String(seconds).padStart(2, '0')}s
-                              </div>
-                              <span className="block text-[9px] font-bold text-black/80">
-                                Espera que se cumpla el tiempo para iniciar la prueba
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="mt-4 pt-3 border-t border-[#6E488A]/12 w-full flex items-center justify-between text-xs">
-                          <div className="text-xs text-black flex items-center gap-1 truncate max-w-[80%]">
-                            <span className="font-black text-black">Herramienta:</span>
-                            <span className="italic truncate font-semibold text-black">{dayMeta.tool}</span>
-                          </div>
-                          <span className="text-xs font-mono text-black group-hover:underline shrink-0 font-extrabold">Ver guía &rarr;</span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* INTERACTIVE LOCKED DAY PREVIEW MODAL */}
-              <AnimatePresence>
-                {selectedDayPreview !== null && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setSelectedDayPreview(null)}
-                    className="fixed inset-0 bg-[#56346F]/40 backdrop-blur-md flex items-center justify-center p-4 z-50"
-                  >
+                <AnimatePresence mode="wait">
+                  {selectedDayPreview !== null ? (
+                    /* DEDICATED PREVIEW VIEW - NO DISTRACTIONS, DYNAMIC BACK NAVIGATION */
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="bg-white border border-[#6E488A]/12 rounded-3xl w-full max-w-md p-6 relative text-left space-y-5 shadow-2xl"
+                      key="dedicated_day_guide_view"
+                      initial={{ opacity: 0, x: 15 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -15 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="bg-white border border-[#6E488A]/12 rounded-3xl p-6 sm:p-8 text-left space-y-6 shadow-md max-w-2xl mx-auto"
                     >
-                      <button
-                        onClick={() => setSelectedDayPreview(null)}
-                        className="absolute top-4 right-4 text-[#56346F]/50 hover:text-[#56346F] cursor-pointer border-none bg-transparent outline-none p-2"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
+                      {/* Wayfinding Header */}
+                      <div className="flex items-center justify-between pb-4 border-b border-[#6E488A]/10">
+                        <button
+                          onClick={() => setSelectedDayPreview(null)}
+                          className="inline-flex items-center space-x-2 text-xs font-mono font-bold text-[#6E488A] hover:text-[#36C4D8] transition-all bg-[#EDE0F0]/60 hover:bg-[#EDE0F0] px-4 py-2.5 rounded-xl cursor-pointer border-none outline-none shadow-xs"
+                        >
+                          <ArrowLeft className="w-4 h-4 text-[#6E488A]" />
+                          <span>Volver al panel</span>
+                        </button>
+                        <span className="text-xs font-mono font-bold text-[#56346F]/50 uppercase tracking-widest">
+                          Guía Día {selectedDayPreview} • M.A.P.A.™
+                        </span>
+                      </div>
 
                       {(() => {
                         const previewData = [
                           {
                             day: 1,
                             title: "Sintomatología Fisiológica y Alerta Corporal",
-                            desc: "Analiza el mapa de tu ritmo latente neural, las tensiones interconectadas y los primeros marcadores simpáticos.",
-                            marcadores: "Frecuencia de alerta subcortical, respiración costal, reflejos de contracción.",
+                            desc: "Exploraremos el ritmo de tu latido cardíaco, la tensión involuntaria en tu mandíbula, tu tipo de respiración (costal alta) y la manera en que tu sistema nervioso simpático responde ante picos imprevistos de estrés cotidiano.",
+                            marcadores: "Frecuencia de alerta subcortical, patrón de respiración torácica, reflejos de contracción muscular.",
                             herramienta: "Técnica de la interrupción muscular M.A.P.A.™ (2 min)."
                           },
                           {
                             day: 2,
-                            title: "Desencadenantes and Sensibilidad Ambiental",
-                            desc: "Sintoniza los climas, ruidos, demandas y factores de sobreestimulación neurofisiológica.",
+                            title: "Desencadenantes y Sensibilidad Ambiental",
+                            desc: "Sintonizaremos e identificaremos con precisión qué climas sociales, ruidos del entorno, exceso de demandas externas o cambios de planes repentinos actúan con mayor violencia sobre tu sistema de alerta neurológica.",
                             marcadores: "Saturación sensorial, fatiga simpática ante el desorden, hiperreacción auditiva.",
                             herramienta: "Protocolo de Blindaje de Estímulos e Inmersión del Nervio Vago (5 min)."
                           },
                           {
                             day: 3,
                             title: "Rumia Mental y Pensamiento Automático Súbito",
-                            desc: "Mapea los bucles de película futura catastrófica que sostienen activos los picos de cortisol cerebral.",
+                            desc: "Mapearemos en detalle los bucles de anticipación futura catastrófica, los escenarios ficticios que tu cerebro recrea como reales y el diálogo obsesivo involuntario que sostiene la inflamación y los altos niveles de cortisol.",
                             marcadores: "Bucle de rumiación obsesiva recurrente, alteradores fóbicos, microdespertares nocturnos.",
                             herramienta: "Tabla psicoterapéutica de desglose Hecho vs. Fantasía (3 min)."
                           },
                           {
                             day: 4,
                             title: "Relaciones de Vínculo e Interacciones Sociales",
-                            desc: "Decodifica el estrés por complacencia pasiva, el dolor de fallar a otros y la sobrecarga empática activa.",
+                            desc: "Analizaremos de forma objetiva la complacencia reactiva para evitar confrontaciones, el miedo latente a fallar o decepcionar a los demás, la fatiga empática activa y los niveles de tu batería de interacción social diaria.",
                             marcadores: "Déficit de batería de interacción social, fatiga empática agregada, límites no asertivos.",
                             herramienta: "Filtro de contención afectiva de tres capas seguras (4 min)."
                           },
                           {
                             day: 5,
                             title: "Hábitos de Control Rígido y Exigencia Personal",
-                            desc: "Evalúa los mecanismos obsesivos e inflexibles para anticipar variables como forma de calmar ansiedades.",
+                            desc: "Investigaremos las dificultades para delegar responsabilidades cotidianas, la necesidad subconsciente de predecir cada variable para sentirte segura y las estructuras de perfeccionismo inercial que agotan tu mente.",
                             marcadores: "Perfeccionismo inercial, intolerancia a la desviación de planes, compulsión organizadora.",
                             herramienta: "Ancla de asimilación conductual 'Cajón Imperfecto' (3 min)."
                           },
                           {
                             day: 6,
                             title: "Estrategias de Evitación y Evasión Silenciosa",
-                            desc: "Rastrea tácticas automáticas de huida de diálogos difíciles, y escapes inerciales en entornos virtuales.",
+                            desc: "Registraremos las técnicas que utilizas de forma subconsciente para postergar decisiones complejas, aislarte de conversaciones incómodas o escapar inercialmente en entornos virtuales o redes sociales como anestesia mental.",
                             marcadores: "Tiempo digital evasivo inercial, postergación fóbica, aislamiento del entorno.",
                             herramienta: "Activación por acción comprometida de Micro-Segundos M.A.P.A.™ (2 min)."
                           },
                           {
                             day: 7,
                             title: "Integración, Autocompasión, Regulación y Cierre",
-                            desc: "Consolida tus 49 marcadores biológicos y elabora las pautas definitivas de desactivación neural.",
+                            desc: "Consolidaremos tus 49 marcadores del nervio vago y reguladores calmantes acumulados durante el viaje emocional para preparar tu reporte profesional personalizado, diseñando tu plan definitivo de regulación autónoma.",
                             marcadores: "Asertividad vegetativa integrativa, optimismo cognitivo basal, resiliencia corporal.",
                             herramienta: "Pauta de anclaje de calma definitiva para tu Mapa Diario (5 min)."
                           }
-                        ][selectedDayPreview - 1];
+                        ][selectedDayPreview - 1] || { day: selectedDayPreview, title: `Día ${selectedDayPreview}`, desc: "", marcadores: "", herramienta: "" };
+
+                        const isCompleted = programProgress.completedDays.includes(selectedDayPreview);
+                        const isActive = programProgress.currentDay === selectedDayPreview;
+                        const timeRemaining = getTimeRemainingForDay(selectedDayPreview);
+                        const userShortName = getUserShortName(leadInfo);
 
                         return (
-                          <div className="space-y-4">
-                            <div>
-                              <span className="text-[10px] font-mono tracking-wider bg-[#EDE0F0] text-[#6E488A] px-2.5 py-1 rounded-full font-bold">
-                                PREVISIÓN DE ENFOQUE • DÍA {previewData.day}
-                              </span>
-                              <h4 className="font-display font-bold text-lg text-[#6E488A] mt-3 leading-tight">
+                          <div className="space-y-6">
+                            <div className="space-y-2">
+                              <h4 className="font-display font-bold text-xl sm:text-2xl text-[#6E488A]">
                                 {previewData.title}
                               </h4>
+                              <p className="text-sm text-[#56346F]/80 leading-relaxed font-sans">
+                                {previewData.desc}
+                              </p>
                             </div>
 
-                            <p className="text-xs text-[#56346F]/85 leading-relaxed font-sans">
-                              {previewData.desc}
-                            </p>
-
-                            <div className="space-y-3 bg-[#FAF7F9] p-4 rounded-2xl border border-[#6E488A]/10 text-xs">
+                            <div className="bg-[#FAF7F9] border border-[#6E488A]/10 p-5 rounded-2xl space-y-4 text-xs font-sans">
                               <div>
-                                <span className="text-[#36C4D8] font-mono text-[10px] uppercase font-bold block">Marcadores Autónomos a Medir:</span>
-                                <p className="text-[#56346F]/80 font-sans mt-0.5">{previewData.marcadores}</p>
+                                <span className="text-[#36C4D8] font-mono font-bold tracking-wider uppercase block">Marcadores Clínicos a Analizar:</span>
+                                <p className="text-[#56346F]/90 mt-1 font-medium text-sm leading-relaxed">{previewData.marcadores}</p>
                               </div>
                               <div>
-                                <span className="text-[#E36DB4] font-mono text-[10px] uppercase font-bold block">Herramienta Práctica Entregada:</span>
-                                <p className="text-[#56346F]/80 font-sans mt-0.5">{previewData.herramienta}</p>
+                                <span className="text-[#E36DB4] font-mono font-bold tracking-wider uppercase block">Herramienta Práctica del Día:</span>
+                                <p className="text-[#56346F]/90 mt-1 font-bold text-sm leading-relaxed">{previewData.herramienta}</p>
                               </div>
                             </div>
 
-                            <button
-                              onClick={() => setSelectedDayPreview(null)}
-                              className="w-full py-3 bg-[#36C4D8] hover:bg-[#2DB3C7] text-white font-mono font-bold text-xs rounded-xl tracking-wider transition-all cursor-pointer text-center border-none shadow-sm outline-none"
-                            >
-                              CERRAR PREVIEW
-                            </button>
+                            <div className="pt-4 border-t border-[#6E488A]/10 flex flex-col gap-4">
+                              {isCompleted ? (
+                                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-xs font-sans font-semibold flex items-center space-x-2.5 shadow-sm">
+                                  <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                                  <span>{userShortName}, ¡ya has completado este test! Tus respuestas están guardadas de forma segura y tus marcadores clínicos de este día han sido registrados con éxito.</span>
+                                </div>
+                              ) : isActive ? (
+                                timeRemaining.isLocked ? (
+                                  <div className="space-y-4">
+                                    <div className="bg-[#FFFBEB] border border-amber-200 text-amber-900 p-4 rounded-xl text-xs space-y-2 font-sans font-medium">
+                                      <div className="flex items-center space-x-2">
+                                        <Clock className="w-5 h-5 text-amber-600 shrink-0 animate-pulse" />
+                                        <strong className="text-amber-800 font-bold uppercase tracking-wider text-[10px] font-mono">INTEGRACIÓN Y ASIMILACIÓN COGNITIVA</strong>
+                                      </div>
+                                      <p className="leading-relaxed">
+                                        Hola {userShortName}, tu mente está asimilando los cambios y herramientas del día anterior. Para garantizar la asimilación neurológica y la validez metodológica de tu reporte de 7 días, se requiere respetar este intervalo saludable de 24 horas consecutivas. ¡Tu paciencia es parte de tu sanación!
+                                      </p>
+                                    </div>
+                                    
+                                    <div className="bg-[#FAF7F9] border border-[#6E488A]/12 p-4 rounded-xl max-w-sm flex items-center space-x-4 shadow-inner">
+                                      <Clock className="w-8 h-8 text-amber-600 shrink-0" />
+                                      <div className="space-y-1">
+                                        <span className="block text-[10px] font-mono text-[#56346F]/60 uppercase tracking-widest font-bold">DISPONIBLE EN</span>
+                                        <div className="font-mono text-xl sm:text-2xl font-black text-[#6E488A] tracking-wider">
+                                          {timeRemaining.text}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-4">
+                                    <p className="text-xs text-[#56346F]/80 leading-relaxed font-semibold">
+                                      Este test está listo y disponible hoy para ti, {userShortName}. Responde con tranquilidad e introspección honesta:
+                                    </p>
+                                    <button
+                                      onClick={() => {
+                                        setSelectedDayPreview(null);
+                                        launchDailyQuiz();
+                                      }}
+                                      className="px-8 py-4 rounded-xl font-display font-extrabold tracking-wider text-slate-950 bg-gradient-to-r from-[#36C4D8] via-[#7BE3E8] to-[#36C4D8] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(54,196,216,0.25)] flex items-center justify-center space-x-3 cursor-pointer border-2 border-[#262222] outline-none"
+                                    >
+                                      <span>COMENZAR TEST DEL DÍA {selectedDayPreview} ➔</span>
+                                      <Compass className="w-5 h-5 text-slate-950" />
+                                    </button>
+                                  </div>
+                                )
+                              ) : (
+                                <div className="bg-[#FAF7F9] border border-[#6E488A]/10 text-[#56346F]/70 p-4 rounded-xl text-xs space-y-2 font-sans">
+                                  <div className="flex items-center space-x-1.5 font-bold text-[#6E488A]">
+                                    <Lock className="w-4 h-4 shrink-0" />
+                                    <span className="uppercase text-[9px] font-mono tracking-widest">AÚN BLOQUEADO</span>
+                                  </div>
+                                  <p className="leading-relaxed">Este día de evaluación se desbloqueará una vez completes de forma secuencial y cronológica el test del día correspondiente.</p>
+                                  <div className="pt-2 flex items-center space-x-1.5 font-mono text-[#E36DB4] font-black text-[11px]">
+                                    <Clock className="w-4 h-4" />
+                                    <span>Tiempo de asimilación aproximado restante: {timeRemaining.text}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         );
                       })()}
                     </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Big Action CTA Panel based on the active state */}
-              <div className="bg-white border border-[#6E488A]/12 rounded-3xl p-6 sm:p-8 text-left space-y-6 shadow-sm">
-                {(() => {
-                  const day = programProgress.currentDay;
-                  const isTodayCompleted = programProgress.completedDays.includes(day);
-                  const allDaysDone = programProgress.completedDays.length === 7;
-
-                  // Topics details mapping (clinical descriptions)
-                  const dayFocusDetails = [
-                    { day: 1, title: "Sintomatología Fisiológica y Alerta Corporal", focus: "Exploraremos el ritmo de tu latido cardíaco, tensión en mandíbula, respiración costal alta y cómo responde tu sistema autónomo simpático." },
-                    { day: 2, title: "Desencadenantes y Sensibilidad Ambiental", focus: "Identificaremos qué climas sociales, ruidos, sobrecargas o imprevistos activan con más violencia tu sistema neural de alerta." },
-                    { day: 3, title: "Rumia Mental y Pensamiento Automático Súbito", focus: "Mapearemos películas de tragedias futuras ficticias y bucles obsesivos que mantienen inflamados tus niveles de cortisol." },
-                    { day: 4, title: "Relaciones de Vínculo e Interacciones Sociales", focus: "Analizaremos el temor a fallar o preocupar a otros, la empatía activa fatigante y la complacencia reactiva." },
-                    { day: 5, title: "Hábitos de Control Rígido y Exigencia Personal", focus: "Investigaremos tu dificultad para delegar y la necesidad obsesiva de predecir cada variable para sentirte segura." },
-                    { day: 6, title: "Estrategias de Evitación y Evasión Silenciosa", focus: "Registraremos las técnicas subconscientes que utilizas para aislarte, huir de situaciones o postergar decisiones difíciles." },
-                    { day: 7, title: "Integración, Autocompasión, Regulación y Cierre", focus: "Consolidaremos tus marcadores del nervio vago y reguladores calmantes para preparar el reporte personalizado de orientación." }
-                  ][day - 1] || { day: 1, title: "Sintomatología Fisiológica y Alerta", focus: "" };
-
-                  const userName = leadInfo.nombre || "Usuaria";
-
-                  if (allDaysDone) {
-                    return (
-                      <div className="space-y-4">
-                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                          <Sparkles className="w-6 h-6 text-emerald-600 animate-spin" style={{ animationDuration: '4s' }} />
-                        </div>
-                        <div className="space-y-2">
-                          <h4 className="font-display font-bold text-xl text-[#6E488A]">¡Felicidades, querida {userName}! Tu M.A.P.A.™ de 7 Días está Listo</h4>
-                          <p className="text-sm text-[#56346F]/80 leading-relaxed max-w-xl">
-                            {userName}, has completado cada día del viaje emocional con admirable dedicación y valentía. Has guardado con éxito tus 49 marcadores psicológicos. Tu reporte profesional, completamente personalizado e integral con tus anclas cerebrales y gráficos interactivos está listo para ser generado para ti.
+                  ) : (
+                    /* TIMELINE DASHBOARD VIEW - REDUCES COGNITIVE OVERLOAD */
+                    <motion.div
+                      key="timeline_dashboard_grid"
+                      initial={{ opacity: 0, x: -15 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 15 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="space-y-8"
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-[#6E488A]/12 pb-4">
+                        <div className="text-left">
+                          <h3 className="font-display font-semibold text-2xl text-[#6E488A] tracking-tight flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-[#E36DB4]" />
+                            Cronograma del Viaje Emocional
+                          </h3>
+                          <p className="text-xs text-[#56346F]/80 mt-1">
+                            Tu ruta estructurada de 7 días consecutivos para regular tu sistema nervioso y desactivar la ansiedad crónica.
                           </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                          <button
-                            onClick={triggerSevenDayReport}
-                            className="px-8 py-4 rounded-xl font-display font-bold tracking-wider text-white bg-gradient-to-r from-[#36C4D8] via-[#E36DB4] to-[#6E488A] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md cursor-pointer inline-flex items-center space-x-2 justify-center border-2 border-[#262222]"
-                          >
-                            <span>GENERAR REPORTE DE 7 DÍAS, {userName.toUpperCase()} 🔓</span>
-                            <ArrowRight className="w-4 h-4" />
-                          </button>
-                          
-                          <a
-                            href="https://wa.link/0x3911"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-8 py-4 rounded-xl font-display font-bold tracking-wider text-[#6E488A] bg-[#EDE0F0] border border-[#6E488A]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-2 justify-center shadow-sm"
-                          >
-                            <span>DESEO SEGUIR CON MI PROCESO PREMIUM ➔</span>
-                            <Smartphone className="w-4 h-4 text-[#6E488A] shrink-0" />
-                          </a>
-                        </div>
+                        <span className="text-xs font-mono bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/15 px-3 py-1.5 rounded-full inline-block text-center whitespace-nowrap font-bold shrink-0 self-start md:self-center">
+                          📅 PROGRAMA DE 7 DÍAS
+                        </span>
                       </div>
-                    );
-                  }
 
-                  const { isLocked, hours, minutes, seconds } = getChronologicalState();
-
-                  if (isLocked) {
-                    return (
-                      <div className="space-y-4">
-                        <div className="inline-flex items-center space-x-2 bg-amber-50 text-amber-800 py-1 px-3 rounded-lg text-xs font-mono font-bold uppercase border border-amber-200">
-                          <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
-                          <span>Día {day} Cronológicamente Bloqueado para {userName}</span>
-                        </div>
-                        <div className="space-y-2">
-                          <h4 className="font-display font-bold text-lg text-[#6E488A]">{dayFocusDetails.title}</h4>
-                          <p className="text-sm text-[#56346F]/80 leading-relaxed max-w-xl">
-                            {dayFocusDetails.focus}
-                          </p>
-                          <p className="text-xs text-[#56346F]/60 leading-relaxed max-w-xl">
-                            Querida {userName}, para garantizar la validez metodológica y la asimilación neurológica de tus marcadores de sobrepensamiento, cada día de autoconocimiento se activa secuencialmente respetando 24 horas calendario de asimilación consecutiva. ¡Tu paciencia es parte de tu sanación!
-                          </p>
-                        </div>
-
-                        {/* Live Countdown HUD */}
-                        <div className="bg-[#FAF7F9] border border-[#6E488A]/12 p-4 rounded-xl max-w-sm flex items-center space-x-4 shadow-inner">
-                          <Clock className="w-8 h-8 text-amber-600 shrink-0" />
-                          <div className="space-y-1">
-                            <span className="block text-[10px] font-mono text-[#56346F]/60 uppercase tracking-widest">APERTURA EN CONSECUTIVO</span>
-                            <div className="font-mono text-xl sm:text-2xl font-bold text-[#6E488A] tracking-wider">
-                              {String(hours).padStart(2, '0')}h {String(minutes).padStart(2, '0')}m {String(seconds).padStart(2, '0')}s
-                            </div>
+                      {/* CELEBRATORY CARD INSIDE TIMELINE GRID (NOT ORPHAN AT BOTTOM!) */}
+                      {programProgress.completedDays.length === 7 && (
+                        <div className="bg-gradient-to-br from-[#EDE0F0] via-white to-[#FDF9FE] border-2 border-[#6E488A]/15 rounded-3xl p-6 sm:p-8 text-left space-y-5 shadow-md relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-radial-gradient from-[#E36DB4]/10 to-transparent blur-2xl pointer-events-none" />
+                          <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 shadow-inner">
+                            <Sparkles className="w-6 h-6 text-emerald-600 animate-spin" style={{ animationDuration: '4s' }} />
+                          </div>
+                          <div className="space-y-2">
+                            <h4 className="font-display font-black text-xl sm:text-2xl text-[#6E488A]">
+                              ¡Felicidades, querida {getUserShortName(leadInfo)}! Tu M.A.P.A.™ de 7 Días está Listo
+                            </h4>
+                            <p className="text-sm text-[#56346F]/80 leading-relaxed max-w-xl">
+                              Has completado cada día del viaje emocional con admirable dedicación y valentía. Has guardado con éxito tus 49 marcadores psicológicos. Tu reporte profesional, completamente personalizado e de orientación médica integral con tus anclas cerebrales y gráficos interactivos está listo para ser generado.
+                            </p>
+                          </div>
+                          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                            <button
+                              onClick={triggerSevenDayReport}
+                              className="px-8 py-4 rounded-xl font-display font-bold tracking-wider text-white bg-gradient-to-r from-[#36C4D8] via-[#E36DB4] to-[#6E488A] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md cursor-pointer inline-flex items-center space-x-2 justify-center border-2 border-[#262222]"
+                            >
+                              <span>GENERAR REPORTE DE 7 DÍAS, {getUserShortName(leadInfo).toUpperCase()} 🔓</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </button>
+                            
+                            <a
+                              href="https://wa.link/0x3911"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-8 py-4 rounded-xl font-display font-bold tracking-wider text-[#6E488A] bg-[#EDE0F0] border border-[#6E488A]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-2 justify-center shadow-sm"
+                            >
+                              <span>DESEO SEGUIR CON MI PROCESO PREMIUM ➔</span>
+                              <Smartphone className="w-4 h-4 text-[#6E488A] shrink-0" />
+                            </a>
                           </div>
                         </div>
+                      )}
 
-                        {/* Disabled CTA with Lock Info */}
-                        <div className="pt-2">
-                          <button
-                            disabled
-                            className="px-8 py-4 rounded-xl font-display font-semibold tracking-wider text-[#56346F]/40 bg-[#FAF7F9] border border-[#6E488A]/10 cursor-not-allowed inline-flex items-center space-x-3 w-full sm:w-auto justify-center"
-                          >
-                            <span>ESPERANDO LA SIGUIENTE APERTURA...</span>
-                            <Lock className="w-4 h-4 text-[#56346F]/40" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  }
+                      {/* TIMELINE CARDS MATRIX */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
+                          const isCompleted = programProgress.completedDays.includes(dayNum);
+                          const isActive = programProgress.currentDay === dayNum;
+                          const { maxAllowedDay } = getChronologicalState();
+                          const isChronologicallyLocked = dayNum > maxAllowedDay;
+                          const timeRemaining = getTimeRemainingForDay(dayNum);
+                          const userShortName = getUserShortName(leadInfo);
 
-                  if (isTodayCompleted) {
-                    return (
-                      <div className="space-y-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[#EDE0F0] flex items-center justify-center text-[#6E488A]">
-                          <Clock className="w-6 h-6 text-[#6E488A]" />
-                        </div>
-                        <div className="space-y-2">
-                          <h4 className="font-display font-bold text-lg text-[#6E488A]">¡Día {day} Completado con éxito, {userName}!</h4>
-                          <p className="text-sm text-[#56346F]/80 leading-relaxed max-w-xl">
-                            {userName}, has guardado tus respuestas de hoy de manera segura en el almacenamiento local. El sistema de tu brújula emocional recalibrará tu mapa una vez que desbloquees los siguientes marcadores mañana. ¡Excelente hábito de autoconocimiento y constancia!
-                          </p>
-                        </div>
-                        <div className="text-xs text-[#56346F]/60 font-mono italic">
-                          El próximo día se desbloqueará de forma automática dentro de 24 horas para mantener tu validez clínica. ¡O usa el Simulador de abajo para acelerar las pruebas de tus 7 días!
-                        </div>
-                      </div>
-                    );
-                  }
+                          const dayMeta = [
+                            { 
+                              icon: "🫁", 
+                              title: "Día 1", 
+                              sub: "Sintomatología Fisiológica", 
+                              desc: "Mide y libera la tensión corporal, el ritmo latente y la alerta acumulada.",
+                              tool: "Interrupción muscular M.A.P.A.™ (2 min)" 
+                            },
+                            { 
+                              icon: "⚡", 
+                              title: "Día 2", 
+                              sub: "Sensibilidad Ambiental", 
+                              desc: "Identifica la sobreestimulación sensorial y ruidos que agotan tu energía simpática.",
+                              tool: "Blindaje e inmersión vagal (5 min)" 
+                            },
+                            { 
+                              icon: "🧠", 
+                              title: "Día 3", 
+                              sub: "Rumia y Pensamiento Automático", 
+                              desc: "Debilita los bucles de escenarios catastróficos que mantienen alto el cortisol.",
+                              tool: "Tabla Hecho vs. Fantasía (3 min)" 
+                            },
+                            { 
+                              icon: "👥", 
+                              title: "Día 4", 
+                              sub: "Relaciones de Vínculo", 
+                              desc: "Gestiona la sobrecarga empática, complacencia y la batería de interacción social.",
+                              tool: "Contención de tres capas (4 min)" 
+                            },
+                            { 
+                              icon: "⚖️", 
+                              title: "Día 5", 
+                              sub: "Hábitos de Control Rígido", 
+                              desc: "Suelta la necesidad de anticipar todo para calmar tus miedos de forma ficticia.",
+                              tool: "Ancla 'Cajón Imperfecto' (3 min)" 
+                            },
+                            { 
+                              icon: "🛡️", 
+                              title: "Día 6", 
+                              sub: "Estrategias de Evitación", 
+                              desc: "Evita la evasión inercial digital y los escapes silenciosos en diálogos difíciles.",
+                              tool: "Acción de Micro-Segundos M.A.P.A.™ (2 min)" 
+                            },
+                            { 
+                              icon: "🕯️", 
+                              title: "Día 7", 
+                              sub: "Integración Sostenida y Cierre", 
+                              desc: "Consolida tus 49 marcadores biológicos y elabora pautas definitivas de calma.",
+                              tool: "Anclaje definitivo de tu mapa diario (5 min)" 
+                            }
+                          ][dayNum - 1];
 
-                  return (
-                    <div className="space-y-4">
-                      <div className="inline-flex items-center space-x-2 bg-[#EDE0F0] text-[#6E488A] py-1 px-3 rounded-lg text-xs font-mono font-bold uppercase border border-[#6E488A]/15">
-                        <span>HOY Corresponde: DÍA {day} para {userName}</span>
+                          return (
+                            <div
+                              key={dayNum}
+                              className={`p-6 rounded-3xl text-left border-2 transition-all relative flex flex-col justify-between min-h-[250px] w-full shadow-xs ${
+                                isActive
+                                  ? isChronologicallyLocked
+                                    ? "bg-[#FFFDF6] border-amber-300 border-b-4 border-b-amber-400 text-black shadow-md ring-1 ring-amber-300/40"
+                                    : "bg-white border-[#36C4D8] border-b-4 border-b-[#27A1B2] shadow-lg ring-1 ring-[#36C4D8]/50 text-black"
+                                  : isCompleted
+                                  ? "bg-white border-[#6E488A]/12 border-b-4 border-b-emerald-400 text-black shadow-sm"
+                                  : "bg-[#FDF9FE]/50 border-[#6E488A]/15 border-b-4 border-b-[#EDE0F0] text-black shadow-xs opacity-85"
+                              }`}
+                            >
+                              <div className="space-y-3 w-full">
+                                <div className="flex items-center justify-between w-full">
+                                  <span className="text-3xl">{dayMeta.icon}</span>
+                                  <div>
+                                    {isCompleted ? (
+                                      <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-bold">
+                                        <span>Completo ✓</span>
+                                      </span>
+                                    ) : isActive ? (
+                                      isChronologicallyLocked ? (
+                                        <span className="text-[10px] font-mono bg-amber-100 text-amber-800 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-bold">
+                                          <span>Espera... 🔒</span>
+                                        </span>
+                                      ) : (
+                                        <span className="text-[10px] font-mono bg-[#36C4D8]/10 text-[#36C4D8] py-1 px-2.5 rounded-full inline-flex items-center gap-1 animate-pulse font-bold border border-[#36C4D8]/30">
+                                          <span>Activo Hoy ✨</span>
+                                        </span>
+                                      )
+                                    ) : (
+                                      <span className="text-[10px] font-mono bg-purple-50 text-[#6E488A]/70 border border-[#6E488A]/10 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-bold">
+                                        <span>Bloqueado 🔒</span>
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                  <span className={`font-mono text-[10px] uppercase tracking-wider block font-black ${isCompleted ? 'text-emerald-600' : 'text-[#E36DB4]'}`}>{dayMeta.title}</span>
+                                  <h4 className="font-display font-bold text-base text-[#411F66] leading-tight block">{dayMeta.sub}</h4>
+                                  <p className="text-xs text-[#56346F]/85 font-medium leading-relaxed block mt-1">{dayMeta.desc}</p>
+                                </div>
+
+                                {/* CONTEXTUAL INTEGRATED ACTIONS IN TIMELINE CARD (LAW OF PROXIMITY) */}
+                                {isActive && (
+                                  <div className="pt-2">
+                                    {isChronologicallyLocked ? (
+                                      /* Locked Countdown direct feedback inside card */
+                                      <div className="p-3 bg-amber-50 border border-amber-200 text-[#56346F] rounded-xl text-left space-y-1 animate-pulse">
+                                        <span className="block text-[9px] font-mono font-black text-amber-800 uppercase tracking-widest">
+                                          ⏳ ASIMILACIÓN: DISPONIBLE EN
+                                        </span>
+                                        <div className="font-mono text-sm font-black text-amber-900">
+                                          {timeRemaining.text}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      /* Active Unlocked CTA right in the active card */
+                                      <button
+                                        onClick={() => launchDailyQuiz()}
+                                        className="w-full py-3 px-4 rounded-xl font-display font-bold text-xs text-slate-950 bg-[#36C4D8] hover:bg-[#2DB3C7] active:scale-[0.98] transition-all shadow-md cursor-pointer inline-flex items-center justify-center space-x-2 border-none outline-none"
+                                      >
+                                        <span>Comenzar Test del Día</span>
+                                        <Compass className="w-4 h-4 text-slate-950" />
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* OTHER DAYS REMAINING ESTIMATOR TO REDUCE ANXIETY */}
+                                {isChronologicallyLocked && !isActive && (
+                                  <div className="pt-1.5 flex items-center space-x-1.5 text-[10px] font-mono text-[#E36DB4] font-black">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    <span>Disponible en: {timeRemaining.text}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="mt-4 pt-3 border-t border-[#6E488A]/12 w-full flex items-center justify-between text-[10px]">
+                                <div className="text-[10px] text-[#56346F]/85 flex items-center gap-1 truncate max-w-[70%]">
+                                  <span className="font-bold">Herramienta:</span>
+                                  <span className="italic truncate font-semibold">{dayMeta.tool}</span>
+                                </div>
+                                <button
+                                  onClick={() => setSelectedDayPreview(dayNum)}
+                                  className="text-[10px] font-mono text-[#6E488A] hover:text-[#36C4D8] underline shrink-0 font-extrabold cursor-pointer border-none bg-transparent"
+                                >
+                                  Ver guía &rarr;
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <div className="space-y-2">
-                        <h4 className="font-display font-bold text-lg text-[#6E488A]">{dayFocusDetails.title}</h4>
-                        <p className="text-sm text-[#56346F]/80 leading-relaxed max-w-xl">
-                          {userName}, {dayFocusDetails.focus.replace("Exploraremos", "hoy exploraremos").replace("Identificaremos", "hoy identificaremos").replace("Mapearemos", "hoy mapearemos").replace("Analizaremos", "hoy analizaremos").replace("Investigaremos", "hoy investigaremos").replace("Registraremos", "hoy registraremos").replace("Consolidaremos", "hoy consolidaremos")}
-                        </p>
-                      </div>
-                      <button
-                        onClick={launchDailyQuiz}
-                        className="px-8 py-4 rounded-xl font-display font-semibold tracking-wider text-white bg-[#36C4D8] hover:bg-[#2DB3C7] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md cursor-pointer inline-flex items-center space-x-3 border-none outline-none"
-                      >
-                        <span>¡Haz tu test de hoy! (Día {day})</span>
-                        <Compass className="w-4 h-4 text-white" />
-                      </button>
-                    </div>
-                  );
-                })()}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
+              {/* Old active CTA panel and preview modal removed */}
 
               {/* HISTORIAL DE LOGROS DIARIOS: BITÁCORA ACTIVATIVA */}
               {programProgress.completedDays.length > 0 && (
