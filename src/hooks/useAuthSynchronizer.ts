@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { LeadInfo } from "../types";
 
 export interface ProgramProgress {
@@ -175,6 +175,17 @@ export function useAuthSynchronizer({
       return;
     }
 
+    const startTime = performance.now();
+    let toastTimer: any = null;
+    let didShowToast = false;
+
+    if (setDashboardNotice) {
+      toastTimer = setTimeout(() => {
+        didShowToast = true;
+        setDashboardNotice("⏳ Sincronizando con el servidor...");
+      }, 2000);
+    }
+
     try {
       setSyncing(true);
       const res = await fetch("/api/update-user-progress", {
@@ -207,7 +218,20 @@ export function useAuthSynchronizer({
       console.warn("[M.A.P.A. Sync] Cloud syncing failed, progress is safely saved locally:", err);
       setSyncError("Error al guardar cambios en la nube. Se guardaron de forma local.");
     } finally {
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+      }
       setSyncing(false);
+      const endTime = performance.now();
+      const elapsedMs = endTime - startTime;
+      console.log(`[M.A.P.A. Sync] Tiempo de respuesta del servidor: ${elapsedMs.toFixed(2)} ms`);
+      
+      if (didShowToast && setDashboardNotice) {
+        setDashboardNotice("🔄 ¡Sincronizado con éxito!");
+        setTimeout(() => {
+          setDashboardNotice(null);
+        }, 2000);
+      }
     }
   };
 

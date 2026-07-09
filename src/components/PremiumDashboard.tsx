@@ -240,6 +240,29 @@ const getDayThemeMessage = (day: number, name: string) => {
   return themes[day - 1] || `Querida ${name}, este es tu espacio personalizado de 7 días. Sigue avanzando a tu propio ritmo con absoluto cariño.`;
 };
 
+const generate30DaysLogs = (): { date: string; value: EvolutionData }[] => {
+  const logs = [];
+  const now = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+    const dayNum = 30 - i;
+    const dateStr = d.toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+    const noise = Math.sin(dayNum * 0.5) * 5;
+    const progressFactor = i / 29; // 1 at start, 0 at end
+    
+    logs.push({
+      date: dateStr,
+      value: {
+        activacion: Math.max(25, Math.min(95, Math.round(30 + progressFactor * 55 + noise))),
+        ansiedad: Math.max(20, Math.min(90, Math.round(25 + progressFactor * 50 - noise * 0.7))),
+        rumiacion: Math.max(15, Math.min(95, Math.round(20 + progressFactor * 60 + noise * 0.5))),
+        sueno: Math.max(40, Math.min(95, Math.round(85 - progressFactor * 40 + noise * 0.8)))
+      }
+    });
+  }
+  return logs;
+};
+
 export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   userEmail,
   userName,
@@ -267,15 +290,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
     ],
     completedChallenges: [],
     challengeAnswers: {},
-    evolutionLogs: [
-      { date: "Lunes", value: { activacion: 75, ansiedad: 68, rumiacion: 80, sueno: 50 } },
-      { date: "Martes", value: { activacion: 65, ansiedad: 58, rumiacion: 72, sueno: 55 } },
-      { date: "Miércoles", value: { activacion: 68, ansiedad: 60, rumiacion: 65, sueno: 60 } },
-      { date: "Jueves", value: { activacion: 55, ansiedad: 48, rumiacion: 50, sueno: 70 } },
-      { date: "Viernes", value: { activacion: 48, ansiedad: 42, rumiacion: 45, sueno: 75 } },
-      { date: "Sábado", value: { activacion: 40, ansiedad: 35, rumiacion: 38, sueno: 80 } },
-      { date: "Domingo", value: { activacion: 35, ansiedad: 30, rumiacion: 28, sueno: 85 } }
-    ],
+    evolutionLogs: generate30DaysLogs(),
     diaryEntries: [
       {
         date: "Sábado, 27 de junio, 10:14 p.m.",
@@ -295,6 +310,16 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [sysError, setSysError] = useState<string | null>(null);
+
+  // States for 30 Days Metrics History interactive view
+  const [metricTimeRange, setMetricTimeRange] = useState<"7" | "15" | "30">("30");
+  const [metricFilters, setMetricFilters] = useState({
+    activacion: true,
+    ansiedad: true,
+    rumiacion: true,
+    sueno: true
+  });
+  const [metricSearchQuery, setMetricSearchQuery] = useState("");
 
   // Coach inputs
   const [coachInput, setCoachInput] = useState<string>("");
@@ -1572,36 +1597,298 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
               </div>
 
-              {/* Chart Visualizer */}
-              <div className="bg-white border-2 border-[#36C4D8]/20 border-b-4 border-b-[#36C4D8]/30 rounded-2xl p-5 text-left shadow-[0_12px_24px_rgba(54,196,216,0.04)] hover:scale-[1.002] transition-all duration-300">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                  <div>
-                    <h5 className="font-extrabold text-[#411F66] text-sm">Trayectoria del Retorno Cognitivo</h5>
-                    <p className="text-[11px] text-[#0B152B]/85 font-semibold">Control semanal de reducción de Ansiedad y Elevación de Calma</p>
-                  </div>
-                  <div className="flex gap-3 text-[10px] font-bold">
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-[#E86FA3]" />Ansiedad</span>
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-[#36C4D8]" />Sueño</span>
-                  </div>
-                </div>
+              {/* COMPONENTE INTERACTIVO DE HISTORIAL DE MÉTRICAS DE 30 DÍAS */}
+              {(() => {
+                const numDays = parseInt(metricTimeRange);
+                const slicedLogs = premiumData.evolutionLogs.slice(-numDays);
 
-                {/* Line chart */}
-                <div className="w-full h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={premiumData.evolutionLogs}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#411F66" opacity={0.1} />
-                      <XAxis dataKey="date" stroke="#411F66" fontSize={10} fontWeight="bold" />
-                      <YAxis stroke="#411F66" fontSize={10} fontWeight="bold" domain={[0, 100]} />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#ffffff', borderColor: '#411F66', borderRadius: '12px', color: '#0B152B', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-                        labelStyle={{ color: '#411F66', fontWeight: 'bold' }}
-                      />
-                      <Line type="monotone" dataKey="value.ansiedad" stroke="#E86FA3" strokeWidth={3} dot={{ r: 4 }} name="Nivel Ansiedad" />
-                      <Line type="monotone" dataKey="value.sueno" stroke="#36C4D8" strokeWidth={3} dot={{ r: 4 }} name="Calidad Sueño" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+                const getMetricAverage = (key: "activacion" | "ansiedad" | "rumiacion" | "sueno") => {
+                  if (slicedLogs.length === 0) return 0;
+                  const sum = slicedLogs.reduce((acc, log) => acc + (log.value[key] || 0), 0);
+                  return Math.round(sum / slicedLogs.length);
+                };
+
+                const getMetricImprovement = (key: "activacion" | "ansiedad" | "rumiacion" | "sueno", isPositive: boolean) => {
+                  if (slicedLogs.length < 2) return "0%";
+                  const startChunk = slicedLogs.slice(0, Math.min(3, Math.ceil(slicedLogs.length / 2)));
+                  const endChunk = slicedLogs.slice(-Math.min(3, Math.ceil(slicedLogs.length / 2)));
+                  
+                  const startAvg = startChunk.reduce((acc, log) => acc + (log.value[key] || 0), 0) / startChunk.length;
+                  const endAvg = endChunk.reduce((acc, log) => acc + (log.value[key] || 0), 0) / endChunk.length;
+                  
+                  const diff = Math.round(startAvg - endAvg);
+                  if (isPositive) {
+                    const imp = Math.round(endAvg - startAvg);
+                    return imp > 0 ? `+${imp}% de mejora` : `${imp}% de cambio`;
+                  } else {
+                    return diff > 0 ? `-${diff}% de reducción` : `+${Math.abs(diff)}% de aumento`;
+                  }
+                };
+
+                const filteredLogs = slicedLogs.filter(log => {
+                  const query = metricSearchQuery.toLowerCase().trim();
+                  if (!query) return true;
+                  return log.date.toLowerCase().includes(query);
+                });
+
+                return (
+                  <div id="advanced_metrics_section" className="space-y-6">
+                    {/* Tarjeta de Control y Visualización Principal */}
+                    <div className="bg-white border-2 border-[#36C4D8]/20 border-b-6 border-b-[#36C4D8]/30 rounded-3xl p-5 sm:p-6 text-left shadow-lg hover:shadow-xl transition-all duration-300">
+                      
+                      {/* Cabecera Interactiva */}
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#6E488A]/10">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#36C4D8] animate-ping" />
+                            <h5 className="font-sans font-black text-base text-[#411F66] flex items-center gap-2">
+                              Evolución de Niveles de Activación
+                            </h5>
+                          </div>
+                          <p className="text-[11px] text-[#0B152B]/75 font-semibold">
+                            Análisis detallado e histórico de asimilación emocional en el archivo central.
+                          </p>
+                        </div>
+
+                        {/* Selector de Rango */}
+                        <div className="flex bg-[#EDE0F0]/40 p-1 rounded-xl border border-[#6E488A]/15 self-start lg:self-auto shrink-0 font-mono text-[11px] font-black">
+                          {(["7", "15", "30"] as const).map((range) => (
+                            <button
+                              key={range}
+                              onClick={() => {
+                                setMetricTimeRange(range);
+                              }}
+                              className={`px-3 py-1.5 rounded-lg transition-all duration-300 ${
+                                metricTimeRange === range
+                                  ? "bg-[#6E488A] text-white shadow-sm"
+                                  : "text-[#6E488A] hover:bg-[#EDE0F0]/60"
+                              }`}
+                            >
+                              Últimos {range} Días
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Toggles de Filtros de Métricas */}
+                      <div className="py-4 flex flex-wrap gap-2.5 items-center justify-start border-b border-[#6E488A]/5">
+                        <span className="text-[10px] text-[#0B152B]/60 uppercase tracking-widest font-black mr-1">Filtrar:</span>
+                        
+                        {/* Activación pill */}
+                        <button
+                          onClick={() => setMetricFilters(prev => ({ ...prev, activacion: !prev.activacion }))}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all ${
+                            metricFilters.activacion
+                              ? "bg-[#E86FA3]/10 border-[#E86FA3] text-[#E86FA3] shadow-sm"
+                              : "border-[#6E488A]/10 text-[#0B152B]/40 hover:bg-[#EDE0F0]/20"
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${metricFilters.activacion ? "bg-[#E86FA3]" : "bg-gray-300"}`} />
+                          Activación Emocional
+                        </button>
+
+                        {/* Ansiedad pill */}
+                        <button
+                          onClick={() => setMetricFilters(prev => ({ ...prev, ansiedad: !prev.ansiedad }))}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all ${
+                            metricFilters.ansiedad
+                              ? "bg-[#36C4D8]/10 border-[#36C4D8] text-[#36C4D8] shadow-sm"
+                              : "border-[#6E488A]/10 text-[#0B152B]/40 hover:bg-[#EDE0F0]/20"
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${metricFilters.ansiedad ? "bg-[#36C4D8]" : "bg-gray-300"}`} />
+                          Ansiedad Interceptiva
+                        </button>
+
+                        {/* Rumiación pill */}
+                        <button
+                          onClick={() => setMetricFilters(prev => ({ ...prev, rumiacion: !prev.rumiacion }))}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all ${
+                            metricFilters.rumiacion
+                              ? "bg-[#6E488A]/10 border-[#6E488A] text-[#6E488A]"
+                              : "border-[#6E488A]/10 text-[#0B152B]/40 hover:bg-[#EDE0F0]/20"
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${metricFilters.rumiacion ? "bg-[#6E488A]" : "bg-gray-300"}`} />
+                          Rumiación Mental
+                        </button>
+
+                        {/* Sueño pill */}
+                        <button
+                          onClick={() => setMetricFilters(prev => ({ ...prev, sueno: !prev.sueno }))}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all ${
+                            metricFilters.sueno
+                              ? "bg-emerald-500/10 border-emerald-500 text-emerald-600"
+                              : "border-[#6E488A]/10 text-[#0B152B]/40 hover:bg-[#EDE0F0]/20"
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${metricFilters.sueno ? "bg-emerald-500" : "bg-gray-300"}`} />
+                          Calidad de Sueño
+                        </button>
+                      </div>
+
+                      {/* Tarjetas de Desempeño Promedio en el Período */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 py-4">
+                        <div className="bg-[#E86FA3]/5 rounded-2xl p-3.5 border border-[#E86FA3]/15 text-left">
+                          <span className="text-[10px] font-bold text-[#E86FA3] uppercase block">Promedio Activación</span>
+                          <span className="text-xl font-mono font-black text-[#E86FA3] block">{getMetricAverage("activacion")}%</span>
+                          <span className="text-[9px] font-semibold text-[#0B152B]/50 block mt-1">{getMetricImprovement("activacion", false)}</span>
+                        </div>
+                        <div className="bg-[#36C4D8]/5 rounded-2xl p-3.5 border border-[#36C4D8]/15 text-left">
+                          <span className="text-[10px] font-bold text-[#36C4D8] uppercase block">Promedio Ansiedad</span>
+                          <span className="text-xl font-mono font-black text-[#36C4D8] block">{getMetricAverage("ansiedad")}%</span>
+                          <span className="text-[9px] font-semibold text-[#0B152B]/50 block mt-1">{getMetricImprovement("ansiedad", false)}</span>
+                        </div>
+                        <div className="bg-[#6E488A]/5 rounded-2xl p-3.5 border border-[#6E488A]/15 text-left">
+                          <span className="text-[10px] font-bold text-[#6E488A] uppercase block">Promedio Rumiación</span>
+                          <span className="text-xl font-mono font-black text-[#6E488A] block">{getMetricAverage("rumiacion")}%</span>
+                          <span className="text-[9px] font-semibold text-[#0B152B]/50 block mt-1">{getMetricImprovement("rumiacion", false)}</span>
+                        </div>
+                        <div className="bg-emerald-500/5 rounded-2xl p-3.5 border border-emerald-500/15 text-left">
+                          <span className="text-[10px] font-bold text-emerald-600 uppercase block">Promedio Sueño</span>
+                          <span className="text-xl font-mono font-black text-emerald-600 block">{getMetricAverage("sueno")}%</span>
+                          <span className="text-[9px] font-semibold text-[#0B152B]/50 block mt-1">{getMetricImprovement("sueno", true)}</span>
+                        </div>
+                      </div>
+
+                      {/* Chart del Período */}
+                      <div className="w-full h-64 mt-2">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={slicedLogs}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#411F66" opacity={0.08} />
+                            <XAxis dataKey="date" stroke="#411F66" fontSize={9} fontWeight="bold" />
+                            <YAxis stroke="#411F66" fontSize={9} fontWeight="bold" domain={[0, 100]} />
+                            <Tooltip
+                              contentStyle={{ backgroundColor: "#ffffff", borderColor: "#6E488A", borderRadius: "16px", color: "#0B152B", boxShadow: "0 10px 25px rgba(110,72,138,0.1)" }}
+                              labelStyle={{ color: "#6E488A", fontWeight: "black", fontSize: "11px" }}
+                            />
+                            {metricFilters.activacion && (
+                              <Line type="monotone" dataKey="value.activacion" stroke="#E86FA3" strokeWidth={3.5} dot={{ r: 3 }} name="Activación Emocional" activeDot={{ r: 5 }} />
+                            )}
+                            {metricFilters.ansiedad && (
+                              <Line type="monotone" dataKey="value.ansiedad" stroke="#36C4D8" strokeWidth={3.5} dot={{ r: 3 }} name="Ansiedad Interceptiva" activeDot={{ r: 5 }} />
+                            )}
+                            {metricFilters.rumiacion && (
+                              <Line type="monotone" dataKey="value.rumiacion" stroke="#6E488A" strokeWidth={3.5} dot={{ r: 3 }} name="Rumiación Mental" activeDot={{ r: 5 }} />
+                            )}
+                            {metricFilters.sueno && (
+                              <Line type="monotone" dataKey="value.sueno" stroke="#10B981" strokeWidth={3.5} dot={{ r: 3 }} name="Calidad de Sueño" activeDot={{ r: 5 }} />
+                            )}
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Nota educativa de autorregulación */}
+                      <div className="mt-4 p-3.5 bg-[#EDE0F0]/30 rounded-2xl border border-[#6E488A]/10 text-xs flex gap-2 text-left">
+                        <Info className="w-4 h-4 text-[#6E488A] shrink-0 mt-0.5 animate-pulse" />
+                        <p className="text-[#56346F]/85 font-medium leading-relaxed">
+                          <strong>Explicación de Sintonía M.A.P.A.™:</strong> Los niveles de activación miden el grado de sobreexcitación de la amígdala cerebral. La tendencia óptima muestra una reducción sostenida en activación, ansiedad y rumiación mental, emparejada con un incremento gradual en la calidad del sueño restaurador.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Buscador y Lista de Registros Detallados (La Tabla) */}
+                    <div className="bg-white border-2 border-[#6E488A]/10 border-b-6 border-b-[#EDE0F0] rounded-3xl p-5 text-left shadow-md">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#6E488A]/10 mb-4">
+                        <div>
+                          <h6 className="font-extrabold text-[#411F66] text-sm">Registros Diarios del Archivo Central</h6>
+                          <p className="text-[10px] text-[#0B152B]/60 font-semibold">Trazabilidad granular de tus últimos {numDays} días de entrenamiento mental</p>
+                        </div>
+
+                        {/* Input de Búsqueda */}
+                        <div className="relative max-w-xs w-full sm:w-64">
+                          <input
+                            type="text"
+                            placeholder="Buscar día... (ej: 08)"
+                            value={metricSearchQuery}
+                            onChange={(e) => setMetricSearchQuery(e.target.value)}
+                            className="w-full text-xs bg-[#EDE0F0]/30 border border-[#6E488A]/15 focus:border-[#E86FA3] rounded-xl pl-3.5 pr-8 py-2 font-semibold text-[#411F66] placeholder-[#56346F]/50 outline-none transition-all"
+                          />
+                          <span className="absolute right-3 top-2 text-[#6E488A]/40 text-xs">🔍</span>
+                        </div>
+                      </div>
+
+                      {/* Lista de Registros */}
+                      <div className="max-h-80 overflow-y-auto pr-1 space-y-2.5 custom-scrollbar">
+                        {filteredLogs.length === 0 ? (
+                          <div className="py-8 text-center text-xs text-[#0B152B]/50 font-bold">
+                            No se encontraron registros para la búsqueda.
+                          </div>
+                        ) : (
+                          filteredLogs.map((log, index) => {
+                            const realIdx = premiumData.evolutionLogs.findIndex(l => l.date === log.date) + 1;
+                            return (
+                              <div
+                                key={log.date}
+                                className="bg-[#EDE0F0]/10 border border-[#6E488A]/5 hover:border-[#36C4D8]/30 rounded-2xl p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300"
+                              >
+                                {/* Fecha y Día */}
+                                <div className="flex items-center gap-3 shrink-0">
+                                  <div className="w-10 h-10 rounded-xl bg-[#6E488A]/10 flex flex-col items-center justify-center font-mono shrink-0">
+                                    <span className="text-[9px] font-black text-[#6E488A] leading-none">DÍA</span>
+                                    <span className="text-sm font-black text-[#6E488A] leading-none">{realIdx}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-xs font-black text-[#411F66] block">{log.date}</span>
+                                    <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wide">M.A.P.A. Activo</span>
+                                  </div>
+                                </div>
+
+                                {/* Progreso de Métricas */}
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+                                  {/* Activacion */}
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                                      <span>Activación</span>
+                                      <span className="font-mono text-[#E86FA3]">{log.value.activacion}%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full overflow-hidden">
+                                      <div className="h-full bg-[#E86FA3] rounded-full" style={{ width: `${log.value.activacion}%` }} />
+                                    </div>
+                                  </div>
+
+                                  {/* Ansiedad */}
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                                      <span>Ansiedad</span>
+                                      <span className="font-mono text-[#36C4D8]">{log.value.ansiedad}%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full overflow-hidden">
+                                      <div className="h-full bg-[#36C4D8] rounded-full" style={{ width: `${log.value.ansiedad}%` }} />
+                                    </div>
+                                  </div>
+
+                                  {/* Rumiación */}
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                                      <span>Rumiación</span>
+                                      <span className="font-mono text-[#6E488A]">{log.value.rumiacion}%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full overflow-hidden">
+                                      <div className="h-full bg-[#6E488A] rounded-full" style={{ width: `${log.value.rumiacion}%` }} />
+                                    </div>
+                                  </div>
+
+                                  {/* Sueño */}
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                                      <span>Sueño</span>
+                                      <span className="font-mono text-emerald-500">{log.value.sueno}%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full overflow-hidden">
+                                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${log.value.sueno}%` }} />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 
