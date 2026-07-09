@@ -54,6 +54,7 @@ import { PWAInstallBanner } from "./components/PWAInstallBanner";
 import { RewardModal } from "./components/RewardModal";
 import { MilestoneModal } from "./components/MilestoneModal";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
+import { useAuthSynchronizer } from "./hooks/useAuthSynchronizer";
 import { playClickCue, playAlertCue, playSuccessCue } from "./utils/audioCues";
 import {
   ResponsiveContainer,
@@ -700,58 +701,28 @@ export default function App() {
     });
   };
 
-  // Synchronize progress to cloud database server
-  const syncProgressToCloud = async (currentProgress: any, userEmail: string) => {
-    if (!userEmail) return;
-    try {
-      const res = await fetch("/api/update-user-progress", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("MAPA_ACCESS_TOKEN") || ""}`
-        },
-        body: JSON.stringify({
-          email: userEmail,
-          programProgress: currentProgress
-        })
-      });
-      if (res.status === 401 || res.status === 403) {
-        const data = await res.json();
-        alert(data.error || "Sesión expirada o acceso no autorizado. Por favor ingresa tus datos nuevamente.");
-        localStorage.removeItem("MAPA_CURRENT_USER_EMAIL");
-        localStorage.removeItem("MAPA_ACCESS_TOKEN");
-        setCurrentUserEmail("");
-        setPhase("LOGIN");
-      }
-    } catch (e) {
-      console.warn("Cloud syncing offline/fallback:", e);
-    }
-  };
+  // Centralized synchronization using the custom useAuthSynchronizer hook
+  const {
+    syncing,
+    syncError,
+    isOffline,
+    syncProgressToCloud,
+    forceFetchProgress
+  } = useAuthSynchronizer({
+    programProgress,
+    setProgramProgress,
+    leadInfo,
+    setLeadInfo,
+    leadCaptured,
+    setLeadCaptured,
+    currentUserEmail,
+    setCurrentUserEmail,
+    setPhase,
+    setDashboardNotice
+  });
 
-  // Save progress dynamically whenever it changes
+  // Synchronize to Cache Storage for Service Worker push notification dynamic state check
   useEffect(() => {
-    if (programProgress.activationDate) {
-      const payload = {
-        ...programProgress,
-        leadInfo,
-        leadCaptured
-      };
-      
-      // Save globally for fallback
-      localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(payload));
-      
-      // Save specifically for the logged-in user
-      const userEmail = leadInfo.email || currentUserEmail;
-      if (userEmail) {
-        localStorage.setItem(
-          `MAPA_USER_PROGRESS_${userEmail.toLowerCase().trim()}`,
-          JSON.stringify(payload)
-        );
-        syncProgressToCloud(payload, userEmail);
-      }
-    }
-
-    // Synchronize to Cache Storage for Service Worker push notification dynamic state check
     if (programProgress && typeof window !== "undefined" && 'caches' in window) {
       try {
         const cacheData = new Response(JSON.stringify(programProgress), {
@@ -766,7 +737,7 @@ export default function App() {
         console.warn("[M.A.P.A.] Failed to write progress to cache:", err);
       }
     }
-  }, [programProgress, leadInfo, leadCaptured, currentUserEmail]);
+  }, [programProgress]);
 
   // Autocomplete existing profile fields live when typing an email
   useEffect(() => {

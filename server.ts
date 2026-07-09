@@ -1969,6 +1969,43 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
 });
 
 // ==========================================
+// PERSISTENCIA: RECUPERAR AVANCE DEL USUARIO
+// ==========================================
+app.get("/api/get-user-progress", authenticateJWT, (req, res) => {
+  try {
+    const email = (req as any).user.email;
+    const db = readUsersDB();
+    const user = db.find((u: any) => u.email === email);
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado." });
+    }
+
+    if (user.disabled) {
+      return res.status(403).json({ error: "Tu acceso ha sido inhabilitado por el administrador del sistema." });
+    }
+
+    const userProgress = {
+      activationDate: user.registeredAt || new Date().toISOString(),
+      currentDay: user.currentDay || 1,
+      completedDays: user.completedDays || [],
+      responses: user.responses || {},
+      leadInfo: { nombre: user.nombre, email: user.email, whatsapp: user.whatsapp || "" },
+      leadCaptured: true,
+      completionTimestamps: user.completionTimestamps || {},
+      dailyConclusionText: user.dailyConclusionText || {},
+      hasDownloadedApp: !!user.hasDownloadedApp,
+      unlockedAudios: user.unlockedAudios || []
+    };
+
+    return res.json({ success: true, userProgress });
+  } catch (error) {
+    console.error("Error retrieving user progress:", error);
+    return res.status(500).json({ error: "Error interno del servidor al recuperar avance." });
+  }
+});
+
+// ==========================================
 // PERSISTENCIA: REGISTRAR AUDIO RECOMPENSA DESBLOQUEADO
 // ==========================================
 app.post("/api/save-unlocked-audio", authenticateJWT, (req, res) => {
