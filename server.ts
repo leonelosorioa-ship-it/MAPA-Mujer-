@@ -115,6 +115,134 @@ function writeUsersDB(data: any) {
   }
 }
 
+const HOTMART_LOGS_PATH = path.join(process.cwd(), "data_hotmart_logs.json");
+
+function readHotmartLogs() {
+  try {
+    if (!fs.existsSync(HOTMART_LOGS_PATH)) {
+      fs.writeFileSync(HOTMART_LOGS_PATH, JSON.stringify([], null, 2));
+      return [];
+    }
+    const raw = fs.readFileSync(HOTMART_LOGS_PATH, "utf-8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    console.error("Error reading Hotmart logs, resetting:", err);
+    return [];
+  }
+}
+
+function writeHotmartLogs(logs: any[]) {
+  try {
+    // Keep only the last 100 entries to prevent infinite growth
+    const truncated = logs.slice(-100);
+    fs.writeFileSync(HOTMART_LOGS_PATH, JSON.stringify(truncated, null, 2));
+  } catch (err) {
+    console.error("Error writing Hotmart logs:", err);
+  }
+}
+
+function addHotmartLog(email: string, payload: any, authorized: boolean, authDetails: any, status: string, errorMessage?: string) {
+  try {
+    const logs = readHotmartLogs();
+    const newLog = {
+      timestamp: new Date().toISOString(),
+      email: (email || "").toLowerCase().trim(),
+      authorized,
+      authDetails,
+      status,
+      errorMessage,
+      payloadSummary: {
+        id: payload?.id,
+        creation_date: payload?.creation_date,
+        event: payload?.event,
+        version: payload?.version,
+        buyer_email: payload?.data?.buyer?.email || payload?.buyer?.email || payload?.email,
+        buyer_name: payload?.data?.buyer?.name || payload?.buyer?.name || payload?.name,
+        purchase_status: payload?.data?.purchase?.status || payload?.purchase?.status || payload?.status,
+        event_tickets_amount: payload?.data?.purchase?.event_tickets?.amount || payload?.purchase?.event_tickets?.amount,
+        hottok_present: !!payload?.hottok,
+        hottok_value: payload?.hottok ? `${payload.hottok.substring(0, 8)}...` : null
+      }
+    };
+    logs.push(newLog);
+    writeHotmartLogs(logs);
+    console.log(`📝 Log de Hotmart registrado para ${email || "Desconocido"}. Autorizado: ${authorized}. Estado: ${status}`);
+  } catch (err) {
+    console.error("Error adding Hotmart log:", err);
+  }
+}
+
+/**
+ * Realiza una validación robusta de la estructura 'data.purchase' y el campo 'event_tickets' de Hotmart.
+ * Soporta de manera segura valores numéricos ordinarios o marcas de tiempo (timestamp)
+ * enviadas en entornos de sandbox, evitando cualquier rechazo por anomalías de tipo.
+ */
+function validateHotmartPurchaseStructure(payload: any): { valid: boolean; warnings: string[]; diagnostics: any } {
+  const warnings: string[] = [];
+  const diagnostics: any = {};
+  
+  if (!payload || typeof payload !== "object") {
+    return { valid: false, warnings: ["Payload inválido o vacío"], diagnostics };
+  }
+
+  const data = payload.data || {};
+  const purchase = data.purchase || payload.purchase;
+
+  if (!purchase) {
+    return { 
+      valid: false, 
+      warnings: ["Falta la estructura data.purchase o purchase en el payload"], 
+      diagnostics 
+    };
+  }
+
+  diagnostics.purchase_present = true;
+  diagnostics.transaction = purchase.transaction || payload.transaction;
+  diagnostics.status = purchase.status || payload.status || payload.purchase_status;
+
+  // Validación de la transacción
+  if (!diagnostics.transaction) {
+    warnings.push("No se encontró el identificador 'transaction' en la compra.");
+  }
+
+  // Validación del estado de compra
+  if (!diagnostics.status) {
+    warnings.push("No se encontró el campo 'status' en la compra.");
+  }
+
+  // Validación robusta de 'event_tickets'
+  // Hotmart puede enviar 'event_tickets' en el objeto de la compra (purchase) o directamente en el nivel superior.
+  const tickets = purchase.event_tickets || data.event_tickets || payload.event_tickets;
+  if (tickets) {
+    diagnostics.event_tickets_present = true;
+    const amount = tickets.amount;
+    diagnostics.event_tickets_amount = amount;
+    
+    if (amount === undefined || amount === null) {
+      warnings.push("La estructura 'event_tickets' existe pero 'amount' es nulo o indefinido.");
+    } else {
+      // Hotmart en pruebas reales/sandbox a veces envía un timestamp gigante (p.ej. 1783564872102) como 'amount'
+      const numAmount = Number(amount);
+      if (isNaN(numAmount)) {
+        warnings.push(`El campo 'amount' de 'event_tickets' tiene un valor no numérico: "${amount}"`);
+      } else if (numAmount > 1000000000) {
+        warnings.push(`El campo 'amount' de 'event_tickets' contiene un valor que parece un timestamp (${numAmount}) en lugar de una cantidad simple.`);
+      }
+    }
+  } else {
+    // Es opcional, pero generamos advertencia para diagnóstico
+    warnings.push("El campo 'event_tickets' no está presente en el payload.");
+  }
+
+  return {
+    valid: true, // Siempre consideramos la estructura básicamente válida para no bloquear a la usuaria si el email es correcto
+    warnings,
+    diagnostics
+  };
+}
+
+
 // Lazy initialization of Gemini dynamically
 function getGeminiClient() {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -1392,6 +1520,16 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
 
       console.warn(`⚠️ Error de verificación del webhook de Hotmart. Token o Basic Auth inválidos. Recibido hotkey largo: ${cleanHeader.length}, Recibido body hottok largo: ${bodyHottok.length}, Auth largo: ${cleanAuth.length}, Configurado secret largo: ${cleanSecret.length}`);
       
+      // Registrar log de error de autenticación
+      addHotmartLog(
+        req.body?.data?.buyer?.email || req.body?.buyer?.email || req.body?.email || "Desconocido", 
+        req.body, 
+        false, 
+        { hotkeyHeader_len: cleanHeader.length, authHeader_len: cleanAuth.length, bodyHottok_len: bodyHottok.length, secret_len: cleanSecret.length }, 
+        "UNAUTHORIZED", 
+        "Fallo en la verificación del token de Hotmart (HOTMART_WEBHOOK_SECRET)."
+      );
+
       return res.status(401).json({
         error: "No autorizado. Token de webhook inválido.",
         details: "El token o las credenciales de autorización enviadas por Hotmart no coinciden con la variable 'HOTMART_WEBHOOK_SECRET' configurada en tu App de AI Studio.",
@@ -1436,6 +1574,14 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
 
     if (!buyerEmail) {
       console.warn("⚠️ Webhook no contiene el correo electrónico de la compradora. Ignorando.");
+      addHotmartLog(
+        "Desconocido", 
+        payload, 
+        true, 
+        { has_auth_header: !!authHeader, has_hotkey_header: !!hotkeyHeader }, 
+        "MISSING_EMAIL", 
+        "El payload no contenía ningún campo de correo electrónico identificable."
+      );
       return res.status(400).json({ error: "El correo electrónico de la compradora es requerido." });
     }
 
@@ -1443,11 +1589,25 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
     const cleanName = (buyerName || "Alumna M.A.P.A.").trim();
     const cleanStatus = String(purchaseStatus || "").toUpperCase().trim();
 
+    // Validación robusta de la estructura data.purchase y event_tickets
+    const validation = validateHotmartPurchaseStructure(payload);
+    if (validation.warnings.length > 0) {
+      console.warn(`⚠️ Advertencias de validación de estructura de Hotmart para ${cleanEmail}:`, validation.warnings);
+    }
+
     // Hotmart puede enviar aprobaciones con estados como APPROVED, APROVADA, COMPLETED, CONCLUIDA, etc.
     const isApproved = ["APPROVED", "APROVADA", "COMPLETED", "CONCLUIDA", "COMPLETE", "APROVADO", "PAGO", "TEST_APPROVED"].includes(cleanStatus) || payload.event === "PURCHASE_APPROVED";
 
     if (!isApproved) {
       console.log(`ℹ️ Estado de compra para ${cleanEmail} es "${cleanStatus}" (no aprobado). Ignorando.`);
+      addHotmartLog(
+        cleanEmail, 
+        payload, 
+        true, 
+        { has_auth_header: !!authHeader, has_hotkey_header: !!hotkeyHeader }, 
+        "NOT_APPROVED", 
+        `La compra tiene estado '${cleanStatus}' y no es una compra aprobada activa.`
+      );
       return res.json({ success: true, message: `Estado de compra es ${cleanStatus}, omitiendo.` });
     }
 
@@ -1496,6 +1656,16 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
     writeUsersDB(db);
     console.log(`✅ Compradora de Hotmart ${cleanEmail} registrada/actualizada con éxito. Código de Acceso: ${code}`);
 
+    // Registrar log de éxito
+    addHotmartLog(
+      cleanEmail, 
+      payload, 
+      true, 
+      { has_auth_header: !!authHeader, has_hotkey_header: !!hotkeyHeader }, 
+      "SUCCESS", 
+      validation.warnings.length > 0 ? `Aprobado con advertencias: ${validation.warnings.join("; ")}` : undefined
+    );
+
     // Enviar correo de Código de Acceso asincrónicamente
     const appUrl = getAppUrl(req);
     sendAccessCodeToUser(cleanEmail, cleanName, code, appUrl).catch((err) => {
@@ -1506,8 +1676,20 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
       success: true,
       message: `Compra aprobada y procesada. Acceso concedido para ${cleanEmail} con código ${code}`
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error al procesar el webhook de Hotmart:", err);
+    try {
+      addHotmartLog(
+        req.body?.data?.buyer?.email || req.body?.buyer?.email || req.body?.email || "Desconocido", 
+        req.body, 
+        true, 
+        {}, 
+        "ERROR", 
+        err instanceof Error ? err.message : String(err)
+      );
+    } catch (logErr) {
+      console.error("No se pudo escribir el log de error de Hotmart:", logErr);
+    }
     return res.status(500).json({ error: "Error interno al procesar el webhook de Hotmart." });
   }
 };
@@ -1825,8 +2007,47 @@ app.post("/api/register-user", (req, res) => {
     }
 
     if (userIndex === -1) {
+      // Buscar logs del webhook de Hotmart para este correo electrónico
+      const hotmartLogs = readHotmartLogs();
+      const userLogs = hotmartLogs.filter((l: any) => l.email === cleanEmail);
+      
+      console.warn(`[MAPA Register Debug] Intento de registro/acceso fallido para: ${cleanEmail}. No se encontró en la base de datos.`);
+      
+      if (userLogs.length > 0) {
+        console.warn(`[MAPA Register Debug] Se encontraron ${userLogs.length} intentos de webhook de Hotmart para este correo:`, JSON.stringify(userLogs, null, 2));
+        
+        // El último log de webhook
+        const lastLog = userLogs[userLogs.length - 1];
+        
+        let customError = "No se encontró ningún registro de compra activa para este correo electrónico en Hotmart.";
+        if (lastLog.status === "UNAUTHORIZED") {
+          customError = "La compra fue recibida desde Hotmart, pero falló la autenticación del token de seguridad (HOTMART_WEBHOOK_SECRET) configurada en tu aplicación de AI Studio.";
+        } else if (lastLog.status === "NOT_APPROVED") {
+          customError = `La compra fue recibida desde Hotmart pero el estado reportado fue "${lastLog.payloadSummary?.purchase_status || "Desconocido"}" (no aprobado). El acceso solo se habilita para compras con estado APPROVED o APROVADA.`;
+        } else if (lastLog.errorMessage) {
+          customError = `Hubo un error al procesar el webhook de compra de Hotmart: ${lastLog.errorMessage}`;
+        }
+        
+        return res.status(403).json({
+          error: customError,
+          diagnostic: {
+            has_webhook_record: true,
+            webhook_timestamp: lastLog.timestamp,
+            webhook_status: lastLog.status,
+            webhook_authorized: lastLog.authorized,
+            purchase_status: lastLog.payloadSummary?.purchase_status,
+            event_tickets_amount: lastLog.payloadSummary?.event_tickets_amount,
+            solution_tip: "Por favor, verifica el estado de la compra en Hotmart y asegúrate de que el token HOTMART_WEBHOOK_SECRET en AI Studio coincida con el Token de Hotmart."
+          }
+        });
+      }
+
       return res.status(403).json({ 
-        error: "No se encontró ningún registro para este correo electrónico en Hotmart. Por favor, asegúrate de ingresar el correo exacto con el que realizaste la compra." 
+        error: "No se encontró ningún registro para este correo electrónico en Hotmart. Por favor, asegúrate de ingresar el correo exacto con el que realizaste la compra.",
+        diagnostic: {
+          has_webhook_record: false,
+          solution_tip: "No hemos recibido ningún evento de Webhook desde Hotmart para este correo electrónico. Por favor, realiza una prueba de postback en Hotmart o asegúrate de que la URL del webhook configurada en Hotmart coincida exactamente con la URL de tu aplicación."
+        }
       });
     }
 
