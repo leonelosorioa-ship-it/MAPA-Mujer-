@@ -1321,18 +1321,24 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
       const cleanSecret = webhookSecret.trim();
       const cleanHeader = typeof hotkeyHeader === "string" ? hotkeyHeader.trim() : "";
       const cleanAuth = typeof authHeader === "string" ? authHeader.trim() : "";
+      const bodyHottok = req.body && typeof req.body.hottok === "string" ? req.body.hottok.trim() : "";
 
       // Caso A: El secreto coincide con la cabecera hotkey directamente (Token de verificación)
       if (cleanHeader !== "" && cleanHeader === cleanSecret) {
         authorized = true;
       }
       
-      // Caso B: El secreto coincide con la cabecera de Autorización directamente (Basic Auth completa)
+      // Caso B: El secreto coincide con el campo 'hottok' dentro del cuerpo JSON del payload
+      else if (bodyHottok !== "" && bodyHottok === cleanSecret) {
+        authorized = true;
+      }
+      
+      // Caso C: El secreto coincide con la cabecera de Autorización directamente (Basic Auth completa)
       else if (cleanAuth !== "" && (cleanAuth === cleanSecret || cleanAuth.includes(cleanSecret))) {
         authorized = true;
       }
 
-      // Caso C: El secreto es el Client ID o Client Secret, decodificamos el Basic Auth para validar
+      // Caso D: El secreto es el Client ID o Client Secret, decodificamos el Basic Auth para validar
       else if (cleanAuth !== "" && cleanAuth.startsWith("Basic ")) {
         try {
           const base64Credentials = cleanAuth.substring(6).trim();
@@ -1375,6 +1381,7 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
       const cleanSecret = webhookSecret ? webhookSecret.trim() : "";
       const cleanHeader = typeof hotkeyHeader === "string" ? hotkeyHeader.trim() : "";
       const cleanAuth = typeof authHeader === "string" ? authHeader.trim() : "";
+      const bodyHottok = req.body && typeof req.body.hottok === "string" ? req.body.hottok.trim() : "";
       
       let decodedBasicUser = "";
       if (cleanAuth.startsWith("Basic ")) {
@@ -1383,7 +1390,7 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
         } catch (e) {}
       }
 
-      console.warn(`⚠️ Error de verificación del webhook de Hotmart. Token o Basic Auth inválidos. Recibido hotkey largo: ${cleanHeader.length}, Auth largo: ${cleanAuth.length}, Configurado secret largo: ${cleanSecret.length}`);
+      console.warn(`⚠️ Error de verificación del webhook de Hotmart. Token o Basic Auth inválidos. Recibido hotkey largo: ${cleanHeader.length}, Recibido body hottok largo: ${bodyHottok.length}, Auth largo: ${cleanAuth.length}, Configurado secret largo: ${cleanSecret.length}`);
       
       return res.status(401).json({
         error: "No autorizado. Token de webhook inválido.",
@@ -1391,6 +1398,8 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
         diagnosticos: {
           token_recibido_hotkey_vacio: cleanHeader === "",
           largo_token_recibido_hotkey: cleanHeader.length,
+          token_recibido_body_hottok_vacio: bodyHottok === "",
+          largo_token_recibido_body_hottok: bodyHottok.length,
           cabecera_authorization_recibida_vacia: cleanAuth === "",
           largo_cabecera_authorization_recibida: cleanAuth.length,
           tipo_cabecera_authorization: cleanAuth.substring(0, 15),
