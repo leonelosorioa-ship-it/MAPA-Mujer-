@@ -3188,6 +3188,24 @@ app.get("/api/admin/metrics", authenticateAdminJWT, (req, res) => {
   }
 });
 
+app.get("/api/admin/hotmart-logs", authenticateAdminJWT, (req, res) => {
+  try {
+    const logs = readHotmartLogs();
+    const reversedLogs = [...logs].reverse();
+    return res.json({
+      success: true,
+      logs: reversedLogs,
+      webhook_secret_length: (process.env.HOTMART_WEBHOOK_SECRET || "").trim().length,
+      webhook_secret_first_last: (process.env.HOTMART_WEBHOOK_SECRET || "").trim().length > 8 
+        ? `${(process.env.HOTMART_WEBHOOK_SECRET || "").trim().substring(0, 4)}...${(process.env.HOTMART_WEBHOOK_SECRET || "").trim().slice(-4)}`
+        : "not_set"
+    });
+  } catch (err: any) {
+    console.error("Error retrieving hotmart logs:", err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.post("/api/admin/toggle-user-status", authenticateAdminJWT, (req, res) => {
   try {
     const { email, disabled } = req.body;

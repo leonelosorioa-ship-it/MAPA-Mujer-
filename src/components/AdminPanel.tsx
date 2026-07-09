@@ -15,7 +15,13 @@ import {
   LayoutDashboard,
   X,
   CheckCircle2,
-  FileText
+  FileText,
+  Activity,
+  ShieldCheck,
+  AlertTriangle,
+  RefreshCw,
+  Check,
+  ExternalLink
 } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -51,6 +57,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Hotmart Webhook Logs states
+  const [hotmartLogs, setHotmartLogs] = useState<any[]>([]);
+  const [hotmartSecretLen, setHotmartSecretLen] = useState<number>(0);
+  const [hotmartSecretMasked, setHotmartSecretMasked] = useState<string>("");
+  const [isLogsLoading, setIsLogsLoading] = useState(false);
+
   // Notification states
   const [notifyTitle, setNotifyTitle] = useState("");
   const [notifyBody, setNotifyBody] = useState("");
@@ -58,6 +70,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
   const [notifyTargetEmail, setNotifyTargetEmail] = useState("ALL");
   const [notifyLoading, setNotifyLoading] = useState(false);
   const [notifySuccessMsg, setNotifySuccessMsg] = useState<string | null>(null);
+
+  const fetchHotmartLogs = async () => {
+    try {
+      setIsLogsLoading(true);
+      const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
+      const res = await fetch("/api/admin/hotmart-logs", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error("No se pudieron cargar los registros de Hotmart.");
+      const data = await res.json();
+      if (data.success) {
+        setHotmartLogs(data.logs || []);
+        setHotmartSecretLen(data.webhook_secret_length || 0);
+        setHotmartSecretMasked(data.webhook_secret_first_last || "no_set");
+      }
+    } catch (err) {
+      console.error("Error fetching Hotmart logs:", err);
+    } finally {
+      setIsLogsLoading(false);
+    }
+  };
 
   const fetchAdminData = async () => {
     try {
@@ -74,6 +109,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
         setMetrics(data.metrics);
         setUsersList(data.capturedEmails);
       }
+      await fetchHotmartLogs();
     } catch (e: any) {
       setErrorMessage(e.message || "Fallo crítico al conectar con el servidor administrativo.");
     } finally {
@@ -527,6 +563,149 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
 
             </div>
 
+          </div>
+
+          {/* SECCIÓN EXCLUSIVA DE DIAGNÓSTICO DE SINCRONIZACIÓN HOTMART */}
+          <div 
+            style={{ borderWidth: "1.5px" }} 
+            className="w-full bg-[#121824]/90 border-[#00F0FF]/30 rounded-3xl p-6 space-y-6 shadow-[0_0_25px_rgba(0,240,255,0.1)] text-left mt-6 text-[#F8FAFC]"
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#00F0FF]/20 pb-4">
+              <div>
+                <h3 className="font-display font-black text-xl text-[#00F0FF] flex items-center gap-2 drop-shadow-[0_0_8px_rgba(0,240,255,0.35)]">
+                  <Activity className="w-5 h-5 text-[#00F0FF] animate-pulse" />
+                  Sincronización Hotmart: Monitor de Estado y Logs
+                </h3>
+                <p className="text-xs text-[#E2E8F0]">Monitorea las peticiones de Webhook recibidas desde Hotmart en tiempo real.</p>
+              </div>
+              <button 
+                onClick={fetchHotmartLogs}
+                disabled={isLogsLoading}
+                className="px-4 py-2 bg-[#00F0FF]/10 hover:bg-[#00F0FF]/25 text-[#00F0FF] border border-[#00F0FF]/30 hover:border-[#00F0FF] rounded-xl text-xs font-mono transition-all flex items-center gap-2 active:scale-95 cursor-pointer disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isLogsLoading ? 'animate-spin' : ''}`} />
+                <span>{isLogsLoading ? 'Actualizando...' : 'Actualizar Logs'}</span>
+              </button>
+            </div>
+
+            {/* SECRETS STATUS BLOCK */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-black/40 p-5 rounded-2xl border border-white/5 text-xs font-sans">
+              <div className="space-y-1">
+                <span className="text-gray-400 block font-mono text-[10px] uppercase tracking-wider text-left">VARIABLE DE ENTORNO EN AI STUDIO</span>
+                <span className="font-mono text-[#00F0FF] font-bold block text-left">HOTMART_WEBHOOK_SECRET</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-gray-400 block font-mono text-[10px] uppercase tracking-wider text-left">ESTADO DE CONFIGURACIÓN</span>
+                {hotmartSecretLen > 0 ? (
+                  <span className="text-emerald-400 flex items-center gap-1 font-bold text-left">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Configurado ({hotmartSecretLen} caracteres)
+                  </span>
+                ) : (
+                  <span className="text-amber-400 flex items-center gap-1 font-bold text-left">
+                    <AlertTriangle className="w-4 h-4 text-amber-400" /> No configurado o vacío
+                  </span>
+                )}
+              </div>
+              <div className="space-y-1">
+                <span className="text-gray-400 block font-mono text-[10px] uppercase tracking-wider text-left">PREVISUALIZACIÓN DE CLAVE</span>
+                <span className="font-mono bg-white/5 px-2 py-0.5 rounded text-white font-bold select-all block text-left w-fit">
+                  {hotmartSecretMasked}
+                </span>
+              </div>
+            </div>
+
+            {/* LOGS TABLE LIST */}
+            <div className="space-y-3">
+              <h4 className="font-mono text-xs font-bold text-[#B5179E] uppercase tracking-wider text-left">Últimas 100 peticiones de Webhook recibidas:</h4>
+              
+              {hotmartLogs.length === 0 ? (
+                <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl bg-black/20">
+                  <p className="text-sm text-gray-500 font-sans">No se ha registrado ninguna petición de Webhook de Hotmart todavía.</p>
+                  <p className="text-xs text-gray-600 mt-1 font-mono">Realiza una prueba de postback/webhook en la consola de Hotmart usando la URL de esta aplicación.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto border border-white/10 rounded-2xl bg-black/30">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-black/50 border-b border-white/10 font-mono text-[10px] uppercase tracking-wider text-gray-400">
+                        <th className="p-3">Fecha y Hora</th>
+                        <th className="p-3">Correo Compradora</th>
+                        <th className="p-3 text-center font-bold">Autorizado</th>
+                        <th className="p-3">Resultado</th>
+                        <th className="p-3">Estado Compra</th>
+                        <th className="p-3">Detalle / Mensaje</th>
+                      </tr>
+                    </thead>
+                    <tbody className="font-sans divide-y divide-white/5">
+                      {hotmartLogs.map((log, idx) => {
+                        const statusColor = 
+                          log.status === "SUCCESS" ? "text-emerald-400 font-bold" :
+                          log.status === "UNAUTHORIZED" ? "text-red-400 font-bold bg-red-950/15" :
+                          log.status === "NOT_APPROVED" ? "text-amber-400 font-bold" :
+                          "text-[#00F0FF]";
+
+                        return (
+                          <tr key={idx} className="hover:bg-white/5 transition-all">
+                            <td className="p-3 font-mono text-gray-400 whitespace-nowrap">
+                              {new Date(log.timestamp).toLocaleString("es-ES")}
+                            </td>
+                            <td className="p-3 font-medium text-white">{log.email}</td>
+                            <td className="p-3 text-center">
+                              {log.authorized ? (
+                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full font-mono text-[9px] font-bold border border-emerald-500/20">
+                                  ✔ SÍ
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-red-500/10 text-red-400 rounded-full font-mono text-[9px] font-bold border border-red-500/20">
+                                  ❌ NO
+                                </span>
+                              )}
+                            </td>
+                            <td className="p-3">
+                              <span className={`px-2 py-0.5 rounded font-mono text-[10px] ${statusColor}`}>
+                                {log.status}
+                              </span>
+                            </td>
+                            <td className="p-3 font-mono text-gray-300">
+                              {log.payloadSummary?.purchase_status || "N/A"}
+                            </td>
+                            <td className="p-3 text-gray-400 leading-normal font-sans max-w-xs break-words">
+                              {log.errorMessage || (
+                                <span className="text-emerald-400/80">Código de acceso enviado por email</span>
+                              )}
+                              {log.payloadSummary?.event_tickets_amount && (
+                                <span className="block text-[10px] text-gray-500 font-mono mt-1">
+                                  Tickets Amount: {log.payloadSummary.event_tickets_amount}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* USEFUL TROUBLESHOOTING GUIDE */}
+            <div className="bg-white/5 p-5 rounded-2xl border border-white/5 text-xs font-sans space-y-3">
+              <h5 className="font-bold text-white flex items-center gap-1.5 text-left">
+                <AlertTriangle className="w-4 h-4 text-[#00F0FF]" />
+                Guía rápida de resolución de problemas de sintonización con Hotmart:
+              </h5>
+              <ul className="list-disc pl-5 space-y-2 text-gray-300 text-left">
+                <li>
+                  <strong>Si el resultado es <span className="text-red-400 font-bold text-left">UNAUTHORIZED</span>:</strong> El token de autenticación configurado en la variable <code className="font-mono bg-black/40 px-1 py-0.5 rounded text-yellow-300">HOTMART_WEBHOOK_SECRET</code> en AI Studio no coincide con el que Hotmart está enviando. Asegúrate de configurar en la aplicación de AI Studio exactamente el Token que te proporciona Hotmart en su consola Webhook (bajo la pestaña &quot;Tokens de Verificación&quot;).
+                </li>
+                <li>
+                  <strong>Si el resultado es <span className="text-amber-400 font-bold text-left">NOT_APPROVED</span>:</strong> Hotmart envió el webhook de forma correcta pero el estado de la compra no era un estado de pago aprobado (por ejemplo, era un &quot;BILLING_INIT&quot;, &quot;CANCELLED&quot;, o &quot;REFUNDED&quot;). El sistema de sintonía hermética solo otorga accesos a transacciones aprobadas (<code className="font-mono">APPROVED</code> o <code className="font-mono">APROVADA</code>).
+                </li>
+                <li>
+                  <strong>Si no aparece ninguna petición en la lista superior:</strong> Hotmart no está enviando las peticiones a la URL correcta. Asegúrate de que la URL de Webhook que configuraste en tu panel de herramientas de Hotmart coincida exactamente con la URL de tu aplicación (p. ej., <code className="font-mono bg-black/40 px-1 py-0.5 rounded text-[#00F0FF]">https://tu-app.run.app/api/hotmart/webhook</code>).
+                </li>
+              </ul>
+            </div>
           </div>
         </>
       )}
