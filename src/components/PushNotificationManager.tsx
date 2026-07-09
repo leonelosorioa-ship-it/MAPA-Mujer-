@@ -13,7 +13,8 @@ import {
   Clock, 
   Trash2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  ArrowRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { NotificationPermissionManager } from "./NotificationPermissionManager";
@@ -48,7 +49,52 @@ const SIMULATED_ALERTS: Omit<PushNotice, "id">[] = [
   { title: "🏆 Caso de Éxito de la Comunidad", body: "Claudia V. redujo su rumia de alerta un 70% regulando sus hábitos de control rígidos.", category: "Guía Rápida de Emergencia" }
 ];
 
-export const PushNotificationManager: React.FC<{ userEmail?: string }> = ({ userEmail }) => {
+export interface PushNotificationManagerProps {
+  userEmail?: string;
+  currentDay?: number;
+  onGoToDay?: (dayNum: number) => void;
+}
+
+const getActionDetails = (title: string, body: string, currentDay: number = 1) => {
+  const fullText = (title + " " + body).toLowerCase();
+  
+  const isDailyTestReady = fullText.includes("prueba") || 
+                            fullText.includes("test") || 
+                            fullText.includes("sintonizar") || 
+                            fullText.includes("ejercicio") || 
+                            fullText.includes("anclaje") ||
+                            fullText.includes("disponible");
+                            
+  const isDiscoveryReady = fullText.includes("descubrimiento") || 
+                            fullText.includes("análisis") || 
+                            fullText.includes("evolutivo") || 
+                            fullText.includes("resultado") || 
+                            fullText.includes("listo") || 
+                            fullText.includes("lista");
+
+  if (isDailyTestReady) {
+    return {
+      label: `✨ Realizar Prueba del Día ${currentDay}`,
+      actionType: "daily_test"
+    };
+  } else if (isDiscoveryReady) {
+    return {
+      label: `🔑 Acceder a mi Descubrimiento`,
+      actionType: "discovery"
+    };
+  }
+  
+  return {
+    label: `🚀 Iniciar Tarea de Hoy`,
+    actionType: "generic"
+  };
+};
+
+export const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ 
+  userEmail,
+  currentDay = 1,
+  onGoToDay
+}) => {
   const [activeNotice, setActiveNotice] = useState<PushNotice | null>(null);
   const [activeQuote, setActiveQuote] = useState(CONSEJOS_MOTIVACIONALES[0]);
   const [permissionStatus, setPermissionStatus] = useState<NotificationPermission>("default");
@@ -655,6 +701,19 @@ export const PushNotificationManager: React.FC<{ userEmail?: string }> = ({ user
                         <p className="text-xs text-[#0B152B]/85 leading-normal">
                           {alertItem.body}
                         </p>
+                        {onGoToDay && (
+                          <div className="pt-2">
+                            <button
+                              onClick={() => {
+                                onGoToDay(currentDay);
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#EDE0F0] hover:bg-[#EDE0F0]/80 text-[#6E488A] font-sans font-extrabold text-[10px] tracking-wide transition-all cursor-pointer border-none shadow-xs"
+                            >
+                              <span>{getActionDetails(alertItem.title, alertItem.body, currentDay).label}</span>
+                              <ArrowRight className="w-3 h-3 text-[#6E488A]" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -693,6 +752,22 @@ export const PushNotificationManager: React.FC<{ userEmail?: string }> = ({ user
                 <p className="text-xs sm:text-sm text-[#0B152B] leading-relaxed font-medium">
                   {activeNotice.body}
                 </p>
+
+                {/* Botón de Llamado a la Acción Directo */}
+                {onGoToDay && (
+                  <div className="pt-2">
+                    <button
+                      onClick={() => {
+                        onGoToDay(currentDay);
+                        setActiveNotice(null); // Close toast on click
+                      }}
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#E36DB4] to-[#6E488A] hover:opacity-95 text-white font-sans font-extrabold text-[11px] tracking-wide shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer border-none"
+                    >
+                      <span>{getActionDetails(activeNotice.title, activeNotice.body, currentDay).label}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-white animate-pulse" />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Right Column: Close manual trigger button */}

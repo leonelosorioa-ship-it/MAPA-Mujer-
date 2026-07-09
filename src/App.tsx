@@ -3518,7 +3518,20 @@ export default function App() {
 
               {/* COMPANION NOTIFICATIONS SHIELDS */}
               <div id="emotional_regulation_labs">
-                <PushNotificationManager userEmail={currentUserEmail} />
+                <PushNotificationManager 
+                  userEmail={currentUserEmail} 
+                  currentDay={programProgress.currentDay}
+                  onGoToDay={(dayNum) => {
+                    setSelectedDayPreview(dayNum);
+                    // Smooth scroll directly to the dedicated day guide view or the timeline container
+                    setTimeout(() => {
+                      const element = document.getElementById("dedicated_day_guide_view") || document.getElementById("emotional_timeline_section");
+                      if (element) {
+                        element.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }, 100);
+                  }}
+                />
               </div>
 
               {/* The 7-Day Program Timeline Cards Grid */}
@@ -3528,6 +3541,7 @@ export default function App() {
                     /* DEDICATED PREVIEW VIEW - NO DISTRACTIONS, DYNAMIC BACK NAVIGATION */
                     <motion.div
                       key="dedicated_day_guide_view"
+                      id="dedicated_day_guide_view"
                       initial={{ opacity: 0, x: 15 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -15 }}
