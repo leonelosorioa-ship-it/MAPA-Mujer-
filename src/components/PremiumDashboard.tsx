@@ -483,26 +483,6 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   }, [userEmail]);
 
   useEffect(() => {
-    const handleSync = (e: Event) => {
-      const customEvent = e as CustomEvent<PremiumData>;
-      if (customEvent.detail) {
-        setPremiumData(customEvent.detail);
-        if (customEvent.detail.completedChallenges) {
-          setChallenges(prev => prev.map(ch => ({
-            ...ch,
-            completed: (customEvent.detail.completedChallenges || []).includes(ch.id)
-          })));
-        }
-        if (customEvent.detail.challengeAnswers) {
-          setChallengeTexts(customEvent.detail.challengeAnswers || {});
-        }
-      }
-    };
-    window.addEventListener("premium-data-synced", handleSync);
-    return () => window.removeEventListener("premium-data-synced", handleSync);
-  }, []);
-
-  useEffect(() => {
     coachBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [premiumData.coachHistory, activeTab]);
 

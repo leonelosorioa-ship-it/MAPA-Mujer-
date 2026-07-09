@@ -704,7 +704,7 @@ export default function App() {
   const syncProgressToCloud = async (currentProgress: any, userEmail: string) => {
     if (!userEmail) return;
     try {
-      const res = await fetch("/api/user/sync-progress", {
+      const res = await fetch("/api/update-user-progress", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -991,67 +991,6 @@ export default function App() {
     setDashboardNotice("Has cerrado sesión. Tus respuestas están resguardadas e intactas con tu correo.");
     setTimeout(() => setDashboardNotice(null), 3500);
   };
-
-  // 2. Validación de Entorno Post-Login e Inyección de Datos (Frontend)
-  // Hook de sincronización en tiempo real para descargar la última compilación del estado de la usuaria al iniciar sesión o cargar la app
-  const useAuthSynchronizer = (email: string) => {
-    useEffect(() => {
-      if (!email) return;
-
-      const syncFromServer = async () => {
-        try {
-          const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
-          if (!token) return;
-
-          console.log(`[M.A.P.A.™ Sync] Sincronizando estado espejo para ${email}...`);
-          const res = await fetch(`/api/user/progress?email=${encodeURIComponent(email.toLowerCase().trim())}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            }
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success && data.userProgress) {
-              console.log("[M.A.P.A.™ Sync] Datos espejo de progreso descargados e inyectados:", data.userProgress);
-              
-              // Inyectar estado en React
-              setProgramProgress(data.userProgress);
-              if (data.userProgress.leadInfo) {
-                setLeadInfo(data.userProgress.leadInfo);
-                setLeadCaptured(true);
-              }
-              
-              // Guardar en almacenamiento local como respaldo local-offline de alto rendimiento
-              localStorage.setItem(
-                `MAPA_USER_PROGRESS_${email.toLowerCase().trim()}`,
-                JSON.stringify(data.userProgress)
-              );
-
-              // Actualizar datos premium si están presentes en la respuesta
-              if (data.premiumData) {
-                const premiumKey = `MAPA_OFFLINE_PREMIUM_${email.toLowerCase().trim()}`;
-                localStorage.setItem(premiumKey, JSON.stringify(data.premiumData));
-                window.dispatchEvent(new CustomEvent("premium-data-synced", { detail: data.premiumData }));
-              }
-            }
-          } else if (res.status === 401 || res.status === 403) {
-            console.warn("[M.A.P.A.™ Sync] Sesión no válida o expirada. Cerrando sesión de seguridad.");
-            handleUserLogout();
-          }
-        } catch (error) {
-          console.error("[M.A.P.A.™ Sync] Error al recuperar progreso de servidor:", error);
-        }
-      };
-
-      syncFromServer();
-    }, [email]);
-  };
-
-  // Activar sincronización central espejo en tiempo real basada en el estado de autenticación de la usuaria
-  useAuthSynchronizer(currentUserEmail);
 
   // Scroll to top on phase changes
   useEffect(() => {
