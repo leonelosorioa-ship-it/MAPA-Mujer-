@@ -224,13 +224,26 @@ export function useAuthSynchronizer({
       setSyncing(false);
       const endTime = performance.now();
       const elapsedMs = endTime - startTime;
-      console.log(`[M.A.P.A. Sync] Tiempo de respuesta del servidor: ${elapsedMs.toFixed(2)} ms`);
+      
+      // Métrica de performance: Calcular el tiempo total de la petición de red
+      console.log(`[M.A.P.A. Performance Metric] Tiempo total de petición de red: ${elapsedMs.toFixed(2)} ms`);
+      
+      // Si el tiempo supera los 2 segundos, garantizamos que se dispara o consolida el toast informativo
+      if (elapsedMs > 2000) {
+        console.warn(`[M.A.P.A. Performance Alert] La petición de red excedió el umbral de 2 segundos: ${elapsedMs.toFixed(2)} ms`);
+        if (setDashboardNotice && !didShowToast) {
+          setDashboardNotice("⏳ Sincronizando con el servidor...");
+          didShowToast = true;
+        }
+      }
       
       if (didShowToast && setDashboardNotice) {
-        setDashboardNotice("🔄 ¡Sincronizado con éxito!");
         setTimeout(() => {
-          setDashboardNotice(null);
-        }, 2000);
+          setDashboardNotice("🔄 ¡Sincronizado con éxito!");
+          setTimeout(() => {
+            setDashboardNotice(null);
+          }, 2000);
+        }, 500);
       }
     }
   };
