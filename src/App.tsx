@@ -412,6 +412,50 @@ export default function App() {
   const [scanInterpretacion, setScanInterpretacion] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [selectedDayPreview, setSelectedDayPreview] = useState<number | null>(null);
+
+  const getUserArchetypeSlug = (): "VIGILANTE" | "ANTICIPADOR" | "HIPERCONTROLADOR" | "SOBRECARGADO" | "PROTECTOR" => {
+    if (evaluationResult?.id) {
+      if (evaluationResult.id === "VIGILANTE") return "VIGILANTE";
+      if (evaluationResult.id === "ANTICIPADOR") return "ANTICIPADOR";
+      if (evaluationResult.id === "HIPERCONTROLADOR") return "HIPERCONTROLADOR";
+      if (evaluationResult.id === "SOBRECARGADO") return "SOBRECARGADO";
+      if (evaluationResult.id === "PROTECTOR") return "PROTECTOR";
+    }
+    const allResponses = Object.values(programProgress.responses).flat() as QuizResponse[];
+    if (allResponses.length === 0) {
+      return "VIGILANTE";
+    }
+    
+    const scores = { vigilante: 0, anticipador: 0, hipercontrolador: 0, sobrecargado: 0, protectorSilencioso: 0 };
+    allResponses.forEach((resItem) => {
+      const question = QUESTIONS.find((q) => q.id === resItem.questionId);
+      if (question && question.options) {
+        const option = question.options.find((opt) => opt.value === resItem.value);
+        if (option && option.scoreWeight) {
+          Object.keys(option.scoreWeight).forEach((key) => {
+            const pKey = key as keyof typeof scores;
+            scores[pKey] += (option.scoreWeight[pKey] || 0);
+          });
+        }
+      }
+    });
+
+    let dominantKey = "vigilante";
+    let maxVal = -1;
+    Object.keys(scores).forEach((key) => {
+      const pKey = key as keyof typeof scores;
+      if (scores[pKey] > maxVal) {
+        maxVal = scores[pKey];
+        dominantKey = pKey;
+      }
+    });
+
+    if (dominantKey === "anticipador") return "ANTICIPADOR";
+    if (dominantKey === "hipercontrolador") return "HIPERCONTROLADOR";
+    if (dominantKey === "sobrecargado") return "SOBRECARGADO";
+    if (dominantKey === "protectorSilencioso") return "PROTECTOR";
+    return "VIGILANTE";
+  };
   
   // Mini-ejercicio de calma states
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(0);
@@ -3456,6 +3500,7 @@ export default function App() {
               </form>
             </motion.div>
           )}
+
           {/* =========================================================
               PHASE: DASHBOARD (7-DAY CHRONOGRAPH PATH CONTROL)
               ========================================================= */}
@@ -3482,6 +3527,29 @@ export default function App() {
                     <p className="text-[#56346F]/80 text-sm font-sans max-w-xl leading-relaxed">
                       Te damos la bienvenida a tu panel de 7 días. Como mujer comprometida con tu bienestar, cada día responderás 7 preguntas breves diseñadas especialmente para reducir la tensión corporal, liberarte del sobrepensamiento y calmar tu mente de forma sencilla.
                     </p>
+                    
+                    {/* Dynamic Archetype Overview badge */}
+                    {(() => {
+                      const slug = getUserArchetypeSlug();
+                      const archetypeInfo = {
+                        VIGILANTE: { name: "El Vigilante", avatar: "👁️", color: "text-[#36C4D8]", bg: "bg-[#36C4D8]/5 border-[#36C4D8]/15", desc: "Escaneas tu entorno físico, social y emocional buscando señales de tensión." },
+                        ANTICIPADOR: { name: "El Anticipador", avatar: "🔮", color: "text-[#E36DB4]", bg: "bg-[#E36DB4]/5 border-[#E36DB4]/15", desc: "Creas escenarios de tragedias futuras para ensayar preventivamente tus respuestas." },
+                        HIPERCONTROLADOR: { name: "El Hipercontrolador", avatar: "⚙️", color: "text-amber-600", bg: "bg-amber-500/5 border-amber-500/15", desc: "Sientes que si dejas de supervisar o intervenir todo colapsará a tu alrededor." },
+                        SOBRECARGADO: { name: "El Sobrecargado", avatar: "🎒", color: "text-sky-600", bg: "bg-sky-500/5 border-sky-500/15", desc: "Cargas inconscientemente con el bienestar y las necesidades de todos los demás." },
+                        PROTECTOR: { name: "El Protector Silencioso", avatar: "🎭", color: "text-purple-600", bg: "bg-purple-500/5 border-purple-500/15", desc: "Construyes una máscara impecable de optimismo exterior mientras batallas sola." }
+                      }[slug];
+
+                      return (
+                        <div className={`p-3.5 rounded-2xl border ${archetypeInfo.bg} flex items-center gap-3 text-left max-w-xl animate-fadeIn`}>
+                          <span className="text-2xl shrink-0">{archetypeInfo.avatar}</span>
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] font-mono uppercase tracking-widest text-[#6E488A]/60 block font-bold">Enfoque de tu Arquetipo Predominante:</span>
+                            <span className={`text-xs font-black ${archetypeInfo.color} block`}>{archetypeInfo.name}</span>
+                            <p className="text-[11px] text-[#56346F]/85 font-medium leading-relaxed">{archetypeInfo.desc}</p>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div className="bg-[#FAF7F9] border border-[#6E488A]/10 p-4 rounded-2xl text-center shrink-0 w-full md:w-auto shadow-inner">
                     <span className="block text-[10px] font-mono text-[#56346F]/60 uppercase tracking-wider">PROGRESO GENERAL</span>
@@ -3641,6 +3709,93 @@ export default function App() {
                                 <p className="text-[#56346F]/90 mt-1 font-bold text-sm leading-relaxed">{previewData.herramienta}</p>
                               </div>
                             </div>
+
+                            {/* PERSONALIZED ARCHETYPE MOTIVATIONAL MESSAGE */}
+                            {(() => {
+                              const slug = getUserArchetypeSlug();
+                              const archetypeInfo = {
+                                VIGILANTE: { name: "El Vigilante", avatar: "👁️", color: "from-[#36C4D8] to-[#2DB3C7]", textBg: "bg-[#36C4D8]/5 border-[#36C4D8]/20", textColor: "text-[#2DB3C7]" },
+                                ANTICIPADOR: { name: "El Anticipador", avatar: "🔮", color: "from-[#E36DB4] to-[#6E488A]", textBg: "bg-[#E36DB4]/5 border-[#E36DB4]/20", textColor: "text-[#E36DB4]" },
+                                HIPERCONTROLADOR: { name: "El Hipercontrolador", avatar: "⚙️", color: "from-amber-400 to-amber-600", textBg: "bg-amber-500/5 border-amber-500/20", textColor: "text-amber-600" },
+                                SOBRECARGADO: { name: "El Sobrecargado", avatar: "🎒", color: "from-sky-500 to-sky-700", textBg: "bg-[#3b82f6]/5 border-[#3b82f6]/10", textColor: "text-[#3b82f6]" },
+                                PROTECTOR: { name: "El Protector Silencioso", avatar: "🎭", color: "from-purple-500 to-indigo-500", textBg: "bg-purple-500/5 border-purple-500/20", textColor: "text-purple-600" }
+                              }[slug];
+
+                              const messages = {
+                                VIGILANTE: [
+                                  "Querida Vigilante, tu cuerpo lleva demasiado tiempo con los escudos en alto escaneando amenazas. Hoy, al mapear tu mandíbula y respiración, recuerda: no necesitas estar en guardia permanente para estar segura. Permítete soltar.",
+                                  "El ruido exterior y las demandas sutiles gatillan tu radar inmediato. Para tu sensibilidad de Vigilante, desconectar 5 minutos hoy con el blindaje vagal no es evadirte, es regalarle a tu sistema nervioso un puerto seguro.",
+                                  "Tu mente de Vigilante traduce el silencio o los microgestos en alertas inminentes. Al registrar tus pensamientos hoy, pregúntate si estás viendo un hecho real o si tu amígdala está sobre-reaccionando a un fantasma.",
+                                  "Como Vigilante, temes que si te distraes decepcionarás a los demás. Poner un límite amoroso hoy protege tu valiosa energía. Tu paz no es negociable.",
+                                  "Querer anticiparlo todo es tu forma de sentirte protegida. Hoy, intenta soltar un solo detalle menor y observa cómo el mundo sigue girando sin que tengas que sostenerlo.",
+                                  "Vigilante, a veces la evitación es tu armadura invisible. Dar un pequeño paso comprometido hoy te demostrará que eres capaz de transitar la incomodidad sin que tu sistema se rompa.",
+                                  "Has mapeado tus alarmas, querida Vigilante. Tu resiliencia corporal es inmensa. Has aprendido que estar a salvo empieza por dentro, no controlando el entorno."
+                                ],
+                                ANTICIPADOR: [
+                                  "Querida Anticipadora, tu mente ya está viviendo en la semana que viene mientras tu cuerpo se tensa hoy. Hoy, al medir tu respiración costal alta, arrastra tu conciencia de vuelta a este instante físico. Aquí estás a salvo.",
+                                  "Los imprevistos y la incertidumbre encienden tu fábrica de películas de terror. Tu sintonizador ambiental del Día 2 te recordará que el futuro no se conquista sufriéndolo por adelantado.",
+                                  "Hoy es tu día clave, Anticipadora. Mapearemos esos escenarios catastróficos. Recuerda: ensayar el dolor no te vacuna contra él, solo te hace sufrir dos veces por cosas que probablemente nunca ocurrirán.",
+                                  "Tu mente ensaya discursos futuros para no fallarle a nadie. Al interactuar hoy, recuerda que tu batería social se agota si intentas prever cada reacción ajena. Vive el presente de tus vínculos.",
+                                  "Intentar predecir variables para calmar tu miedo al vacío es agotador. Hoy aplicaremos el 'Cajón Imperfecto': abraza la incertidumbre como un espacio de libertad, no de amenaza.",
+                                  "Anticipadora, el sobrepensamiento es tu forma más sofisticada de postergación. Activar hoy tus acciones de microsegundos romperá el bucle de parálisis por análisis.",
+                                  "¡Felicidades, Anticipadora! Has desactivado tus proyecciones catastróficas. Has aprendido a respirar en el presente y a confiar en tus recursos ante el mañana real."
+                                ],
+                                HIPERCONTROLADOR: [
+                                  "Querida Hipercontroladora, tu espalda y hombros sostienen una carga invisible. Hoy, al registrar la contracción muscular, date permiso para rendirte un minuto. Sostener el orden no es tu única función.",
+                                  "El desorden o los cambios inesperados de planes encienden tu reactividad inmediata. Tu protocolo vagal de hoy te enseñará a blindar tu calma interna, incluso cuando el entorno sea un caos.",
+                                  "Los bucles obsesivos son tu intento de ordenar mentalmente lo que no puedes gobernar. Al desglosar Hechos vs. Fantasías hoy, verás con claridad qué variables merecen tu energía y cuáles debes soltar.",
+                                  "Te cuesta decir 'no' porque sientes que si tú no lo haces, nadie lo hará bien. Hoy, cuida tu batería de interacciones delegando una pequeña tarea y permitiéndote descansar sin culpas.",
+                                  "Este es tu epicentro, Hipercontroladora. Soltar el perfeccionismo inercial es tu mayor acto de amor propio. Permítete equivocarte hoy; la vida fluye mejor en la flexibilidad.",
+                                  "La evitación fóbica a veces es tu respuesta cuando sientes que no tienes el 100% del control. Actúa con microsegundos hoy sin buscar el resultado perfecto, solo por el valor de intentar.",
+                                  "Has completado la ruta, Hipercontroladora. Tu mapa de 49 marcadores demuestra que regularse es más sabio que controlarlo todo. Confía en tu balance vagal."
+                                ],
+                                SOBRECARGADO: [
+                                  "Querida Sobrecargada, tu cansancio es el grito de un sistema exhausto de salvar a otros. Al respirar hondo hoy, recuerda que tu primera y más importante responsabilidad es el mapa de tu propio cuerpo.",
+                                  "La sobrecarga del entorno penetra profundo en ti. Tu protocolo de blindaje sensorial de hoy te dará el derecho de crear un espacio sagrado donde los problemas del mundo queden fuera.",
+                                  "Tus pensamientos rumiantes giran en torno al miedo a decepcionar. Hoy desmontaremos esas fantasías restrictivas de que tu valor depende de cuánto te sacrifiques por los demás.",
+                                  "Tu día esencial, Sobrecargada. El límite no es una barrera egoísta, es el contenedor que protege tu precioso combustible vital. Aprende hoy a decir 'no' con amor y firmeza.",
+                                  "Intentas resolver variables ajenas para evitar conflictos. Hoy, practica soltar la carga de un tercero y observa cómo cada quien tiene el derecho y la fuerza de recorrer su propia ruta.",
+                                  "A veces te aíslas o pospones tus propios deseos por fatiga de empatía. Tu micro-acción de hoy te reconectará con un paso valiente dedicado exclusivamente a ti.",
+                                  "¡Lo lograste, Sobrecargada! Has vaciado tu mochila de piedras ajenas. Tu plan definitivo de calma está diseñado para cuidar de ti con el mismo amor con el que cuidas a los demás."
+                                ],
+                                PROTECTOR: [
+                                  "Querida Protectora, sostener una máscara impecable de fortaleza mientras por dentro batallas sola es una carga insoportable. Hoy, al registrar tu cuerpo, permítete sentir la vulnerabilidad. Estar cansada también está bien.",
+                                  "Para ti que actúas como puerto seguro de todos, tu blindaje de hoy no es para aislarte, sino para recargar tu propia batería vital en la discreción de tu calma interior.",
+                                  "Enterrar tus preocupaciones mantiene tu sistema nervioso gritando en silencio. Al escribir hoy tus pensamientos rumiantes, dales voz y validez. Tus temores merecen ser escuchados.",
+                                  "Sueles dar contención sin pedirla. Hoy, experimenta un límite sanador: permite que otros conozcan tu sentir real en vez de complacerlos con un 'estoy perfecta' ficticio.",
+                                  "Exigirte ser inafectable es una rigidez que agota tus recursos vegetativos. Al soltar hoy el control de las expectativas, abres espacio para que tu mente respire con total libertad.",
+                                  "Afrontar la incomodidad de pedir ayuda es tu mayor reto de microsegundos hoy. Dejarte sostener por un instante disuelve la angustia inercial profunda.",
+                                  "Protectora Silenciosa, has destapado tu mapa con absoluta valentía. Tu resiliencia no radica en ser indestructible, sino en tu capacidad de integrarte y florecer con autocompasión."
+                                ]
+                              }[slug];
+
+                              const messageText = messages[selectedDayPreview - 1] || messages[0];
+
+                              return (
+                                <motion.div 
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className={`p-4 rounded-2xl border ${archetypeInfo.textBg} flex gap-3.5 items-start text-left`}
+                                >
+                                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${archetypeInfo.color} flex items-center justify-center text-xl shadow-xs shrink-0`}>
+                                    {archetypeInfo.avatar}
+                                  </div>
+                                  <div className="space-y-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className="text-[9px] font-mono tracking-wider uppercase font-extrabold text-[#6E488A]/70">
+                                        Foco de tu Arquetipo:
+                                      </span>
+                                      <span className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded-full bg-[#EDE0F0] ${archetypeInfo.textColor}`}>
+                                        {archetypeInfo.name}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-[#56346F]/90 leading-relaxed font-bold italic">
+                                      "{messageText}"
+                                    </p>
+                                  </div>
+                                </motion.div>
+                              );
+                            })()}
 
                             <div className="pt-4 border-t border-[#6E488A]/10 flex flex-col gap-4">
                               {isCompleted ? (
