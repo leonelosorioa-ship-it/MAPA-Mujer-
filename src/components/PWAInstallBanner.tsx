@@ -40,13 +40,14 @@ export const PWAInstallBanner: React.FC = () => {
     setPlatformInfo({ isIOS, isMac, isSafari, isFirefox, isMobile });
 
     // 3. Listen for Chromium's native PWA install prompt
+    const isTestUrl = window.location.hostname.includes("run.app") || window.location.hostname.includes("localhost") || window.location.search.includes("test=true");
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // If we are not in standalone and haven't dismissed in this session, show
+      // If we are not in standalone and haven't dismissed in this session (or if we are on the test URL, always show), show
       const isDismissedThisSession = sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") === "true";
-      if (!standalone && !isDismissedThisSession) {
+      if (!standalone && (!isDismissedThisSession || isTestUrl)) {
         setIsVisible(true);
       }
     };
@@ -56,11 +57,12 @@ export const PWAInstallBanner: React.FC = () => {
     // 4. Fallback show for non-Chromium browsers (Safari iOS/macOS, Firefox etc)
     // Since beforeinstallprompt is NOT fired on iOS Safari, we trigger the banner manually
     const isDismissedThisSession = sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") === "true";
-    if (!standalone && !isDismissedThisSession) {
-      // Show banner after 3 seconds for a smooth user entrance experience
+    if (!standalone && (!isDismissedThisSession || isTestUrl)) {
+      // Show banner after 3 seconds, or 500ms on the test URL for instant prompt/activation of download
+      const delay = isTestUrl ? 500 : 3000;
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 3000);
+      }, delay);
       return () => clearTimeout(timer);
     }
 

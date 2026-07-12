@@ -1722,7 +1722,35 @@ app.post("/api/auth/login", (req, res) => {
     const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
     const isSpecialAdmin = adminEmails.includes(cleanEmail);
 
+    const rawInputCode = (accessCode || "").trim();
+    const cleanInputCode = rawInputCode.toUpperCase();
+    const isPromoBypass = cleanInputCode === "LEO777";
+
     let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+
+    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777"
+    if (userIndex === -1 && isPromoBypass) {
+      const newPromoUser = {
+        nombre: "Invitada Especial M.A.P.A.",
+        email: cleanEmail,
+        whatsapp: "",
+        registeredAt: new Date().toISOString(),
+        lastActive: new Date().toISOString(),
+        currentDay: 1,
+        completedDays: [],
+        responses: {},
+        completionTimestamps: {},
+        dailyConclusionText: {},
+        initialScanResults: null,
+        isCompleted: false,
+        disabled: false,
+        accessCode: "LEO777",
+        hotmartApproved: true
+      };
+      db.push(newPromoUser);
+      writeUsersDB(db);
+      userIndex = db.length - 1;
+    }
 
     // Auto-creación de registro de administrador si no existiera en la BD local
     if (userIndex === -1 && isSpecialAdmin) {
@@ -1761,8 +1789,6 @@ app.post("/api/auth/login", (req, res) => {
       return res.status(403).json({ error: "Tu acceso ha sido inhabilitado por el administrador del sistema." });
     }
 
-    const rawInputCode = (accessCode || "").trim();
-    const cleanInputCode = rawInputCode.toUpperCase();
     const cleanDbCode = (user.accessCode || "").trim().toUpperCase();
 
     // Comprobación de Administradores Maestros Duales
@@ -1800,10 +1826,10 @@ app.post("/api/auth/login", (req, res) => {
     const hasNoCodeYet = !cleanDbCode;
     const isApprovedBuyer = user.hotmartApproved === true;
 
-    if ((hasNoCodeYet && !accessCode) || cleanInputCode === cleanDbCode || isApprovedBuyer) {
-      // Generar código de acceso si no tenía para proteger futuros accesos
-      if (hasNoCodeYet) {
-        user.accessCode = generateAccessCode();
+    if ((hasNoCodeYet && !accessCode) || cleanInputCode === cleanDbCode || isApprovedBuyer || isPromoBypass) {
+      // Generar código de acceso si no tenía para proteger futuros accesos, o guardar LEO777 si es bypass
+      if (hasNoCodeYet || isPromoBypass) {
+        user.accessCode = isPromoBypass ? "LEO777" : (user.accessCode || generateAccessCode());
         user.hotmartApproved = true;
         db[userIndex] = user;
         writeUsersDB(db);
