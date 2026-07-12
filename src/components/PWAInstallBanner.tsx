@@ -171,25 +171,25 @@ export const PWAInstallBanner: React.FC = () => {
                 </button>
               </div>
 
-              <div className="text-xs space-y-3 leading-relaxed text-gray-200">
+              <div className="text-xs space-y-3 leading-relaxed text-slate-100" style={{ color: "#F1F5F9" }}>
                 {platformInfo.isIOS && platformInfo.isSafari && (
                   <div className="space-y-2">
-                    <p className="font-semibold text-[#7EF9FF]">Para instalar en tu iPhone o iPad (Safari):</p>
-                    <ol className="list-decimal pl-5 space-y-2">
-                      <li>Presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span> en la barra inferior del navegador.</li>
-                      <li>Desplázate hacia abajo y selecciona <span className="font-bold text-[#7EF9FF] flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Agregar a la pantalla de inicio <Plus className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
-                      <li>Presiona <span className="font-bold text-emerald-400">Agregar</span> en la esquina superior derecha y ¡listo!</li>
+                    <p className="font-semibold text-[#7EF9FF]" style={{ color: "#7EF9FF" }}>Para instalar en tu iPhone o iPad (Safari):</p>
+                    <ol className="list-decimal pl-5 space-y-2 text-slate-100" style={{ color: "#F1F5F9" }}>
+                      <li style={{ color: "#F1F5F9" }}>Presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span> en la barra inferior del navegador.</li>
+                      <li style={{ color: "#F1F5F9" }}>Desplázate hacia abajo y selecciona <span className="font-bold text-[#7EF9FF] flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Agregar a la pantalla de inicio <Plus className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
+                      <li style={{ color: "#F1F5F9" }}>Presiona <span className="font-bold text-emerald-400">Agregar</span> en la esquina superior derecha y ¡listo!</li>
                     </ol>
                   </div>
                 )}
 
                 {platformInfo.isMac && platformInfo.isSafari && (
                   <div className="space-y-2">
-                    <p className="font-semibold text-[#7EF9FF]">Para instalar en tu Mac (Safari):</p>
-                    <ol className="list-decimal pl-5 space-y-2">
-                      <li>Haz clic en <span className="font-bold text-white">Archivo</span> en la barra superior o presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
-                      <li>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Agregar al Dock...</span> en la lista.</li>
-                      <li>Confirma haciendo clic en <span className="font-bold text-emerald-400">Agregar</span> para anclar M.A.P.A.™ junto a tus aplicaciones de escritorio.</li>
+                    <p className="font-semibold text-[#7EF9FF]" style={{ color: "#7EF9FF" }}>Para instalar en tu Mac (Safari):</p>
+                    <ol className="list-decimal pl-5 space-y-2 text-slate-100" style={{ color: "#F1F5F9" }}>
+                      <li style={{ color: "#F1F5F9" }}>Haz clic en <span className="font-bold text-white">Archivo</span> en la barra superior o presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
+                      <li style={{ color: "#F1F5F9" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Agregar al Dock...</span> en la lista.</li>
+                      <li style={{ color: "#F1F5F9" }}>Confirma haciendo clic en <span className="font-bold text-emerald-400">Agregar</span> para anclar M.A.P.A.™ junto a tus aplicaciones de escritorio.</li>
                     </ol>
                   </div>
                 )}
@@ -197,18 +197,18 @@ export const PWAInstallBanner: React.FC = () => {
                 {/* General default instructions for other cases where prompt didn't fire */}
                 {!(platformInfo.isSafari && (platformInfo.isIOS || platformInfo.isMac)) && (
                   <div className="space-y-2">
-                    <p className="font-semibold text-[#7EF9FF]">Guía de descarga e instalación rápida:</p>
-                    <ol className="list-decimal pl-5 space-y-2">
-                      <li>Busca el ícono de <span className="font-bold text-white">Instalar Aplicación</span> (una pantalla con una flecha hacia abajo o un signo <span className="font-bold">+</span>) en la barra de direcciones de tu navegador (Chrome, Edge, Firefox u Opera).</li>
-                      <li>Alternativamente, haz clic en el menú secundario <span className="font-bold text-white">⋮</span> (tres puntos) en la esquina superior derecha de tu navegador.</li>
-                      <li>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Instalar M.A.P.A.™</span> o <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Guardar en Pantalla de Inicio</span>.</li>
+                    <p className="font-semibold text-[#7EF9FF]" style={{ color: "#7EF9FF" }}>Guía de descarga e instalación rápida:</p>
+                    <ol className="list-decimal pl-5 space-y-2 text-slate-100" style={{ color: "#F1F5F9" }}>
+                      <li style={{ color: "#F1F5F9" }}>Busca el ícono de <span className="font-bold text-white">Instalar Aplicación</span> (una pantalla con una flecha hacia abajo o un signo <span className="font-bold">+</span>) en la barra de direcciones de tu navegador (Chrome, Edge, Firefox u Opera).</li>
+                      <li style={{ color: "#F1F5F9" }}>Alternativamente, haz clic en el menú secundario <span className="font-bold text-white">⋮</span> (tres puntos) en la esquina superior derecha de tu navegador.</li>
+                      <li style={{ color: "#F1F5F9" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Instalar M.A.P.A.™</span> o <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Guardar en Pantalla de Inicio</span>.</li>
                     </ol>
                   </div>
                 )}
 
                 <div className="bg-[#113A63]/30 border border-[#7EF9FF]/20 p-3 rounded-2xl flex items-start gap-2.5 mt-2 text-[11px] text-gray-300">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <p>
+                  <p className="text-gray-200" style={{ color: "#E2E8F0" }}>
                     Una vez completada la instalación, podrás iniciar M.A.P.A.™ directamente desde el ícono de tu pantalla de inicio o Dock como una aplicación nativa segura.
                   </p>
                 </div>

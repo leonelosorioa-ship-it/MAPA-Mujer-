@@ -1798,8 +1798,9 @@ app.post("/api/auth/login", (req, res) => {
     }
 
     const hasNoCodeYet = !cleanDbCode;
+    const isApprovedBuyer = user.hotmartApproved === true;
 
-    if ((hasNoCodeYet && !accessCode) || cleanInputCode === cleanDbCode) {
+    if ((hasNoCodeYet && !accessCode) || cleanInputCode === cleanDbCode || isApprovedBuyer) {
       // Generar código de acceso si no tenía para proteger futuros accesos
       if (hasNoCodeYet) {
         user.accessCode = generateAccessCode();

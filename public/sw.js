@@ -2,13 +2,12 @@ const CACHE_NAME = "mapa-cache-v1";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
-  "/src/main.tsx",
-  "/src/App.tsx",
-  "/src/index.css",
   "/manifest.json",
-  "/icon-192.png",
+  "/favicon.png",
   "/icon-512.png",
-  "/icon-maskable.png"
+  "/icon.svg",
+  "/apple-touch-icon.png",
+  "/compartir.svg"
 ];
 
 // Install Event - caching the app shell

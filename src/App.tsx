@@ -924,9 +924,60 @@ export default function App() {
   }, [loginEmail]);
 
   // Deep-link check: if URL has action=test, handle automatic entrance and launch daily test
+  // Also check for auto-login / auto-activation URL query parameters (e.g. ?email=correo@dominio.com&code=123456)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      const emailParam = params.get("email");
+      const codeParam = params.get("code") || params.get("access_code");
+
+      if (emailParam) {
+        const cleanEmail = emailParam.toLowerCase().trim();
+        setLoginEmail(cleanEmail);
+        if (codeParam) {
+          setLoginAccessCode(codeParam.toUpperCase().trim());
+        }
+
+        // Trigger automatic activation/login for seamless entry
+        fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: cleanEmail,
+            accessCode: (codeParam || "").toUpperCase().trim()
+          })
+        })
+        .then(async (res) => {
+          const data = await res.json();
+          if (res.ok) {
+            console.log("Auto-login / auto-activación exitosa:", cleanEmail);
+            localStorage.setItem("MAPA_ACCESS_TOKEN", data.token);
+            localStorage.setItem("MAPA_CURRENT_USER_EMAIL", cleanEmail);
+            setCurrentUserEmail(cleanEmail);
+            
+            const loadedProgress = data.userProgress;
+            setProgramProgress(loadedProgress);
+            localStorage.setItem(`MAPA_USER_PROGRESS_${cleanEmail}`, JSON.stringify(loadedProgress));
+            
+            setLeadInfo(loadedProgress.leadInfo);
+            setLeadCaptured(true);
+            
+            const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+            if (adminEmails.includes(cleanEmail) || data.isAdmin) {
+              setPhase("ADMIN");
+            } else {
+              setPhase("DASHBOARD");
+              const displayName = loadedProgress.leadInfo.alias || getUserShortName(loadedProgress.leadInfo);
+              setDashboardNotice(`🎯 ¡Activación automática concedida! Bienvenida a M.A.P.A.™ Mujer, ${displayName}.`);
+              setTimeout(() => setDashboardNotice(null), 5000);
+            }
+          }
+        })
+        .catch((err) => {
+          console.warn("Fallo en auto-login automático:", err);
+        });
+      }
+
       const action = params.get("action");
       if (action === "test") {
         const activeEmail = localStorage.getItem("MAPA_CURRENT_USER_EMAIL");
@@ -3521,14 +3572,14 @@ export default function App() {
                     return (
                       <div className="space-y-1">
                         <label className="block text-xs font-mono text-[#1C0630] uppercase tracking-widest font-black">
-                          {isAdm ? "Contraseña de Administrador (Maestra)" : "Código de Acceso (6 caracteres)"}
+                          {isAdm ? "Contraseña de Administrador (Maestra)" : "Código de Acceso (Opcional)"}
                         </label>
                         <div className="relative">
                           <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C0630]/60" />
                           <input 
                             type={isAdm ? "password" : "text"} 
-                            required
-                            placeholder={isAdm ? "Introduce la contraseña maestra" : "Ej. K9A8B7"}
+                            required={isAdm}
+                            placeholder={isAdm ? "Introduce la contraseña maestra" : "Ej. K9A8B7 (Opcional para alumnas)"}
                             maxLength={isAdm ? 100 : 6}
                             value={loginAccessCode}
                             onChange={(e) => setLoginAccessCode(isAdm ? e.target.value : e.target.value.toUpperCase())}
@@ -3537,7 +3588,7 @@ export default function App() {
                         </div>
                         <div className="flex justify-between items-center pt-1">
                           <span className="block text-[11px] text-[#1C0630] font-mono font-bold leading-normal">
-                            {isAdm ? "Protección exclusiva para el acceso de Administración M.A.P.A.™" : "Ingresa el código enviado tras tu compra en Hotmart."}
+                            {isAdm ? "Protección exclusiva para el acceso de Administración M.A.P.A.™" : "¡Opcional! Si ya adquiriste la App, escribe tu correo arriba para entrar."}
                           </span>
                           {!isAdm && (
                             <button
