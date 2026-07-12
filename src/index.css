@@ -118,10 +118,19 @@
 
 body {
   background: radial-gradient(circle at top left, #FFFFFF 0%, #FFF7FC 50%, #F5FBFD 100%);
-  color: #0B152B; /* Azul marino espacial ultra oscuro para contraste estelar */
+  color: #1C0630; /* Morado cósmico ultra oscuro para un contraste óptimo */
   font-family: var(--font-sans);
-  font-size: 1.0rem;
-  line-height: 1.6;
+  font-size: 1.1rem;
+  line-height: 1.65;
+}
+
+/* Contenedores y elementos de texto base para garantizar excelente contraste */
+p, li, label, .text-container, td, th {
+  color: #1C0630;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #120220; /* Títulos aún más profundos para legibilidad jerárquica */
 }
 
 
