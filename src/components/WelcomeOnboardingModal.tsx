@@ -175,7 +175,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#090D16]/90 backdrop-blur-md overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto">
         
         {/* Invisible backdrop shield to block external clicks */}
         <div className="absolute inset-0" />
@@ -189,28 +189,28 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
           style={{ borderWidth: "1.5px" }}
-          className="relative w-full max-w-lg bg-[#0F141F]/95 border-[#9D4EDD]/40 rounded-3xl p-6 sm:p-8 space-y-6 shadow-[0_0_50px_rgba(157,78,221,0.25)] text-left z-10"
+          className="relative w-full max-w-lg bg-white border-purple-100 rounded-3xl p-6 sm:p-8 space-y-6 shadow-[0_20px_50px_rgba(157,78,221,0.15)] text-left z-10"
         >
           {/* Decorative premium header border glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-[#00F0FF] via-[#9D4EDD] to-[#B5179E] rounded-full blur-[2px]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-[#9D4EDD] via-[#B5179E] to-[#7b2cbf] rounded-full" />
 
           {/* Heading */}
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#9D4EDD]/15 border border-[#9D4EDD]/30 text-xs text-[#E2E8F0] font-mono tracking-wide uppercase">
-              <Sparkles className="w-3.5 h-3.5 text-[#00F0FF] animate-pulse" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#9D4EDD]/10 border border-[#9D4EDD]/20 text-xs text-[#7b2cbf] font-mono tracking-wide uppercase font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-[#9D4EDD] animate-pulse" />
               <span>Paso Obligatorio • Bienvenida</span>
             </div>
-            <h2 className="font-display font-black text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] via-[#E2E8F0] to-[#9D4EDD] tracking-tight pt-1 leading-tight">
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#7b2cbf] via-[#9D4EDD] to-[#B5179E] tracking-tight pt-1 leading-tight">
               ¡Bienvenida a M.A.P.A.™ Mujer, {userName || "hermosa"}!
             </h2>
-            <p className="text-xs sm:text-sm text-slate-200 font-bold font-sans max-w-sm mx-auto">
+            <p className="text-xs sm:text-sm text-slate-600 font-bold font-sans max-w-sm mx-auto">
               Leonel Osorio Andrade y todo el equipo te damos la bienvenida oficial a tu proceso de transformación de 7 días.
             </p>
           </div>
 
           {/* Core persuasion copy */}
-          <div className="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-2.5 text-xs sm:text-sm text-slate-100 leading-relaxed font-sans font-medium">
-            <p className="text-[#00F0FF] font-black flex items-center gap-1">
+          <div className="bg-purple-50/50 p-4 rounded-2xl border border-purple-100 space-y-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans font-medium">
+            <p className="text-[#7b2cbf] font-black flex items-center gap-1">
               <Heart className="w-4 h-4 fill-current text-rose-500 animate-pulse" />
               Un mensaje crítico de nuestra mentora Clara:
             </p>
@@ -222,37 +222,37 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
           </div>
 
           {/* CUSTOM PREMIUM AUDIO PLAYER */}
-          <div className="bg-[#151B26] p-5 rounded-2xl border border-white/10 space-y-4 shadow-inner">
+          <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-[#9D4EDD]/10 rounded-xl border border-[#9D4EDD]/25">
-                  <Music className="w-5 h-5 text-[#00F0FF] animate-bounce" />
+                <div className="p-2.5 bg-[#9D4EDD]/10 rounded-xl border border-[#9D4EDD]/20">
+                  <Music className="w-5 h-5 text-[#7b2cbf] animate-bounce" />
                 </div>
                 <div>
-                  <h4 className="font-sans font-bold text-sm text-white leading-tight">
+                  <h4 className="font-sans font-bold text-sm text-slate-900 leading-tight">
                     Audio de Clara • Bienvenida Oficial
                   </h4>
-                  <p className="font-mono text-xs text-slate-300 font-bold">
+                  <p className="font-mono text-xs text-slate-500 font-bold">
                     M.A.P.A.™ Guía Esencial de Inicio
                   </p>
                 </div>
               </div>
 
               {/* Status Indicator */}
-              <div className="font-mono text-xs text-slate-300 font-bold">
+              <div className="font-mono text-xs font-bold">
                 {isPlaying ? (
-                  <span className="text-[#00F0FF] flex items-center gap-1 animate-pulse">
+                  <span className="text-[#7b2cbf] flex items-center gap-1 animate-pulse">
                     ● Reproduciendo
                   </span>
                 ) : (
-                  <span className="text-gray-400">Pausado</span>
+                  <span className="text-slate-400">Pausado</span>
                 )}
               </div>
             </div>
 
             {/* Play progress bar */}
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs font-mono text-slate-200 font-bold">
+              <div className="flex items-center justify-between text-xs font-mono text-slate-600 font-bold">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
@@ -262,7 +262,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                 max={duration || 100}
                 value={currentTime}
                 onChange={handleSeek}
-                className="w-full h-1 bg-black/40 rounded-lg appearance-none cursor-pointer accent-[#00F0FF] focus:outline-none"
+                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#7b2cbf] focus:outline-none"
               />
             </div>
 
@@ -272,16 +272,16 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
               <button
                 onClick={togglePlay}
                 style={{ borderWidth: "2px" }}
-                className="px-5 py-2.5 bg-[#9D4EDD]/20 hover:bg-[#9D4EDD]/35 border-[#9D4EDD] hover:border-[#00F0FF] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                className="px-5 py-2.5 bg-[#9D4EDD] hover:bg-[#7b2cbf] border-[#9D4EDD] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-95 shadow-sm"
               >
                 {isPlaying ? (
                   <>
-                    <Pause className="w-4 h-4 text-[#00F0FF] fill-current" />
+                    <Pause className="w-4 h-4 text-white fill-current" />
                     <span>Pausar</span>
                   </>
                 ) : (
                   <>
-                    <Play className="w-4 h-4 text-[#00F0FF] fill-current" />
+                    <Play className="w-4 h-4 text-white fill-current" />
                     <span>Escuchar Audio</span>
                   </>
                 )}
@@ -291,12 +291,12 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
               <div className="flex items-center gap-2">
                 <button 
                   onClick={toggleMute}
-                  className="p-1.5 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition-all cursor-pointer"
+                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer"
                 >
                   {isMuted || volume === 0 ? (
-                    <VolumeX className="w-4 h-4 text-rose-400" />
+                    <VolumeX className="w-4 h-4 text-rose-500" />
                   ) : (
-                    <Volume2 className="w-4 h-4 text-[#00F0FF]" />
+                    <Volume2 className="w-4 h-4 text-[#7b2cbf]" />
                   )}
                 </button>
                 <input
@@ -306,14 +306,14 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                   step={0.05}
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
-                  className="w-16 h-1 bg-black/40 rounded-lg appearance-none cursor-pointer accent-[#00F0FF]"
+                  className="w-16 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#7b2cbf]"
                 />
               </div>
             </div>
 
             {/* Browser Autoplay notification fallback if blocked */}
             {autoplayBlocked && (
-              <p className="text-[10px] text-amber-400 font-mono text-center pt-1 animate-pulse">
+              <p className="text-[10px] text-amber-600 font-mono text-center pt-1 animate-pulse font-bold">
                 ⚠️ Haz clic en el botón de arriba para iniciar la reproducción.
               </p>
             )}
@@ -321,42 +321,42 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
 
           {/* SUITE DE HERRAMIENTAS: DESCARGAR Y COMPARTIR */}
           <div className="space-y-3">
-            <span className="block text-xs font-mono text-slate-200 font-black uppercase tracking-wider text-center bg-white/5 py-1.5 rounded-lg border border-white/10">
+            <span className="block text-xs font-mono text-slate-700 font-black uppercase tracking-wider text-center bg-slate-100 py-1.5 rounded-lg border border-slate-200">
               Conserva este Audio Guía Permanente
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* BOTÓN DE DESCARGA DIRECTA */}
               <button
                 onClick={handleDirectDownload}
-                style={{ borderWidth: "2.5px" }}
-                className="w-full py-3 px-4 bg-transparent hover:bg-white/5 border-slate-500 hover:border-[#00F0FF] text-slate-100 hover:text-white rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 cursor-pointer active:scale-95"
+                style={{ borderWidth: "2px" }}
+                className="w-full py-3 px-4 bg-white hover:bg-slate-50 border-slate-200 hover:border-[#7b2cbf] text-slate-700 hover:text-slate-900 rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02] cursor-pointer active:scale-95 shadow-sm"
               >
-                <Download className="w-5 h-5 text-[#00F0FF]" />
+                <Download className="w-5 h-5 text-[#7b2cbf]" />
                 <span>Descargar en mi Dispositivo</span>
               </button>
 
               {/* BOTÓN DE COMPARTIR EN WHATSAPP */}
               <button
                 onClick={handleWhatsAppShare}
-                style={{ borderWidth: "2.5px" }}
-                className="w-full py-3 px-4 bg-[#25D366]/15 hover:bg-[#25D366]/25 border-[#25D366] hover:border-[#25D366]/90 text-[#25D366] rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 cursor-pointer active:scale-95 animate-pulse"
+                style={{ borderWidth: "2px" }}
+                className="w-full py-3 px-4 bg-[#25D366] hover:bg-[#20ba5a] border-transparent text-white rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02] cursor-pointer active:scale-95 shadow-sm"
               >
-                <MessageCircle className="w-5 h-5 fill-current text-[#25D366]" />
-                <span>Guardar / Enviar a mi WhatsApp</span>
+                <MessageCircle className="w-5 h-5 fill-current text-white" />
+                <span>Enviar a mi WhatsApp</span>
               </button>
             </div>
           </div>
 
           {/* TRANSITION ZONE & SUBMIT BUTTON */}
-          <div className="pt-2 border-t border-white/5">
+          <div className="pt-2 border-t border-slate-100">
             {hasInteracted ? (
               <motion.button
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={handleEnterApp}
                 disabled={isFinishing}
-                style={{ borderWidth: "2.5px" }}
-                className="w-full py-4 bg-gradient-to-r from-[#00F0FF] via-[#9D4EDD] to-[#B5179E] hover:from-[#00F0FF] hover:to-[#B5179E] text-white font-display font-black tracking-wider uppercase rounded-2xl shadow-[0_0_20px_rgba(157,78,221,0.4)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] text-center text-sm sm:text-base cursor-pointer transition-all duration-300 flex items-center justify-center gap-2"
+                style={{ borderWidth: "2px" }}
+                className="w-full py-4 bg-gradient-to-r from-[#7b2cbf] via-[#9D4EDD] to-[#B5179E] hover:from-[#5a189a] hover:to-[#9d4edd] text-white font-display font-black tracking-wider uppercase rounded-2xl shadow-md hover:shadow-lg text-center text-sm sm:text-base cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 border-transparent"
               >
                 {isFinishing ? (
                   <>
@@ -374,15 +374,15 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                 )}
               </motion.button>
             ) : (
-              <div className="w-full py-4 text-center text-xs sm:text-sm font-mono text-amber-300 bg-amber-500/15 border-2 border-amber-500/40 rounded-2xl flex items-center justify-center gap-2 font-bold animate-pulse">
-                <HelpCircle className="w-5 h-5 text-amber-300 shrink-0" />
+              <div className="w-full py-4 text-center text-xs sm:text-sm font-mono text-amber-800 bg-amber-50 border-2 border-amber-200 rounded-2xl flex items-center justify-center gap-2 font-bold animate-pulse">
+                <HelpCircle className="w-5 h-5 text-amber-600 shrink-0" />
                 <span>Interactúa con el reproductor de audio para desbloquear tu acceso</span>
               </div>
             )}
           </div>
 
           {/* Footer absolute validation */}
-          <div className="text-[10px] sm:text-xs text-slate-300 font-mono text-center flex items-center justify-center gap-1.5 font-semibold bg-white/5 py-2.5 rounded-xl border border-white/10">
+          <div className="text-[10px] sm:text-xs text-slate-500 font-mono text-center flex items-center justify-center gap-1.5 font-semibold bg-slate-50 py-2.5 rounded-xl border border-slate-100">
             <span>Copyright © 2026 M.A.P.A.™</span>
             <span>•</span>
             <span>Leonel Osorio Andrade</span>
