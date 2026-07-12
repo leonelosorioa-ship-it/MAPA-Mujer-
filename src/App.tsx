@@ -515,10 +515,34 @@ export default function App() {
   });
   const [isAlarmPlaying, setIsAlarmPlaying] = useState<boolean>(false);
   const [alarmReason, setAlarmReason] = useState<string>("");
-  const [testReminderAlarmEnabled, setTestReminderAlarmEnabled] = useState<boolean>(true);
+  const [testReminderAlarmEnabled, setTestReminderAlarmEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem("MAPA_TEST_REMINDER_ENABLED");
+    return saved !== null ? saved === "true" : true;
+  });
+  const [testReminderMode, setTestReminderMode] = useState<"unlocked" | "scheduled">(() => {
+    return (localStorage.getItem("MAPA_TEST_REMINDER_MODE") as "unlocked" | "scheduled") || "scheduled";
+  });
+  const [testReminderTime, setTestReminderTime] = useState<string>(() => {
+    return localStorage.getItem("MAPA_TEST_REMINDER_TIME") || "20:00";
+  });
+  const [lastReminderFiredDate, setLastReminderFiredDate] = useState<string>(() => {
+    return localStorage.getItem("MAPA_LAST_REMINDER_FIRED_DATE") || "";
+  });
   const [testReminderFired, setTestReminderFired] = useState<boolean>(false);
   const [activeTaskAlarm, setActiveTaskAlarm] = useState<{ taskName: string; secondsLeft: number; isRunning: boolean } | null>(null);
   const [alarmPanelOpen, setAlarmPanelOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    localStorage.setItem("MAPA_TEST_REMINDER_ENABLED", String(testReminderAlarmEnabled));
+  }, [testReminderAlarmEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem("MAPA_TEST_REMINDER_MODE", testReminderMode);
+  }, [testReminderMode]);
+
+  useEffect(() => {
+    localStorage.setItem("MAPA_TEST_REMINDER_TIME", testReminderTime);
+  }, [testReminderTime]);
 
   // Triggering & stopping audio alarms
   const triggerAlarm = (reason: string) => {
@@ -631,19 +655,53 @@ export default function App() {
   useEffect(() => {
     if (!programProgress.activationDate) return;
     const chrono = getChronologicalState();
-    
-    // If next day is unlocked (isLocked is false), total days completed is less than 7, reminder is enabled, and reminder hasn't fired yet
     const completedCount = programProgress.completedDays?.length || 0;
-    if (!chrono.isLocked && completedCount < 7 && testReminderAlarmEnabled && !testReminderFired) {
-      triggerPushNotificationOnly(`¡Tu prueba diaria M.A.P.A. del Día ${programProgress.currentDay} ya está disponible!`);
-      setTestReminderFired(true);
-    }
+    if (completedCount >= 7 || !testReminderAlarmEnabled) return;
 
-    // Reset reminder fired state if it gets locked again (e.g. they completed a day and next day is locked)
-    if (chrono.isLocked && testReminderFired) {
-      setTestReminderFired(false);
+    if (testReminderMode === "unlocked") {
+      // If next day is unlocked (isLocked is false), total days completed is less than 7, reminder is enabled, and reminder hasn't fired yet
+      if (!chrono.isLocked && !testReminderFired) {
+        triggerPushNotificationOnly(`¡Tu prueba diaria M.A.P.A. del Día ${programProgress.currentDay} ya está disponible!`);
+        setTestReminderFired(true);
+      }
+
+      // Reset reminder fired state if it gets locked again (e.g. they completed a day and next day is locked)
+      if (chrono.isLocked && testReminderFired) {
+        setTestReminderFired(false);
+      }
+    } else {
+      // Scheduled hour behavior using the native notification API
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const todayDateStr = `${year}-${month}-${day}`;
+
+      const currentHourStr = String(today.getHours()).padStart(2, '0');
+      const currentMinStr = String(today.getMinutes()).padStart(2, '0');
+      const currentTimeStr = `${currentHourStr}:${currentMinStr}`;
+
+      if (
+        !chrono.isLocked &&
+        lastReminderFiredDate !== todayDateStr &&
+        currentTimeStr === testReminderTime
+      ) {
+        triggerPushNotificationOnly(`¡Tu recordatorio M.A.P.A.™! Es el momento ideal seleccionado para realizar tu práctica de calma.`);
+        setLastReminderFiredDate(todayDateStr);
+        localStorage.setItem("MAPA_LAST_REMINDER_FIRED_DATE", todayDateStr);
+      }
     }
-  }, [tick, programProgress.activationDate, programProgress.currentDay, programProgress.completedDays, testReminderAlarmEnabled, testReminderFired]);
+  }, [
+    tick, 
+    programProgress.activationDate, 
+    programProgress.currentDay, 
+    programProgress.completedDays, 
+    testReminderAlarmEnabled, 
+    testReminderMode, 
+    testReminderTime, 
+    testReminderFired, 
+    lastReminderFiredDate
+  ]);
   
   // Interactive legend states for the 7-day activation chart
   const [showActivationData, setShowActivationData] = useState<boolean>(true);
@@ -5699,29 +5757,129 @@ export default function App() {
               </div>
 
               {/* Daily test lock countdown sound notification configuration */}
-              <div className="border-t border-gray-100 pt-3 space-y-2">
+              <div className="border-t border-gray-100 pt-3 space-y-3">
                 <h5 className="text-[11px] font-mono uppercase tracking-wider text-[#411F66] font-extrabold">
                   🔔 RECORDATORIO DE TEST DIARIO
                 </h5>
-                <label className="flex items-start gap-2.5 p-2.5 bg-pink-50/50 hover:bg-pink-50 rounded-xl border border-pink-100/50 cursor-pointer transition-all">
-                  <input
-                    type="checkbox"
-                    checked={testReminderAlarmEnabled}
-                    onChange={(e) => {
-                      setTestReminderAlarmEnabled(e.target.checked);
-                      if (!e.target.checked && isAlarmPlaying) {
-                        stopAlarm();
-                      }
-                    }}
-                    className="mt-0.5 rounded border-[#E86FA3] text-[#E86FA3] focus:ring-[#E86FA3]"
-                  />
-                  <div className="space-y-0.5 text-left">
-                    <span className="text-xs font-bold text-[#411F66] block">Avisar cuando mi test esté disponible</span>
-                    <span className="text-[10px] text-gray-500 block leading-tight">
-                      Recibe una notificación push silenciosa tan pronto termine la cuenta regresiva de 24h.
-                    </span>
-                  </div>
-                </label>
+                
+                <div className="space-y-3">
+                  {/* Enable/Disable Toggle */}
+                  <label className="flex items-start gap-2.5 p-2.5 bg-pink-50/50 hover:bg-pink-50 rounded-xl border border-pink-100/50 cursor-pointer transition-all">
+                    <input
+                      type="checkbox"
+                      checked={testReminderAlarmEnabled}
+                      onChange={(e) => {
+                        setTestReminderAlarmEnabled(e.target.checked);
+                        if (!e.target.checked && isAlarmPlaying) {
+                          stopAlarm();
+                        }
+                      }}
+                      className="mt-0.5 rounded border-[#E86FA3] text-[#E86FA3] focus:ring-[#E86FA3]"
+                    />
+                    <div className="space-y-0.5 text-left">
+                      <span className="text-xs font-bold text-[#411F66] block">Habilitar Recordatorios Diarios</span>
+                      <span className="text-[10px] text-gray-500 block leading-tight">
+                        Mantén activos los avisos de paz mental para no perder el hilo de tu asimilación de 7 días.
+                      </span>
+                    </div>
+                  </label>
+
+                  {/* Settings expanded when enabled */}
+                  {testReminderAlarmEnabled && (
+                    <div className="p-3 bg-gray-50/70 border border-gray-100 rounded-xl space-y-3 animate-fadeIn">
+                      <div className="space-y-1.5 text-left">
+                        <span className="text-[10px] font-mono font-black uppercase text-[#E86FA3] block">
+                          TIPO DE PLANIFICACIÓN
+                        </span>
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setTestReminderMode("unlocked")}
+                            className={`py-2 px-2.5 rounded-lg text-center text-xs font-bold border transition-all cursor-pointer ${
+                              testReminderMode === "unlocked"
+                                ? "bg-[#411F66] text-white border-[#411F66] shadow-sm"
+                                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-100"
+                            }`}
+                          >
+                            ⚡ Al estar disponible
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setTestReminderMode("scheduled")}
+                            className={`py-2 px-2.5 rounded-lg text-center text-xs font-bold border transition-all cursor-pointer ${
+                              testReminderMode === "scheduled"
+                                ? "bg-[#411F66] text-white border-[#411F66] shadow-sm"
+                                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-100"
+                            }`}
+                          >
+                            ⏰ Elegir horario
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-gray-500 leading-tight">
+                          {testReminderMode === "unlocked"
+                            ? "Te notificaremos inmediatamente en cuanto pasen las 24h de asimilación del test anterior."
+                            : "Recibe el aviso de calma diario de forma regular en el horario de tu preferencia."}
+                        </p>
+                      </div>
+
+                      {testReminderMode === "scheduled" && (
+                        <div className="space-y-3 pt-2 border-t border-gray-200/60 animate-fadeIn">
+                          {/* Hour select input */}
+                          <div className="flex items-center justify-between gap-3 text-left">
+                            <span className="text-[10px] font-mono font-black text-[#411F66] uppercase">
+                              HORA PERSONALIZADA
+                            </span>
+                            <input
+                              type="time"
+                              value={testReminderTime}
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  setTestReminderTime(e.target.value);
+                                  setDashboardNotice(`⏰ Horario de recordatorio establecido a las ${e.target.value}`);
+                                  setTimeout(() => setDashboardNotice(null), 3000);
+                                }
+                              }}
+                              className="px-2.5 py-1 text-xs font-bold font-mono rounded-lg border border-gray-300 text-gray-800 bg-white focus:outline-none focus:border-[#E86FA3] focus:ring-1 focus:ring-[#E86FA3]"
+                            />
+                          </div>
+
+                          {/* Common time presets */}
+                          <div className="space-y-1.5 text-left">
+                            <span className="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-wider block">
+                              ACCESOS RÁPIDOS DE HORARIO
+                            </span>
+                            <div className="grid grid-cols-2 gap-1.5">
+                              {[
+                                { label: "🌅 Mañana (09:00)", time: "09:00" },
+                                { label: "☀️ Almuerzo (14:00)", time: "14:00" },
+                                { label: "🌆 Tarde (18:30)", time: "18:30" },
+                                { label: "🌌 Noche (21:30)", time: "21:30" }
+                              ].map((preset) => (
+                                <button
+                                  key={preset.time}
+                                  type="button"
+                                  onClick={() => {
+                                    setTestReminderTime(preset.time);
+                                    setDashboardNotice(`⏰ Recordatorio programado a las ${preset.time}`);
+                                    setTimeout(() => setDashboardNotice(null), 3000);
+                                  }}
+                                  className={`py-1.5 px-2 text-[10px] rounded-md font-medium text-center border transition-all cursor-pointer ${
+                                    testReminderTime === preset.time
+                                      ? "bg-[#E86FA3]/15 text-[#E86FA3] border-[#E86FA3] font-bold"
+                                      : "bg-white text-gray-600 border-gray-200 hover:bg-gray-100"
+                                  }`}
+                                >
+                                  {preset.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Active countdown display */}

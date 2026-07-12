@@ -225,6 +225,7 @@ interface PremiumData {
   challengeAnswers: { [key: string]: string };
   evolutionLogs: { date: string; value: EvolutionData }[];
   diaryEntries?: DiaryEntry[];
+  dailyInteractions?: { [dateStr: string]: string[] };
 }
 
 const getDayThemeMessage = (day: number, name: string) => {
@@ -398,6 +399,30 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
   const levelInfo = getLevelInfo(premiumData.points);
 
+  const getTodayDateStr = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const markModuleInteracted = (moduleId: string) => {
+    const todayStr = getTodayDateStr();
+    const currentInteractions = premiumData.dailyInteractions?.[todayStr] || [];
+    if (!currentInteractions.includes(moduleId)) {
+      const updatedInteractions = [...currentInteractions, moduleId];
+      const updatedData = {
+        ...premiumData,
+        dailyInteractions: {
+          ...(premiumData.dailyInteractions || {}),
+          [todayStr]: updatedInteractions
+        }
+      };
+      savePremiumState(updatedData);
+    }
+  };
+
   // Sync state with backend database on load
   const fetchUserData = async () => {
     setIsLoading(true);
@@ -432,7 +457,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             : premiumData.evolutionLogs,
           diaryEntries: Array.isArray(serverData.diaryEntries)
             ? serverData.diaryEntries
-            : (premiumData.diaryEntries || [])
+            : (premiumData.diaryEntries || []),
+          dailyInteractions: serverData.dailyInteractions || {}
         };
 
         setPremiumData(validatedData);
@@ -506,6 +532,12 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   useEffect(() => {
     fetchUserData();
   }, [userEmail]);
+
+  useEffect(() => {
+    if (activeTab !== "menu") {
+      markModuleInteracted(activeTab);
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     coachBottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -634,6 +666,12 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
     const updatedCompletedIds = [...premiumData.completedChallenges, id];
     const newPoints = premiumData.points + challenge.xpReward;
 
+    const todayStr = getTodayDateStr();
+    const currentInteractions = premiumData.dailyInteractions?.[todayStr] || [];
+    const updatedInteractions = currentInteractions.includes("challenges")
+      ? currentInteractions
+      : [...currentInteractions, "challenges"];
+
     savePremiumState({
       ...premiumData,
       points: newPoints,
@@ -641,6 +679,10 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
       challengeAnswers: {
         ...premiumData.challengeAnswers,
         ...challengeTexts
+      },
+      dailyInteractions: {
+        ...(premiumData.dailyInteractions || {}),
+        [todayStr]: updatedInteractions
       }
     });
 
@@ -709,10 +751,20 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
     const finalPoints = premiumData.points + 25;
     const updatedEntries = [newEntry, ...(premiumData.diaryEntries || [])];
 
+    const todayStr = getTodayDateStr();
+    const currentInteractions = premiumData.dailyInteractions?.[todayStr] || [];
+    const updatedInteractions = currentInteractions.includes("diary")
+      ? currentInteractions
+      : [...currentInteractions, "diary"];
+
     savePremiumState({
       ...premiumData,
       points: finalPoints,
-      diaryEntries: updatedEntries
+      diaryEntries: updatedEntries,
+      dailyInteractions: {
+        ...(premiumData.dailyInteractions || {}),
+        [todayStr]: updatedInteractions
+      }
     });
 
     // Reset fields for future usage
@@ -982,6 +1034,59 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             </div>
           </div>
 
+          {/* Daily Progress Tracker Banner */}
+          <div className="bg-gradient-to-r from-[#6E488A]/5 via-[#E36DB4]/5 to-transparent border border-[#6E488A]/15 rounded-2xl p-4 sm:p-5 text-left flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-[9px] font-mono font-black uppercase text-[#E36DB4] bg-[#EDE0F0] border border-[#E36DB4]/20 px-2.5 py-1 rounded-full">
+                🎯 PROGRESO DIARIO M.A.P.A.™
+              </span>
+              <h4 className="text-sm sm:text-base font-black text-[#6E488A] m-0">
+                Tu meta diaria: Explora e interactúa con el ecosistema de calma
+              </h4>
+              <p className="text-[11px] text-[#56346F]/80 m-0">
+                Usa cada recurso premium hoy para consolidar tu bienestar. Las herramientas completadas hoy se marcan en verde.
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-4 w-full md:w-auto shrink-0 justify-between md:justify-end">
+              <div className="text-left md:text-right">
+                <div className="text-xl font-black text-[#6E488A] font-mono">
+                  {(premiumData.dailyInteractions?.[getTodayDateStr()] || []).length} de 7
+                </div>
+                <span className="text-[9px] font-mono text-[#56346F]/70 uppercase font-black tracking-wider block">
+                  HERRAMIENTAS USADAS HOY
+                </span>
+              </div>
+              
+              <div className="w-14 h-14 relative flex items-center justify-center shrink-0">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r="23"
+                    className="stroke-[#EDE0F0]"
+                    strokeWidth="5"
+                    fill="transparent"
+                  />
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r="23"
+                    className="stroke-emerald-500"
+                    strokeWidth="5"
+                    fill="transparent"
+                    strokeDasharray={2 * Math.PI * 23}
+                    strokeDashoffset={2 * Math.PI * 23 * (1 - Math.min(7, (premiumData.dailyInteractions?.[getTodayDateStr()] || []).length) / 7)}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute text-[10px] font-black font-mono text-emerald-600">
+                  {Math.min(100, Math.round(((premiumData.dailyInteractions?.[getTodayDateStr()] || []).length / 7) * 100))}%
+                </span>
+              </div>
+            </div>
+          </div>
+
           {/* Premium Tools Bento Grid */}
           <div className="space-y-6">
             <div className="text-left space-y-1">
@@ -1121,6 +1226,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 }
               ].map((mod) => {
                 const IconComp = mod.icon;
+                const isCompleted = !!premiumData.dailyInteractions?.[getTodayDateStr()]?.includes(mod.id);
                 return (
                   <motion.div
                     key={mod.id}
@@ -1130,7 +1236,10 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     }}
                     whileHover={{ scale: 1.025, y: -4 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setActiveTab(mod.id as any)}
+                    onClick={() => {
+                      markModuleInteracted(mod.id);
+                      setActiveTab(mod.id as any);
+                    }}
                     className={`w-full text-left rounded-3xl p-5 bg-gradient-to-br ${mod.bgColor} border-2 ${mod.borderColor} transition-all duration-300 relative flex flex-col justify-between min-h-[250px] cursor-pointer group`}
                     style={{
                       boxShadow: `0 8px 24px ${mod.glowColor}`
@@ -1148,6 +1257,17 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                       </div>
                       
                       <div className="flex items-center gap-2">
+                        {isCompleted ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 text-[9px] font-mono font-black flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            COMPLETADO
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[9px] font-mono font-black flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            PENDIENTE
+                          </span>
+                        )}
                         {mod.badge !== undefined && mod.badge !== null && mod.badge > 0 && (
                           <span className="px-2 py-0.5 rounded-full bg-[#E36DB4] text-white text-[9px] font-mono font-black animate-pulse shadow-sm">
                             {mod.badge} ACTIVOS
@@ -2251,17 +2371,28 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                         alert("Por favor, escribe algo en tu diario de emociones.");
                         return;
                       }
-                      const newDiaryEntry = {
+                       const newDiaryEntry = {
                         date: new Date().toLocaleDateString("es-ES", { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
                         note: calmDiaryNote.trim(),
                         mood: calmDiaryMood,
                         xpEarned: 15
                       };
                       const updatedEntries = [newDiaryEntry, ...(premiumData.diaryEntries || [])];
+
+                      const todayStr = getTodayDateStr();
+                      const currentInteractions = premiumData.dailyInteractions?.[todayStr] || [];
+                      const updatedInteractions = currentInteractions.includes("diary")
+                        ? currentInteractions
+                        : [...currentInteractions, "diary"];
+
                       savePremiumState({
                         ...premiumData,
                         points: premiumData.points + 15,
-                        diaryEntries: updatedEntries
+                        diaryEntries: updatedEntries,
+                        dailyInteractions: {
+                          ...(premiumData.dailyInteractions || {}),
+                          [todayStr]: updatedInteractions
+                        }
                       });
                       setCalmDiaryNote("");
                       setCalmDiaryMood("En Paz");
