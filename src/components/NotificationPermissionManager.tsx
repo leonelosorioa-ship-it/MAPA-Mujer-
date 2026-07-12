@@ -31,6 +31,7 @@ export const NotificationPermissionManager: React.FC<PermissionManagerProps> = (
   const [swActive, setSwActive] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState<boolean>(false);
   const [expandedBrowser, setExpandedBrowser] = useState<"chrome" | "safari" | "firefox" | null>(null);
+  const [showInstructions, setShowInstructions] = useState<boolean>(false);
 
   // Diagnostic check of SW and permission status
   const runDiagnostics = async () => {
@@ -269,151 +270,181 @@ export const NotificationPermissionManager: React.FC<PermissionManagerProps> = (
       </div>
 
       {/* Browser Step-by-Step Instructions when DENIED or optionally for any status */}
-      <div className="space-y-4 pt-3 border-t border-[#6E488A]/10">
-        <div className="flex items-center space-x-2">
-          <HelpCircle className="w-4 h-4 text-[#E36DB4]" />
-          <h4 className="font-display font-bold text-sm text-[#56346F] uppercase tracking-wider">
-            ¿Cómo activar las notificaciones en tu Navegador?
-          </h4>
-        </div>
+      <div className="pt-3 border-t border-[#6E488A]/10 text-left">
+        <button
+          type="button"
+          onClick={() => setShowInstructions(!showInstructions)}
+          className="w-full flex items-center justify-between text-left py-2 px-3 bg-[#FAF7F9]/70 hover:bg-[#FAF7F9] rounded-xl border border-[#6E488A]/10 cursor-pointer transition-all duration-200 outline-none select-none hover:shadow-sm"
+        >
+          <div className="flex items-center space-x-2">
+            <HelpCircle className="w-4 h-4 text-[#E36DB4]" />
+            <h4 className="font-display font-bold text-xs text-[#56346F] uppercase tracking-wider m-0">
+              ¿Cómo activar las notificaciones en tu Navegador?
+            </h4>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {showInstructions ? (
+              <ChevronUp className="w-4 h-4 text-[#6E488A]" />
+            ) : (
+              <span className="text-[10px] font-mono text-[#E36DB4] font-bold flex items-center gap-1">
+                Ver Guía de Ayuda <ChevronDown className="w-3.5 h-3.5" />
+              </span>
+            )}
+          </div>
+        </button>
         
-        <p className="text-xs text-[#56346F]/80 leading-normal max-w-2xl">
-          Si bloqueaste las alertas anteriormente o no te aparece la ventana flotante de confirmación, sigue estos sencillos pasos para habilitarlas según tu navegador actual:
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          
-          {/* CHROME / EDGE */}
-          <div className="border border-[#6E488A]/10 rounded-xl overflow-hidden bg-white shadow-sm">
-            <button
-              onClick={() => toggleBrowserInstructions("chrome")}
-              className="w-full p-3.5 flex items-center justify-between text-left bg-[#FAF7F9]/50 hover:bg-[#FAF7F9] transition-colors border-none cursor-pointer outline-none"
+        <AnimatePresence initial={false}>
+          {showInstructions && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="space-y-4 pt-4 overflow-hidden"
             >
-              <div className="flex items-center space-x-2">
-                <Chrome className="w-4 h-4 text-amber-500 shrink-0" />
-                <span className="text-xs font-bold text-[#411F66] font-display">Chrome / Edge</span>
-              </div>
-              {expandedBrowser === "chrome" ? <ChevronUp className="w-3.5 h-3.5 text-[#6E488A]" /> : <ChevronDown className="w-3.5 h-3.5 text-[#6E488A]" />}
-            </button>
-            
-            <AnimatePresence>
-              {expandedBrowser === "chrome" && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="px-4 pb-4 pt-2 border-t border-[#6E488A]/8 text-left space-y-3"
-                >
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
-                      <Laptop className="w-3 h-3 text-[#6E488A]" /> Desktop:
-                    </p>
-                    <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
-                      <li>Haz clic en el icono del <strong>candado</strong> o de <strong>configuración de sitio</strong> a la izquierda de la URL (barra de direcciones).</li>
-                      <li>Busca la opción de <strong>"Notificaciones"</strong>.</li>
-                      <li>Cambia el interruptor a <strong>"Permitir"</strong> o <strong>"Activar"</strong>.</li>
-                    </ol>
-                  </div>
+              <p className="text-xs text-[#56346F]/80 leading-normal max-w-2xl m-0">
+                Si bloqueaste las alertas anteriormente o no te aparece la ventana flotante de confirmación, sigue estos sencillos pasos para habilitarlas según tu navegador actual:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                
+                {/* CHROME / EDGE */}
+                <div className="border border-[#6E488A]/10 rounded-xl overflow-hidden bg-white shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => toggleBrowserInstructions("chrome")}
+                    className="w-full p-3.5 flex items-center justify-between text-left bg-[#FAF7F9]/50 hover:bg-[#FAF7F9] transition-colors border-none cursor-pointer outline-none"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Chrome className="w-4 h-4 text-amber-500 shrink-0" />
+                      <span className="text-xs font-bold text-[#411F66] font-display">Chrome / Edge</span>
+                    </div>
+                    {expandedBrowser === "chrome" ? <ChevronUp className="w-3.5 h-3.5 text-[#6E488A]" /> : <ChevronDown className="w-3.5 h-3.5 text-[#6E488A]" />}
+                  </button>
                   
-                  <div className="space-y-2 pt-1">
-                    <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
-                      <Smartphone className="w-3 h-3 text-[#6E488A]" /> Móvil (Android/Chrome):
-                    </p>
-                    <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
-                      <li>Toca el botón de tres puntos (menú) arriba a la derecha y luego el icono de <strong>Información (i)</strong> o el candado.</li>
-                      <li>Ingresa a <strong>"Permisos"</strong> o <strong>"Ajustes de Sitio"</strong>.</li>
-                      <li>Presiona <strong>"Notificaciones"</strong> y cámbialo a <strong>"Permitido"</strong>.</li>
-                    </ol>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  <AnimatePresence>
+                    {expandedBrowser === "chrome" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="px-4 pb-4 pt-2 border-t border-[#6E488A]/8 text-left space-y-3"
+                      >
+                        <div className="space-y-2">
+                          <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
+                            <Laptop className="w-3 h-3 text-[#6E488A]" /> Desktop:
+                          </p>
+                          <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
+                            <li>Haz clic en el icono del <strong>candado</strong> o de <strong>configuración de sitio</strong> a la izquierda de la URL (barra de direcciones).</li>
+                            <li>Busca la opción de <strong>"Notificaciones"</strong>.</li>
+                            <li>Cambia el interruptor a <strong>"Permitir"</strong> o <strong>"Activar"</strong>.</li>
+                          </ol>
+                        </div>
+                        
+                        <div className="space-y-2 pt-1">
+                          <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
+                            <Smartphone className="w-3 h-3 text-[#6E488A]" /> Móvil (Android/Chrome):
+                          </p>
+                          <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
+                            <li>Toca el botón de tres puntos (menú) arriba a la derecha y luego el icono de <strong>Información (i)</strong> o el candado.</li>
+                            <li>Ingresa a <strong>"Permisos"</strong> o <strong>"Ajustes de Sitio"</strong>.</li>
+                            <li>Presiona <strong>"Notificaciones"</strong> y cámbialo a <strong>"Permitido"</strong>.</li>
+                          </ol>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-          {/* SAFARI (iOS / macOS) */}
-          <div className="border border-[#6E488A]/10 rounded-xl overflow-hidden bg-white shadow-sm">
-            <button
-              onClick={() => toggleBrowserInstructions("safari")}
-              className="w-full p-3.5 flex items-center justify-between text-left bg-[#FAF7F9]/50 hover:bg-[#FAF7F9] transition-colors border-none cursor-pointer outline-none"
-            >
-              <div className="flex items-center space-x-2">
-                <Smartphone className="w-4 h-4 text-blue-500 shrink-0" />
-                <span className="text-xs font-bold text-[#411F66] font-display">Safari (Apple)</span>
+                {/* SAFARI (iOS / macOS) */}
+                <div className="border border-[#6E488A]/10 rounded-xl overflow-hidden bg-white shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => toggleBrowserInstructions("safari")}
+                    className="w-full p-3.5 flex items-center justify-between text-left bg-[#FAF7F9]/50 hover:bg-[#FAF7F9] transition-colors border-none cursor-pointer outline-none"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Smartphone className="w-4 h-4 text-blue-500 shrink-0" />
+                      <span className="text-xs font-bold text-[#411F66] font-display">Safari (Apple)</span>
+                    </div>
+                    {expandedBrowser === "safari" ? <ChevronUp className="w-3.5 h-3.5 text-[#6E488A]" /> : <ChevronDown className="w-3.5 h-3.5 text-[#6E488A]" />}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {expandedBrowser === "safari" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="px-4 pb-4 pt-2 border-t border-[#6E488A]/8 text-left space-y-3"
+                      >
+                        <div className="space-y-2">
+                          <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
+                            <Smartphone className="w-3 h-3 text-[#6E488A]" /> iPhone / iPad (iOS 16.4+):
+                          </p>
+                          <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
+                            <li>Asegúrate de haber añadido esta app a tu pantalla de inicio (<strong>Compartir ➔ Añadir a pantalla de inicio</strong>).</li>
+                            <li>Abre la aplicación desde el icono de tu pantalla de inicio.</li>
+                            <li>Ve a los <strong>Ajustes generales de tu iPhone</strong> ➔ <strong>Notificaciones</strong> ➔ busca <strong>M.A.P.A.™</strong> y activa <strong>Permitir notificaciones</strong>.</li>
+                          </ol>
+                        </div>
+
+                        <div className="space-y-2 pt-1">
+                          <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
+                            <Laptop className="w-3 h-3 text-[#6E488A]" /> macOS (Mac):
+                          </p>
+                          <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
+                            <li>Abre Safari y ve a <strong>Ajustes/Preferencias</strong> (Cmd + ,).</li>
+                            <li>Haz clic en la pestaña <strong>Sitios Web</strong> y luego en <strong>Notificaciones</strong>.</li>
+                            <li>Busca esta aplicación en la lista y cámbiala a <strong>Permitir</strong>.</li>
+                          </ol>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* MOZILLA FIREFOX */}
+                <div className="border border-[#6E488A]/10 rounded-xl overflow-hidden bg-white shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => toggleBrowserInstructions("firefox")}
+                    className="w-full p-3.5 flex items-center justify-between text-left bg-[#FAF7F9]/50 hover:bg-[#FAF7F9] transition-colors border-none cursor-pointer outline-none"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Info className="w-4 h-4 text-orange-500 shrink-0" />
+                      <span className="text-xs font-bold text-[#411F66] font-display">Firefox</span>
+                    </div>
+                    {expandedBrowser === "firefox" ? <ChevronUp className="w-3.5 h-3.5 text-[#6E488A]" /> : <ChevronDown className="w-3.5 h-3.5 text-[#6E488A]" />}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {expandedBrowser === "firefox" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="px-4 pb-4 pt-2 border-t border-[#6E488A]/8 text-left space-y-3"
+                      >
+                        <div className="space-y-2">
+                          <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
+                            <Laptop className="w-3 h-3 text-[#6E488A]" /> Escritorio y Móvil:
+                          </p>
+                          <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
+                            <li>Haz clic en el icono del <strong>escudo o del candado</strong> que aparece a la izquierda de la URL en la barra superior.</li>
+                            <li>Junto a "Permitido temporalmente" o "Bloqueado", presiona la <strong>X</strong> para eliminar el estado actual.</li>
+                            <li>Recarga la página e intenta de nuevo haciendo clic en <strong>Activar Alertas</strong> arriba, para dar consentimiento formal.</li>
+                          </ol>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
               </div>
-              {expandedBrowser === "safari" ? <ChevronUp className="w-3.5 h-3.5 text-[#6E488A]" /> : <ChevronDown className="w-3.5 h-3.5 text-[#6E488A]" />}
-            </button>
-            
-            <AnimatePresence>
-              {expandedBrowser === "safari" && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="px-4 pb-4 pt-2 border-t border-[#6E488A]/8 text-left space-y-3"
-                >
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
-                      <Smartphone className="w-3 h-3 text-[#6E488A]" /> iPhone / iPad (iOS 16.4+):
-                    </p>
-                    <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
-                      <li>Asegúrate de haber añadido esta app a tu pantalla de inicio (<strong>Compartir ➔ Añadir a pantalla de inicio</strong>).</li>
-                      <li>Abre la aplicación desde el icono de tu pantalla de inicio.</li>
-                      <li>Ve a los <strong>Ajustes generales de tu iPhone</strong> ➔ <strong>Notificaciones</strong> ➔ busca <strong>M.A.P.A.™</strong> y activa <strong>Permitir notificaciones</strong>.</li>
-                    </ol>
-                  </div>
-
-                  <div className="space-y-2 pt-1">
-                    <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
-                      <Laptop className="w-3 h-3 text-[#6E488A]" /> macOS (Mac):
-                    </p>
-                    <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
-                      <li>Abre Safari y ve a <strong>Ajustes/Preferencias</strong> (Cmd + ,).</li>
-                      <li>Haz clic en la pestaña <strong>Sitios Web</strong> y luego en <strong>Notificaciones</strong>.</li>
-                      <li>Busca esta aplicación en la lista y cámbiala a <strong>Permitir</strong>.</li>
-                    </ol>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* MOZILLA FIREFOX */}
-          <div className="border border-[#6E488A]/10 rounded-xl overflow-hidden bg-white shadow-sm">
-            <button
-              onClick={() => toggleBrowserInstructions("firefox")}
-              className="w-full p-3.5 flex items-center justify-between text-left bg-[#FAF7F9]/50 hover:bg-[#FAF7F9] transition-colors border-none cursor-pointer outline-none"
-            >
-              <div className="flex items-center space-x-2">
-                <Info className="w-4 h-4 text-orange-500 shrink-0" />
-                <span className="text-xs font-bold text-[#411F66] font-display">Firefox</span>
-              </div>
-              {expandedBrowser === "firefox" ? <ChevronUp className="w-3.5 h-3.5 text-[#6E488A]" /> : <ChevronDown className="w-3.5 h-3.5 text-[#6E488A]" />}
-            </button>
-            
-            <AnimatePresence>
-              {expandedBrowser === "firefox" && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="px-4 pb-4 pt-2 border-t border-[#6E488A]/8 text-left space-y-3"
-                >
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-bold text-[#6E488A] uppercase font-mono tracking-wider flex items-center gap-1">
-                      <Laptop className="w-3 h-3 text-[#6E488A]" /> Escritorio y Móvil:
-                    </p>
-                    <ol className="list-decimal list-inside text-xs text-[#56346F]/80 space-y-1 pl-1 font-medium leading-relaxed">
-                      <li>Haz clic en el icono del <strong>escudo o del candado</strong> que aparece a la izquierda de la URL en la barra superior.</li>
-                      <li>Junto a "Permitido temporalmente" o "Bloqueado", presiona la <strong>X</strong> para eliminar el estado actual.</li>
-                      <li>Recarga la página e intenta de nuevo haciendo clic en <strong>Activar Alertas</strong> arriba, para dar consentimiento formal.</li>
-                    </ol>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
