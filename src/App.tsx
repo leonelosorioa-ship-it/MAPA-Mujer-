@@ -53,6 +53,7 @@ import { PremiumDashboard } from "./components/PremiumDashboard";
 import { PWAInstallBanner } from "./components/PWAInstallBanner";
 import { RewardModal } from "./components/RewardModal";
 import { MilestoneModal } from "./components/MilestoneModal";
+import { WelcomeOnboardingModal } from "./components/WelcomeOnboardingModal";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
 import { useAuthSynchronizer } from "./hooks/useAuthSynchronizer";
 import { playClickCue, playAlertCue, playSuccessCue } from "./utils/audioCues";
@@ -223,6 +224,7 @@ export default function App() {
     completionTimestamps?: Record<number, string>;
     hasDownloadedApp?: boolean;
     unlockedAudios?: string[];
+    onboardingCompletado?: boolean;
   }>(() => {
     const activeEmail = localStorage.getItem("MAPA_CURRENT_USER_EMAIL") || "";
     if (activeEmail) {
@@ -256,7 +258,8 @@ export default function App() {
       leadCaptured: false,
       completionTimestamps: {},
       hasDownloadedApp: false,
-      unlockedAudios: []
+      unlockedAudios: [],
+      onboardingCompletado: false
     };
   });
 
@@ -1754,6 +1757,41 @@ export default function App() {
       console.error("Error submitting lead:", err);
       setIsSendingEmail(false);
       alert("Ocurrió un error inesperado al registrar el reporte.");
+    }
+  };
+
+  // Complete onboarding modal flow and persist state
+  const handleOnboardingComplete = async () => {
+    const updatedProgress = {
+      ...programProgress,
+      onboardingCompletado: true
+    };
+    setProgramProgress(updatedProgress);
+
+    if (currentUserEmail) {
+      localStorage.setItem(`MAPA_USER_PROGRESS_${currentUserEmail.toLowerCase().trim()}`, JSON.stringify(updatedProgress));
+    }
+    localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(updatedProgress));
+
+    if (currentUserEmail) {
+      try {
+        const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
+        if (token) {
+          await fetch("/api/update-user-progress", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              email: currentUserEmail,
+              programProgress: updatedProgress
+            })
+          });
+        }
+      } catch (err) {
+        console.error("Error updating user progress with onboarding status:", err);
+      }
     }
   };
 
@@ -5383,6 +5421,14 @@ export default function App() {
         daysCount={milestoneModal.daysCount}
         onClose={() => setMilestoneModal({ ...milestoneModal, isOpen: false })}
         userName={leadInfo.nombre || "Usuaria"}
+      />
+
+      {/* MANDATORY ONBOARDING WELCOME MODAL */}
+      <WelcomeOnboardingModal
+        isOpen={!!currentUserEmail && phase !== "ADMIN" && !programProgress.onboardingCompletado}
+        userName={leadInfo.nombre || "Usuaria"}
+        userEmail={currentUserEmail}
+        onComplete={handleOnboardingComplete}
       />
 
       {/* FLOATING LEAD TOAST NOTIFICATION */}

@@ -1785,7 +1785,8 @@ app.post("/api/auth/login", (req, res) => {
         completionTimestamps: user.completionTimestamps || {},
         dailyConclusionText: user.dailyConclusionText || {},
         hasDownloadedApp: !!user.hasDownloadedApp,
-        unlockedAudios: user.unlockedAudios || []
+        unlockedAudios: user.unlockedAudios || [],
+        onboardingCompletado: !!user.onboardingCompletado
       };
 
       return res.json({
@@ -1820,7 +1821,8 @@ app.post("/api/auth/login", (req, res) => {
         completionTimestamps: user.completionTimestamps || {},
         dailyConclusionText: user.dailyConclusionText || {},
         hasDownloadedApp: !!user.hasDownloadedApp,
-        unlockedAudios: user.unlockedAudios || []
+        unlockedAudios: user.unlockedAudios || [],
+        onboardingCompletado: !!user.onboardingCompletado
       };
 
       return res.json({
@@ -2162,6 +2164,9 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
       if (programProgress.hasOwnProperty("hasDownloadedApp")) {
         db[userIndex].hasDownloadedApp = !!programProgress.hasDownloadedApp;
       }
+      if (programProgress.hasOwnProperty("onboardingCompletado")) {
+        db[userIndex].onboardingCompletado = !!programProgress.onboardingCompletado;
+      }
       db[userIndex].lastActive = new Date().toISOString();
       db[userIndex].isCompleted = programProgress.completedDays.length === 7;
       if (programProgress.unlockedAudios) {
@@ -2186,7 +2191,8 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
         unlockedAudios: programProgress.unlockedAudios || [],
         initialScanResults: null,
         isCompleted: programProgress.completedDays ? programProgress.completedDays.length === 7 : false,
-        hasDownloadedApp: !!programProgress.hasDownloadedApp
+        hasDownloadedApp: !!programProgress.hasDownloadedApp,
+        onboardingCompletado: !!programProgress.onboardingCompletado
       };
       db.push(newUser);
       writeUsersDB(db);

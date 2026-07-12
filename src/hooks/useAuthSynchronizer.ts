@@ -12,6 +12,7 @@ export interface ProgramProgress {
   hasDownloadedApp?: boolean;
   unlockedAudios?: string[];
   dailyConclusionText?: Record<number, string>;
+  onboardingCompletado?: boolean;
 }
 
 interface UseAuthSynchronizerProps {
@@ -83,7 +84,8 @@ export function useAuthSynchronizer({
       JSON.stringify(p1.completedDays) === JSON.stringify(p2.completedDays) &&
       JSON.stringify(p1.unlockedAudios || []) === JSON.stringify(p2.unlockedAudios || []) &&
       JSON.stringify(p1.responses) === JSON.stringify(p2.responses) &&
-      p1.hasDownloadedApp === p2.hasDownloadedApp
+      p1.hasDownloadedApp === p2.hasDownloadedApp &&
+      p1.onboardingCompletado === p2.onboardingCompletado
     );
   };
 
