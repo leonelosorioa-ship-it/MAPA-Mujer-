@@ -1010,108 +1010,177 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   id: "coach",
                   title: "MENTORA CLARA",
                   emoji: "🧠",
-                  desc: "Asistencia clínica interactiva con tu guía experta en tiempo real.",
+                  desc: "Asistencia clínica interactiva con tu guía experta en tiempo real para autorregulación emocional.",
                   icon: Brain,
-                  bgColor: "bg-[#EDE0F0]/30 hover:bg-[#EDE0F0]/50",
-                  borderColor: "border-2 border-[#6E488A]/20 hover:border-[#6E488A]/50 shadow-sm",
-                  iconColor: "text-[#6E488A]"
+                  bgColor: "from-[#EDE0F0] via-[#EDE0F0]/40 to-white",
+                  borderColor: "border-[#6E488A]/35 hover:border-[#6E488A] hover:shadow-[0_12px_28px_rgba(110,72,138,0.15)]",
+                  glowColor: "rgba(110,72,138,0.08)",
+                  iconColor: "text-[#6E488A]",
+                  iconBg: "bg-[#6E488A]/10 border-[#6E488A]/20",
+                  btnBg: "bg-[#6E488A] hover:bg-[#593973] text-white hover:scale-[1.03]",
+                  ctaText: "Conversar con Clara 💬",
+                  tag: "Soporte Clínico IA",
+                  pulse: true
                 },
                 {
                   id: "garden",
-                  title: "JARDÍN DE PAZ",
+                  title: "JARDÍNES DE PAZ",
                   emoji: "🌿",
-                  desc: "Un espacio de calma express para desacelerar tu ritmo nervioso.",
+                  desc: "Un espacio de calma express para desacelerar tu ritmo cardiaco y relajar el sistema simpático.",
                   icon: Smile,
-                  bgColor: "bg-[#E6F8F9]/40 hover:bg-[#E6F8F9]/60",
-                  borderColor: "border-2 border-[#36C4D8]/20 hover:border-[#36C4D8]/50 shadow-sm",
-                  iconColor: "text-[#36C4D8]"
+                  bgColor: "from-[#E6F8F9] via-[#E6F8F9]/40 to-white",
+                  borderColor: "border-[#36C4D8]/45 hover:border-[#36C4D8] hover:shadow-[0_12px_28px_rgba(54,196,216,0.15)]",
+                  glowColor: "rgba(54,196,216,0.08)",
+                  iconColor: "text-[#127280]",
+                  iconBg: "bg-[#36C4D8]/10 border-[#36C4D8]/20",
+                  btnBg: "bg-[#36C4D8] hover:bg-[#27A1B2] text-[#0B152B] hover:scale-[1.03]",
+                  ctaText: "Cuidar mi Jardín 🌸",
+                  tag: "Frecuencias de Paz",
+                  pulse: true
                 },
                 {
                   id: "challenges",
                   title: "RETOS ACTIVOS™",
                   emoji: "🎯",
-                  desc: "Tus misiones diarias personalizadas para consolidar nuevos hábitos.",
+                  desc: "Tus misiones diarias personalizadas para modular tu respuesta y consolidar nuevos hábitos.",
                   icon: Award,
-                  bgColor: "bg-[#FDF2F7]/40 hover:bg-[#FDF2F7]/60",
-                  borderColor: "border-2 border-[#E36DB4]/20 hover:border-[#E36DB4]/50 shadow-sm",
+                  bgColor: "from-[#FDF2F7] via-[#FDF2F7]/40 to-white",
+                  borderColor: "border-[#E36DB4]/45 hover:border-[#E36DB4] hover:shadow-[0_12px_28px_rgba(227,109,180,0.15)]",
+                  glowColor: "rgba(227,109,180,0.08)",
                   iconColor: "text-[#E36DB4]",
-                  badge: challenges.filter(c => !c.completed).length
+                  iconBg: "bg-[#E36DB4]/10 border-[#E36DB4]/20",
+                  btnBg: "bg-[#E36DB4] hover:bg-[#C9539A] text-white hover:scale-[1.03]",
+                  ctaText: "Ver mis Retos Activos 🎯",
+                  badge: challenges.filter(c => !c.completed).length,
+                  tag: "Ruta de 7 Días",
+                  pulse: true
                 },
                 {
                   id: "evolution",
                   title: "MI EVOLUCIÓN™",
                   emoji: "📈",
-                  desc: "Gráficas visuales de tu progreso y balance emocional en las 5 dimensiones.",
+                  desc: "Gráficas visuales y analíticas de tu progreso acumulado en las 5 dimensiones del bienestar.",
                   icon: Activity,
-                  bgColor: "bg-[#EDEBF7]/30 hover:bg-[#EDEBF7]/55",
-                  borderColor: "border-2 border-[#5B21B6]/20 hover:border-[#5B21B6]/50 shadow-sm",
-                  iconColor: "text-[#5B21B6]"
+                  bgColor: "from-[#EDEBF7] via-[#EDEBF7]/40 to-white",
+                  borderColor: "border-[#5B21B6]/35 hover:border-[#5B21B6] hover:shadow-[0_12px_28px_rgba(91,33,182,0.15)]",
+                  glowColor: "rgba(91,33,182,0.08)",
+                  iconColor: "text-[#5B21B6]",
+                  iconBg: "bg-[#5B21B6]/10 border-[#5B21B6]/20",
+                  btnBg: "bg-[#5B21B6] hover:bg-[#4C1D95] text-white hover:scale-[1.03]",
+                  ctaText: "Ver mi Evolución 📈",
+                  tag: "Métricas Avanzadas",
+                  pulse: false
                 },
                 {
                   id: "diary",
-                  title: "DIARIO",
+                  title: "MI EVOLUCIÓN DIARIO",
                   emoji: "📖",
-                  desc: "Tu espacio seguro de escritura introspectiva y descarga mental diaria.",
+                  desc: "Tu espacio privado y seguro de escritura introspectiva con descarga mental diaria.",
                   icon: BookOpen,
-                  bgColor: "bg-[#FAF5FF]/40 hover:bg-[#FAF5FF]/65",
-                  borderColor: "border-2 border-purple-400/20 hover:border-purple-500/50 shadow-sm",
-                  iconColor: "text-purple-600"
+                  bgColor: "from-[#FAF5FF] via-[#FAF5FF]/30 to-white",
+                  borderColor: "border-purple-400/35 hover:border-purple-600 hover:shadow-[0_12px_28px_rgba(147,51,234,0.15)]",
+                  glowColor: "rgba(147,51,234,0.08)",
+                  iconColor: "text-purple-700",
+                  iconBg: "bg-purple-100/40 border-purple-200",
+                  btnBg: "bg-purple-600 hover:bg-purple-700 text-white hover:scale-[1.03]",
+                  ctaText: "Escribir Diario Íntimo ✍️",
+                  tag: "Descarga Mental",
+                  pulse: false
                 },
                 {
                   id: "share",
-                  title: "COMPARTIR",
+                  title: "COMPARTOR (COMPARTIR)",
                   emoji: "🏆",
-                  desc: "Inspira a otras mujeres extendiendo tus victorias emocionales con un clic.",
+                  desc: "Inspira a otras mujeres extendiendo tus testimonios de superación en un solo clic.",
                   icon: Share2,
-                  bgColor: "bg-[#F0FDFA]/40 hover:bg-[#F0FDFA]/60",
-                  borderColor: "border-2 border-teal-400/20 hover:border-teal-500/50 shadow-sm",
-                  iconColor: "text-teal-600"
+                  bgColor: "from-[#F0FDFA] via-[#F0FDFA]/30 to-white",
+                  borderColor: "border-teal-400/35 hover:border-teal-600 hover:shadow-[0_12px_28px_rgba(20,184,166,0.15)]",
+                  glowColor: "rgba(20,184,166,0.08)",
+                  iconColor: "text-teal-700",
+                  iconBg: "bg-teal-100/40 border-teal-200",
+                  btnBg: "bg-teal-600 hover:bg-teal-700 text-white hover:scale-[1.03]",
+                  ctaText: "Compartir mis Logros 🔗",
+                  tag: "Red de Inspiración",
+                  pulse: false
                 },
                 {
                   id: "milestones",
                   title: "MIS LOGROS",
                   emoji: "🏅",
-                  desc: "Tu vitrina de medallas y niveles alcanzados por tu constancia.",
+                  desc: "Tu vitrina interactiva de medallas e insignias alcanzadas por tu constancia.",
                   icon: Trophy,
-                  bgColor: "bg-[#FFFBEB]/40 hover:bg-[#FFFBEB]/60",
-                  borderColor: "border-2 border-amber-400/20 hover:border-amber-500/50 shadow-sm",
-                  iconColor: "text-amber-600"
+                  bgColor: "from-[#FFFBEB] via-[#FFFBEB]/30 to-white",
+                  borderColor: "border-amber-400/35 hover:border-amber-600 hover:shadow-[0_12px_28px_rgba(245,158,11,0.15)]",
+                  glowColor: "rgba(245,158,11,0.08)",
+                  iconColor: "text-amber-700",
+                  iconBg: "bg-amber-100/40 border-amber-200",
+                  btnBg: "bg-amber-500 hover:bg-amber-600 text-slate-950 font-black hover:scale-[1.03]",
+                  ctaText: "Ver mis Logros 🏆",
+                  tag: "Vitrina de Insignias",
+                  pulse: false
                 }
               ].map((mod) => {
                 const IconComp = mod.icon;
                 return (
-                  <motion.button
+                  <motion.div
                     key={mod.id}
                     variants={{
                       hidden: { opacity: 0, y: 10 },
                       show: { opacity: 1, y: 0 }
                     }}
-                    whileHover={{ scale: 1.025, y: -3 }}
+                    whileHover={{ scale: 1.025, y: -4 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setActiveTab(mod.id as any)}
-                    className={`w-full text-left rounded-2xl p-5 ${mod.bgColor} ${mod.borderColor} transition-all duration-300 relative flex flex-col justify-between h-[165px] cursor-pointer group`}
+                    className={`w-full text-left rounded-3xl p-5 bg-gradient-to-br ${mod.bgColor} border-2 ${mod.borderColor} transition-all duration-300 relative flex flex-col justify-between min-h-[250px] cursor-pointer group`}
+                    style={{
+                      boxShadow: `0 8px 24px ${mod.glowColor}`
+                    }}
                   >
-                    <div className="flex items-start justify-between w-full">
-                      <div className={`p-3 rounded-xl bg-white ${mod.iconColor} shadow-sm border border-black/5 group-hover:scale-110 transition-transform duration-300`}>
-                        <IconComp className="w-5 h-5" />
-                      </div>
-                      {mod.badge !== undefined && mod.badge !== null && mod.badge > 0 && (
-                        <span className="px-2 py-0.5 rounded bg-[#E36DB4] text-white text-[10px] font-mono font-black animate-pulse shadow-sm">
-                          {mod.badge} ACTIVOS
+                    {/* Header: Icon, Tags, and Emojis */}
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <div className={`p-2.5 rounded-xl ${mod.iconBg} ${mod.iconColor} shadow-sm border border-black/5 group-hover:rotate-12 transition-transform duration-300`}>
+                          <IconComp className="w-5 h-5" />
+                        </div>
+                        <span className="text-[9px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/70 border border-black/5 text-slate-600">
+                          {mod.tag}
                         </span>
-                      )}
-                      <span className="text-xl filter drop-shadow-sm">{mod.emoji}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        {mod.badge !== undefined && mod.badge !== null && mod.badge > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-[#E36DB4] text-white text-[9px] font-mono font-black animate-pulse shadow-sm">
+                            {mod.badge} ACTIVOS
+                          </span>
+                        )}
+                        <span className="text-xl filter drop-shadow-sm">{mod.emoji}</span>
+                      </div>
                     </div>
 
-                    <div className="space-y-1 mt-3">
-                      <h4 className={`font-display font-black text-xs uppercase tracking-wider ${mod.iconColor} flex items-center gap-1.5`}>
+                    {/* Middle: Title & Description */}
+                    <div className="space-y-1.5 mt-4 flex-1">
+                      <h4 className={`font-display font-black text-xs uppercase tracking-wider ${mod.iconColor} flex items-center gap-2`}>
+                        {mod.pulse && (
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                          </span>
+                        )}
                         {mod.title}
                       </h4>
-                      <p className="text-[11px] text-[#56346F]/75 font-sans leading-relaxed font-semibold line-clamp-2">
+                      <p className="text-[11px] text-[#56346F]/85 font-sans leading-relaxed font-semibold">
                         {mod.desc}
                       </p>
                     </div>
-                  </motion.button>
+
+                    {/* Bottom: Explicit Beautiful Call-To-Action Button */}
+                    <div className="mt-4 pt-3 border-t border-black/[0.04]">
+                      <div className={`w-full py-2 px-3 rounded-xl ${mod.btnBg} font-mono font-black text-[11px] uppercase tracking-wider shadow-sm transition-all duration-300 flex items-center justify-between group-hover:shadow-md`}>
+                        <span>{mod.ctaText}</span>
+                        <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </motion.div>
                 );
               })}
             </motion.div>
