@@ -1178,12 +1178,12 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                           <div className="space-y-1">
                             <div className={`p-4 rounded-2xl whitespace-pre-line ${
                               isCoach 
-                                ? "bg-[#EDE0F0]/50 border border-[#6E488A]/12 text-[#56346F] rounded-tl-none text-base sm:text-lg font-semibold leading-relaxed sm:leading-loose shadow-sm" 
-                                : "bg-[#36C4D8]/10 border border-[#36C4D8]/20 text-[#56346F] rounded-tr-none text-sm sm:text-base font-medium leading-relaxed"
+                                ? "bg-[#EDE0F0]/70 border-2 border-[#6E488A]/30 text-[#1C0630] rounded-tl-none text-base sm:text-lg font-bold leading-relaxed sm:leading-loose shadow-sm" 
+                                : "bg-[#36C4D8]/15 border-2 border-[#36C4D8]/40 text-[#1C0630] rounded-tr-none text-base sm:text-lg font-bold leading-relaxed"
                             }`}>
                               {msg.content}
                             </div>
-                            <span className="text-[10px] font-mono text-[#56346F]/60 block px-1">
+                            <span className="text-[10px] font-mono font-bold text-[#1C0630]/80 block px-1">
                               {msg.timestamp || "Hace un momento"}
                             </span>
                           </div>
@@ -1195,7 +1195,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                         <div className="w-8 h-8 rounded-full shrink-0 bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/20 flex items-center justify-center animate-spin">
                           🌀
                         </div>
-                        <div className="p-4 rounded-2xl bg-[#EDE0F0]/30 border border-[#6E488A]/10 text-[#6E488A]/80 text-base sm:text-lg rounded-tl-none font-semibold">
+                        <div className="p-4 rounded-2xl bg-[#EDE0F0]/40 border-2 border-[#6E488A]/25 text-[#1C0630] text-base sm:text-lg rounded-tl-none font-extrabold">
                           La Mentora Clara está sintonizando con tu sentir...
                         </div>
                       </div>
@@ -1250,15 +1250,15 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 <div className="lg:col-span-5 space-y-6">
                   
                   {/* Dynamic context advice container */}
-                  <div className="bg-white rounded-3xl p-6 border border-[#6E488A]/15 shadow-md space-y-6 text-left">
+                  <div className="bg-white rounded-3xl p-6 border-2 border-[#6E488A]/20 shadow-md space-y-6 text-left">
                     <div className="space-y-1">
-                      <span className="text-xs font-mono text-[#36C4D8] uppercase tracking-widest font-black block">
+                      <span className="text-sm font-mono text-[#36C4D8] uppercase tracking-widest font-black block">
                         ANÁLISIS DE AUTORREGULACIÓN
                       </span>
-                      <h3 className="font-display font-black text-xl text-[#6E488A]">
+                      <h3 className="font-display font-black text-2xl text-[#1C0630]">
                         {lastMatchedCategory ? `Módulo Activo: ${lastMatchedCategory.name}` : "Anclajes de Soporte"}
                       </h3>
-                      <p className="text-xs text-[#56346F]/80 leading-relaxed font-medium">
+                      <p className="text-sm text-[#1C0630] leading-relaxed font-bold">
                         Acciones sugeridas por la Mentora Clara M.A.P.A.™ basadas en tu estado emocional para ayudarte a sintonizar tu sistema simpático.
                       </p>
                     </div>
@@ -1267,11 +1267,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                       <div className="space-y-4 animate-fadeIn">
                         
                         {/* 1. Recommended Challenge */}
-                        <div className="p-4 rounded-xl bg-[#EDE0F0]/30 border border-[#6E488A]/10 space-y-2">
-                          <span className="text-[10px] font-mono font-black text-[#6E488A] uppercase tracking-widest block">
+                        <div className="p-4 rounded-xl bg-[#EDE0F0]/50 border-2 border-[#6E488A]/20 space-y-2">
+                          <span className="text-xs font-mono font-black text-[#6E488A] uppercase tracking-widest block">
                             🎯 RETO RECOMENDADO
                           </span>
-                          <p className="text-sm text-[#56346F] font-extrabold">
+                          <p className="text-base text-[#1C0630] font-black leading-relaxed">
                             {lastMatchedCategory.recommendedChallenge}
                           </p>
                           <button
@@ -1285,11 +1285,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                         </div>
 
                         {/* 2. Recommended Sound */}
-                        <div className="p-4 rounded-xl bg-[#EDE0F0]/30 border border-[#6E488A]/10 space-y-2">
-                          <span className="text-[10px] font-mono font-black text-[#36C4D8] uppercase tracking-widest block">
+                        <div className="p-4 rounded-xl bg-[#EDE0F0]/50 border-2 border-[#6E488A]/20 space-y-2">
+                          <span className="text-xs font-mono font-black text-[#36C4D8] uppercase tracking-widest block">
                             🌿 FRECUENCIA DE SONIDO RECOMENDADA
                           </span>
-                          <p className="text-sm text-[#56346F] font-extrabold">
+                          <p className="text-base text-[#1C0630] font-black leading-relaxed">
                             {lastMatchedCategory.recommendedSound}
                           </p>
                           <button
@@ -1303,11 +1303,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                         </div>
 
                         {/* 3. Recommended Reflection */}
-                        <div className="p-4 rounded-xl bg-[#EDE0F0]/30 border border-[#6E488A]/10 space-y-2">
-                          <span className="text-[10px] font-mono font-black text-[#6E488A] uppercase tracking-widest block">
+                        <div className="p-4 rounded-xl bg-[#EDE0F0]/50 border-2 border-[#6E488A]/20 space-y-2">
+                          <span className="text-xs font-mono font-black text-[#6E488A] uppercase tracking-widest block">
                             ✨ REFLEXIÓN RECOMENDADA
                           </span>
-                          <p className="text-sm text-[#56346F] font-medium italic">
+                          <p className="text-base text-[#1C0630] font-extrabold italic leading-relaxed">
                             "{lastMatchedCategory.recommendedReflection}"
                           </p>
                           <button
@@ -1315,7 +1315,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                               alert("¡Reflexión copiada en memoria! Puedes escribirla como tu pensamiento anclaje del día en tu Jardín de Paz.");
                               navigator.clipboard.writeText(lastMatchedCategory.recommendedReflection);
                             }}
-                            className="text-xs font-mono font-black text-[#36C4D8] hover:text-white flex items-center gap-1.5 mt-1 hover:underline cursor-pointer animate-pulse"
+                            className="text-xs font-mono font-black text-[#36C4D8] hover:text-[#27A1B2] flex items-center gap-1.5 mt-1 hover:underline cursor-pointer animate-pulse"
                           >
                             Copiar reflexión para usarla como anclaje <ArrowRight className="w-3.5 h-3.5" />
                           </button>
@@ -1323,13 +1323,13 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
                       </div>
                     ) : (
-                      <div className="p-6 rounded-xl bg-[#EDE0F0]/20 border border-dashed border-[#6E488A]/30 text-center space-y-3">
+                      <div className="p-6 rounded-xl bg-[#EDE0F0]/30 border-2 border-dashed border-[#6E488A]/30 text-center space-y-3">
                         <span className="text-3xl block animate-bounce">💡</span>
-                        <p className="text-xs text-[#56346F]/80 leading-relaxed font-medium">
+                        <p className="text-sm text-[#1C0630] leading-relaxed font-bold">
                           Escribe en la ventana del chat cómo te sientes en este momento. El sistema de Tu Poder Mental Mujer™ analizará tus palabras y activará las mejores recomendaciones terapéuticas M.A.P.A.™ para ti.
                         </p>
                         <div className="pt-2">
-                          <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/15 font-bold">
+                          <span className="text-xs font-mono px-2.5 py-1 rounded bg-[#EDE0F0] text-[#6E488A] border-2 border-[#6E488A]/25 font-bold">
                             Esperando Entrada Emocional...
                           </span>
                         </div>
@@ -1439,18 +1439,18 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             <div className="space-y-6">
               
               {/* RESUMEN DE BIENESTAR: ÚLTIMOS 3 DÍAS */}
-              <div id="resumen_bienestar_section" className="bg-gradient-to-br from-[#EDE0F0]/40 via-[#EDE0F0]/10 to-white border-2 border-[#6E488A]/15 border-b-[6px] border-b-[#6E488A]/25 rounded-3xl p-5 sm:p-6 text-left space-y-4 shadow-md">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#6E488A]/10">
+              <div id="resumen_bienestar_section" className="bg-gradient-to-br from-[#EDE0F0]/65 via-[#EDE0F0]/25 to-white border-2 border-[#6E488A]/25 border-b-[6px] border-b-[#6E488A]/35 rounded-3xl p-5 sm:p-6 text-left space-y-4 shadow-md">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b-2 border-[#6E488A]/15">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#E86FA3]/15 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-[#E86FA3]/20 flex items-center justify-center">
                       <Sparkles className="w-4.5 h-4.5 text-[#E86FA3] animate-pulse" />
                     </div>
                     <div>
-                      <h4 className="font-sans font-black text-base text-[#411F66]">Resumen de Bienestar (Últimos 3 Días)</h4>
-                      <p className="text-[11px] text-[#0B152B]/75 font-semibold">Trazado sintonizado de tus últimos 3 días de autogestión</p>
+                      <h4 className="font-sans font-black text-lg text-[#1C0630]">Resumen de Bienestar (Últimos 3 Días)</h4>
+                      <p className="text-xs text-[#1C0630] font-extrabold">Trazado sintonizado de tus últimos 3 días de autogestión</p>
                     </div>
                   </div>
-                  <span className="text-[10px] bg-[#36C4D8]/10 text-[#27A1B2] font-mono uppercase tracking-widest font-black px-3 py-1 rounded-full border border-[#36C4D8]/20 self-start sm:self-auto">
+                  <span className="text-xs bg-[#36C4D8]/20 text-[#127280] font-mono uppercase tracking-widest font-black px-3 py-1 rounded-full border-2 border-[#36C4D8]/30 self-start sm:self-auto">
                     Sincronizado con IA
                   </span>
                 </div>
@@ -1462,7 +1462,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     return (
                       <div 
                         key={log.date}
-                        className="bg-white border-2 border-[#6E488A]/10 border-b-4 border-b-[#EDE0F0] rounded-2xl p-4 space-y-4 hover:scale-[1.01] hover:border-[#E86FA3]/30 transition-all duration-300 shadow-sm relative overflow-hidden"
+                        className="bg-white border-2 border-[#6E488A]/20 border-b-4 border-b-[#EDE0F0] rounded-2xl p-4 space-y-4 hover:scale-[1.01] hover:border-[#E86FA3]/40 transition-all duration-300 shadow-sm relative overflow-hidden"
                       >
                         {/* Decorative subtle background icon / number */}
                         <div className="absolute -right-4 -bottom-4 text-6xl font-black text-[#6E488A]/5 select-none pointer-events-none">
@@ -1470,22 +1470,22 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                         </div>
 
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-mono font-black text-[#E86FA3] uppercase tracking-wider bg-[#EDE0F0]/40 px-2.5 py-1 rounded-lg">
+                          <span className="text-xs font-mono font-black text-[#E86FA3] uppercase tracking-wider bg-[#EDE0F0]/50 px-2.5 py-1 rounded-lg">
                             Día {realIndex} • {log.date}
                           </span>
-                          <span className="text-[10px] font-bold text-[#0B152B]/50">M.A.P.A. Activo</span>
+                          <span className="text-xs font-black text-[#1C0630]/80">M.A.P.A. Activo</span>
                         </div>
 
                         {/* Indicators Grid */}
                         <div className="space-y-2.5 relative z-10">
                           {/* Indicator 1 */}
                           <div className="space-y-1">
-                            <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                            <div className="flex justify-between text-xs font-black text-[#1C0630]">
                               <span className="flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#E86FA3]" />
+                                <span className="w-2 h-2 rounded-full bg-[#E86FA3]" />
                                 Activación Emocional
                               </span>
-                              <span className="font-mono text-[#E86FA3]">{activacion}%</span>
+                              <span className="font-mono text-[#E86FA3] font-black">{activacion}%</span>
                             </div>
                             <div className="w-full h-1.5 bg-[#EDE0F0]/50 rounded-full overflow-hidden">
                               <div className="h-full bg-[#E86FA3] rounded-full" style={{ width: `${activacion}%` }} />
@@ -1494,12 +1494,12 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
                           {/* Indicator 2 */}
                           <div className="space-y-1">
-                            <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                            <div className="flex justify-between text-xs font-black text-[#1C0630]">
                               <span className="flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#36C4D8]" />
+                                <span className="w-2 h-2 rounded-full bg-[#36C4D8]" />
                                 Ansiedad Interceptiva
                               </span>
-                              <span className="font-mono text-[#36C4D8]">{ansiedad}%</span>
+                              <span className="font-mono text-[#27A1B2] font-black">{ansiedad}%</span>
                             </div>
                             <div className="w-full h-1.5 bg-[#EDE0F0]/50 rounded-full overflow-hidden">
                               <div className="h-full bg-[#36C4D8] rounded-full" style={{ width: `${ansiedad}%` }} />
@@ -1508,12 +1508,12 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
                           {/* Indicator 3 */}
                           <div className="space-y-1">
-                            <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                            <div className="flex justify-between text-xs font-black text-[#1C0630]">
                               <span className="flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#6E488A]" />
+                                <span className="w-2 h-2 rounded-full bg-[#6E488A]" />
                                 Rumiación Mental
                               </span>
-                              <span className="font-mono text-[#6E488A]">{rumiacion}%</span>
+                              <span className="font-mono text-[#6E488A] font-black">{rumiacion}%</span>
                             </div>
                             <div className="w-full h-1.5 bg-[#EDE0F0]/50 rounded-full overflow-hidden">
                               <div className="h-full bg-[#6E488A] rounded-full" style={{ width: `${rumiacion}%` }} />
@@ -1522,21 +1522,21 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
                           {/* Indicator 4 */}
                           <div className="space-y-1">
-                            <div className="flex justify-between text-[10px] font-bold text-[#411F66]">
+                            <div className="flex justify-between text-xs font-black text-[#1C0630]">
                               <span className="flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                                 Calidad del Sueño
                               </span>
-                              <span className="font-mono text-emerald-500">{sueno}%</span>
+                              <span className="font-mono text-emerald-600 font-black">{sueno}%</span>
                             </div>
                             <div className="w-full h-1.5 bg-[#EDE0F0]/50 rounded-full overflow-hidden">
-                              <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${sueno}%` }} />
+                              <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${sueno}%` }} />
                             </div>
                           </div>
                         </div>
 
                         {/* Status tag */}
-                        <div className="text-[9px] font-semibold text-[#0B152B]/60 italic pt-1.5 border-t border-[#6E488A]/5 text-right">
+                        <div className="text-xs font-bold text-[#1C0630] italic pt-1.5 border-t border-[#6E488A]/10 text-right">
                           {sueno >= 70 ? "✨ Nivel óptimo de recuperación" : "⚠️ Requiere sintonización de calma"}
                         </div>
                       </div>
@@ -1548,51 +1548,51 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 
                 {/* Stat 1 */}
-                <div className="bg-white p-5 rounded-2xl border-2 border-[#E86FA3]/20 border-b-4 border-b-[#E86FA3]/35 text-left shadow-[0_8px_20px_rgba(232,111,163,0.06)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(232,111,163,0.12)] hover:border-[#E86FA3]">
-                  <div className="text-[#0B152B]/75 text-[10px] tracking-wide uppercase font-mono mb-1 font-bold">
+                <div className="bg-white p-5 rounded-2xl border-2 border-[#E86FA3]/30 border-b-4 border-b-[#E86FA3]/45 text-left shadow-[0_8px_20px_rgba(232,111,163,0.06)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(232,111,163,0.12)] hover:border-[#E86FA3]">
+                  <div className="text-[#1C0630] text-xs tracking-wide uppercase font-mono mb-1 font-black">
                     Activación Emocional
                   </div>
                   <div className="text-2xl font-black text-[#E86FA3] font-mono">Disminuyó 40%</div>
                   <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-[#E86FA3] to-[#F58BC8] w-[60%]" />
                   </div>
-                  <span className="text-[9px] text-[#0B152B]/60 block mt-1 font-bold">Simulación neural acumulativa</span>
+                  <span className="text-xs text-[#1C0630]/95 block mt-1 font-bold">Simulación neural acumulativa</span>
                 </div>
 
                 {/* Stat 2 */}
-                <div className="bg-white p-5 rounded-2xl border-2 border-[#36C4D8]/20 border-b-4 border-b-[#36C4D8]/35 text-left shadow-[0_8px_20px_rgba(54,196,216,0.06)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(54,196,216,0.12)] hover:border-[#36C4D8]">
-                  <div className="text-[#0B152B]/75 text-[10px] tracking-wide uppercase font-mono mb-1 font-bold">
+                <div className="bg-white p-5 rounded-2xl border-2 border-[#36C4D8]/30 border-b-4 border-b-[#36C4D8]/45 text-left shadow-[0_8px_20px_rgba(54,196,216,0.06)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(54,196,216,0.12)] hover:border-[#36C4D8]">
+                  <div className="text-[#1C0630] text-xs tracking-wide uppercase font-mono mb-1 font-black">
                     Ansiedad Interceptiva
                   </div>
-                  <div className="text-2xl font-black text-[#36C4D8] font-mono">Reducida en un 38%</div>
+                  <div className="text-2xl font-black text-[#27A1B2] font-mono">Reducida en un 38%</div>
                   <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-[#36C4D8] to-[#45B2B6] w-[62%]" />
                   </div>
-                  <span className="text-[9px] text-[#0B152B]/60 block mt-1 font-bold">Intercepción de reflejos de pánico</span>
+                  <span className="text-xs text-[#1C0630]/95 block mt-1 font-bold">Intercepción de reflejos de pánico</span>
                 </div>
 
                 {/* Stat 3 */}
-                <div className="bg-white p-5 rounded-2xl border-2 border-[#411F66]/15 border-b-4 border-b-[#411F66]/30 text-left shadow-[0_8px_20px_rgba(65,31,102,0.04)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(65,31,102,0.08)] hover:border-[#411F66]/30">
-                  <div className="text-[#0B152B]/75 text-[10px] tracking-wide uppercase font-mono mb-1 font-bold">
+                <div className="bg-white p-5 rounded-2xl border-2 border-[#6E488A]/30 border-b-4 border-b-[#6E488A]/45 text-left shadow-[0_8px_20px_rgba(65,31,102,0.04)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(65,31,102,0.08)] hover:border-[#6E488A]">
+                  <div className="text-[#1C0630] text-xs tracking-wide uppercase font-mono mb-1 font-black">
                     Rumiación Mental
                   </div>
-                  <div className="text-2xl font-black text-[#411F66] font-mono">-52% Ciclos</div>
+                  <div className="text-2xl font-black text-[#6E488A] font-mono">-52% Ciclos</div>
                   <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full mt-2 overflow-hidden">
-                    <div className="h-full bg-[#411F66] w-[48%]" />
+                    <div className="h-full bg-[#6E488A] w-[48%]" />
                   </div>
-                  <span className="text-[9px] text-[#0B152B]/60 block mt-1 font-bold">Cuestionamientos cognitivos realizados</span>
+                  <span className="text-xs text-[#1C0630]/95 block mt-1 font-bold">Cuestionamientos cognitivos realizados</span>
                 </div>
 
                 {/* Stat 4 */}
-                <div className="bg-white p-5 rounded-2xl border-2 border-[#36C4D8]/20 border-b-4 border-b-[#36C4D8]/35 text-left shadow-[0_8px_20px_rgba(54,196,216,0.06)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(54,196,216,0.12)] hover:border-[#36C4D8]">
-                  <div className="text-[#0B152B]/75 text-[10px] tracking-wide uppercase font-mono mb-1 font-bold">
+                <div className="bg-white p-5 rounded-2xl border-2 border-[#36C4D8]/30 border-b-4 border-b-[#36C4D8]/45 text-left shadow-[0_8px_20px_rgba(54,196,216,0.06)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_24px_rgba(54,196,216,0.12)] hover:border-[#36C4D8]">
+                  <div className="text-[#1C0630] text-xs tracking-wide uppercase font-mono mb-1 font-black">
                     Calidad del Sueño
                   </div>
-                  <div className="text-2xl font-black text-[#36C4D8] font-mono">+70% Eficacia</div>
+                  <div className="text-2xl font-black text-[#27A1B2] font-mono">+70% Eficacia</div>
                   <div className="w-full h-1.5 bg-[#EDE0F0] rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-[#36C4D8] to-[#45B2B6] w-[70%]" />
                   </div>
-                  <span className="text-[9px] text-[#0B152B]/60 block mt-1 font-bold">Sintonización cerebral nocturna</span>
+                  <span className="text-xs text-[#1C0630]/95 block mt-1 font-bold">Sintonización cerebral nocturna</span>
                 </div>
 
               </div>

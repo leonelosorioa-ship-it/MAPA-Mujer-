@@ -203,14 +203,14 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
             <h2 className="font-display font-black text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] via-[#E2E8F0] to-[#9D4EDD] tracking-tight pt-1 leading-tight">
               ¡Bienvenida a M.A.P.A.™ Mujer, {userName || "hermosa"}!
             </h2>
-            <p className="text-xs text-gray-400 font-sans max-w-sm mx-auto">
+            <p className="text-xs sm:text-sm text-slate-200 font-bold font-sans max-w-sm mx-auto">
               Leonel Osorio Andrade y todo el equipo te damos la bienvenida oficial a tu proceso de transformación de 7 días.
             </p>
           </div>
 
           {/* Core persuasion copy */}
-          <div className="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-2.5 text-xs text-slate-300 leading-relaxed font-sans">
-            <p className="text-[#00F0FF] font-bold flex items-center gap-1">
+          <div className="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-2.5 text-xs sm:text-sm text-slate-100 leading-relaxed font-sans font-medium">
+            <p className="text-[#00F0FF] font-black flex items-center gap-1">
               <Heart className="w-4 h-4 fill-current text-rose-500 animate-pulse" />
               Un mensaje crítico de nuestra mentora Clara:
             </p>
@@ -232,27 +232,27 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                   <h4 className="font-sans font-bold text-sm text-white leading-tight">
                     Audio de Clara • Bienvenida Oficial
                   </h4>
-                  <p className="font-mono text-[10px] text-gray-400">
+                  <p className="font-mono text-xs text-slate-300 font-bold">
                     M.A.P.A.™ Guía Esencial de Inicio
                   </p>
                 </div>
               </div>
 
               {/* Status Indicator */}
-              <div className="font-mono text-[10px]">
+              <div className="font-mono text-xs text-slate-300 font-bold">
                 {isPlaying ? (
                   <span className="text-[#00F0FF] flex items-center gap-1 animate-pulse">
                     ● Reproduciendo
                   </span>
                 ) : (
-                  <span className="text-gray-500">Pausado</span>
+                  <span className="text-gray-400">Pausado</span>
                 )}
               </div>
             </div>
 
             {/* Play progress bar */}
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-[10px] font-mono text-gray-400">
+              <div className="flex items-center justify-between text-xs font-mono text-slate-200 font-bold">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
@@ -321,7 +321,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
 
           {/* SUITE DE HERRAMIENTAS: DESCARGAR Y COMPARTIR */}
           <div className="space-y-3">
-            <span className="block text-[10px] font-mono text-gray-400 uppercase tracking-widest text-center">
+            <span className="block text-xs font-mono text-slate-200 font-black uppercase tracking-wider text-center bg-white/5 py-1.5 rounded-lg border border-white/10">
               Conserva este Audio Guía Permanente
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -329,9 +329,9 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
               <button
                 onClick={handleDirectDownload}
                 style={{ borderWidth: "2.5px" }}
-                className="w-full py-3 px-4 bg-transparent hover:bg-white/5 border-slate-600 hover:border-[#00F0FF] text-slate-200 hover:text-white rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 cursor-pointer active:scale-95"
+                className="w-full py-3 px-4 bg-transparent hover:bg-white/5 border-slate-500 hover:border-[#00F0FF] text-slate-100 hover:text-white rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 cursor-pointer active:scale-95"
               >
-                <Download className="w-4 h-4 text-[#00F0FF]" />
+                <Download className="w-5 h-5 text-[#00F0FF]" />
                 <span>Descargar en mi Dispositivo</span>
               </button>
 
@@ -339,9 +339,9 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
               <button
                 onClick={handleWhatsAppShare}
                 style={{ borderWidth: "2.5px" }}
-                className="w-full py-3 px-4 bg-[#25D366]/10 hover:bg-[#25D366]/20 border-[#25D366] hover:border-[#25D366]/80 text-[#25D366] rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 cursor-pointer active:scale-95"
+                className="w-full py-3 px-4 bg-[#25D366]/15 hover:bg-[#25D366]/25 border-[#25D366] hover:border-[#25D366]/90 text-[#25D366] rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 cursor-pointer active:scale-95 animate-pulse"
               >
-                <MessageCircle className="w-4 h-4 fill-current text-[#25D366]" />
+                <MessageCircle className="w-5 h-5 fill-current text-[#25D366]" />
                 <span>Guardar / Enviar a mi WhatsApp</span>
               </button>
             </div>
@@ -356,7 +356,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                 onClick={handleEnterApp}
                 disabled={isFinishing}
                 style={{ borderWidth: "2.5px" }}
-                className="w-full py-3.5 bg-gradient-to-r from-[#00F0FF] via-[#9D4EDD] to-[#B5179E] hover:from-[#00F0FF]/90 hover:to-[#B5179E]/90 text-white font-display font-black tracking-wider uppercase rounded-2xl shadow-[0_0_20px_rgba(157,78,221,0.4)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] text-center text-sm cursor-pointer transition-all duration-300 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gradient-to-r from-[#00F0FF] via-[#9D4EDD] to-[#B5179E] hover:from-[#00F0FF] hover:to-[#B5179E] text-white font-display font-black tracking-wider uppercase rounded-2xl shadow-[0_0_20px_rgba(157,78,221,0.4)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] text-center text-sm sm:text-base cursor-pointer transition-all duration-300 flex items-center justify-center gap-2"
               >
                 {isFinishing ? (
                   <>
@@ -374,15 +374,15 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                 )}
               </motion.button>
             ) : (
-              <div className="w-full py-4 text-center text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center gap-2">
-                <HelpCircle className="w-4 h-4 text-amber-400 animate-pulse" />
+              <div className="w-full py-4 text-center text-xs sm:text-sm font-mono text-amber-300 bg-amber-500/15 border-2 border-amber-500/40 rounded-2xl flex items-center justify-center gap-2 font-bold animate-pulse">
+                <HelpCircle className="w-5 h-5 text-amber-300 shrink-0" />
                 <span>Interactúa con el reproductor de audio para desbloquear tu acceso</span>
               </div>
             )}
           </div>
 
           {/* Footer absolute validation */}
-          <div className="text-[9px] text-gray-500 font-mono text-center flex items-center justify-center gap-1.5">
+          <div className="text-[10px] sm:text-xs text-slate-300 font-mono text-center flex items-center justify-center gap-1.5 font-semibold bg-white/5 py-2.5 rounded-xl border border-white/10">
             <span>Copyright © 2026 M.A.P.A.™</span>
             <span>•</span>
             <span>Leonel Osorio Andrade</span>

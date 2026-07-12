@@ -2672,7 +2672,7 @@ export default function App() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-gradient-to-b from-[#EDE0F0]/50 via-transparent to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Persistent PWA Install Banner */}
-      <PWAInstallBanner />
+      {!(focusMode && phase === "DASHBOARD") && <PWAInstallBanner />}
 
       {/* HEADER LOGO RAIL */}
       {!(focusMode && phase === "DASHBOARD") && (
@@ -2972,28 +2972,28 @@ export default function App() {
 
               {/* FASE 1: HERO */}
               <section id="landing_hero" className="text-center space-y-8 max-w-4xl mx-auto py-4">
-                <div className="inline-flex items-center space-x-2 bg-[#EDE0F0] border border-[#6E488A]/20 py-2 px-5 rounded-full select-none shadow-[0_4px_15px_rgba(110,72,138,0.05)]">
-                  <span className="text-sm font-semibold tracking-wide text-[#411F66] uppercase flex items-center gap-1.5 font-bold">
+                <div className="inline-flex items-center space-x-2 bg-[#EDE0F0] border-2 border-[#6E488A]/30 py-2 px-5 rounded-full select-none shadow-[0_4px_15px_rgba(110,72,138,0.05)]">
+                  <span className="text-base font-black tracking-wide text-[#1C0630] uppercase flex items-center gap-1.5 font-bold">
                     By <span className="text-[#E86FA3] font-black">TU PODER MENTAL MUJER</span>
                   </span>
                 </div>
                 
                 <div className="space-y-4">
-                  <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl text-[#411F66] tracking-tight leading-none">
-                    M.A.P.A. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E86FA3] to-[#411F66]">Mujer</span>
+                  <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl text-[#1C0630] tracking-tight leading-none">
+                    M.A.P.A. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E86FA3] to-[#1C0630]">Mujer</span>
                   </h1>
-                  <p className="text-[#E86FA3] text-xl sm:text-2xl font-black tracking-wide uppercase max-w-3xl mx-auto leading-relaxed">
+                  <p className="text-[#E86FA3] text-2xl sm:text-3xl font-black tracking-wide uppercase max-w-3xl mx-auto leading-relaxed">
                     Mapa de Activación y Protección Emocional
                   </p>
                 </div>
                 
-                <p className="text-lg sm:text-xl text-[#0B152B]/90 font-sans tracking-wide leading-relaxed max-w-2xl mx-auto px-4 font-semibold">
+                <p className="text-lg sm:text-xl md:text-2xl text-[#0B152B] font-sans tracking-wide leading-relaxed max-w-3xl mx-auto px-4 font-black">
                   Descubre qué factores podrían estar manteniendo activo tu sistema de alerta emocional. Un espacio diseñado única y exclusivamente para guiar a la mujer hacia su bienestar, autorregulación y calma mental.
                 </p>
 
                 {/* Animated Custom Gold & Teal Brain-Compass Core (Matches uploaded logo accurately) */}
                 <div className="py-8 flex justify-center">
-                  <div className="relative w-48 h-48 rounded-full border-4 border-[#411F66]/15 p-2 bg-gradient-to-b from-white to-[#FFF7FC] shadow-[0_0_30px_rgba(232,111,163,0.12)] flex items-center justify-center">
+                  <div className="relative w-48 h-48 rounded-full border-4 border-[#411F66]/30 p-2 bg-gradient-to-b from-white to-[#FFF7FC] shadow-[0_0_30px_rgba(232,111,163,0.12)] flex items-center justify-center">
                     {/* Compass outer dial ring */}
                     <div className="absolute inset-2 rounded-full border border-dashed border-[#36C4D8]/30 animate-spin" style={{ animationDuration: '30s' }} />
                     <div className="absolute inset-5 rounded-full border border-[#E86FA3]/20 animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }} />
@@ -3010,11 +3010,11 @@ export default function App() {
                         <div className="absolute inset-0 flex items-center justify-center animate-spin" style={{ animationDuration: '8s' }}>
                           <div className="relative h-28 w-1 flex items-center justify-center">
                             {/* Needle point */}
-                            <div className="absolute -top-1 w-2.5 h-2.5 bg-[#36C4D8] rotate-45 rounded" />
+                            <div className="absolute -top-1 w-2.5 h-2.5 bg-[#36C4D8] rotate-45 rounded animate-pulse" />
                             {/* Needle shine */}
                             <div className="w-[2px] h-full bg-gradient-to-b from-[#36C4D8] via-[#EDE0F0] to-[#E86FA3]" />
                             {/* Needle gold sun pointer at bottom/top */}
-                            <div className="absolute -bottom-1 w-3 h-3 bg-[#E86FA3] rounded-full border border-pink-200 shadow-[0_0_10px_rgba(232,111,163,0.5)]" />
+                            <div className="absolute -bottom-1 w-3 h-3 bg-[#E86FA3] rounded-full border border-pink-200 shadow-[0_0_10px_rgba(232,111,163,0.5)] animate-pulse" />
                           </div>
                         </div>
                       </div>
@@ -3024,9 +3024,9 @@ export default function App() {
 
                 {/* Highlighted Quote Board from attached files (COMPRENDER ES...) */}
                 <div className="max-w-2xl mx-auto px-4 pb-4">
-                  <div className="p-6 rounded-2xl bg-gradient-to-r from-white via-[#EDE0F0]/50 to-white border border-[#411F66]/15 shadow-[0_4px_20px_rgba(110,72,138,0.06)] space-y-2">
-                    <span className="text-xs font-mono tracking-widest text-[#E86FA3] uppercase block font-bold">FILOSOFÍA DE CONTENCIÓN</span>
-                    <p className="font-display font-semibold text-lg sm:text-xl text-[#411F66] leading-relaxed">
+                  <div className="p-6 rounded-2xl bg-gradient-to-r from-white via-[#EDE0F0]/50 to-white border-2 border-[#1C0630]/25 shadow-[0_4px_20px_rgba(110,72,138,0.06)] space-y-2">
+                    <span className="text-sm font-mono tracking-widest text-[#E86FA3] uppercase block font-black">FILOSOFÍA DE CONTENCIÓN</span>
+                    <p className="font-display font-black text-xl sm:text-2xl text-[#1C0630] leading-relaxed">
                       COMPRENDER ES EL PRIMER PASO PARA <span className="text-[#36C4D8] block sm:inline font-black">TRANSFORMAR TU VIDA</span>.
                     </p>
                   </div>
@@ -3050,10 +3050,10 @@ export default function App() {
                                   }
                                 }, 100);
                               }}
-                              className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-bold tracking-wider text-gray-500 bg-gray-100 hover:bg-gray-200 flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-gray-300 transition-all shadow-sm"
+                              className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-[#1C0630] bg-gray-100 hover:bg-gray-200 flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-gray-400 transition-all shadow-sm"
                             >
                               <span>Ir a mi Panel de Control</span>
-                              <Compass className="w-5 h-5 text-gray-500 shrink-0" />
+                              <Compass className="w-5 h-5 text-[#1C0630] shrink-0" />
                             </button>
                             <div className="flex items-center gap-1.5 text-xs text-amber-600 font-bold bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
                               <Clock className="w-3.5 h-3.5 text-amber-500 animate-spin" style={{ animationDuration: "12s" }} />
@@ -3068,9 +3068,9 @@ export default function App() {
                               setPhase("DASHBOARD");
                               setTimeout(() => {
                                 const elem = document.getElementById("emotional_timeline_section");
-                                if (elem) {
-                                  elem.scrollIntoView({ behavior: "smooth", block: "center" });
-                                }
+                                  if (elem) {
+                                    elem.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  }
                               }, 100);
                             }}
                             className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-white bg-gradient-to-r from-[#E86FA3] via-[#411F66] to-[#36C4D8] btn-neon-pulse flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-[#262222] shadow-xl"
@@ -3093,64 +3093,64 @@ export default function App() {
                   )}
                   <a 
                     href="#problem"
-                    className="w-full sm:w-auto px-6 py-4 rounded-xl border border-[#6E488A]/20 text-[#411F66] hover:bg-[#EDE0F0]/40 text-sm font-bold transition-all text-center"
+                    className="w-full sm:w-auto px-6 py-4 rounded-xl border-2 border-[#1C0630]/30 text-[#1C0630] bg-[#EDE0F0]/30 hover:bg-[#EDE0F0]/60 text-sm font-black transition-all text-center"
                   >
                     Saber más primero
                   </a>
                 </div>
 
                 {/* Micro disclaimers */}
-                <p className="text-xs text-[#0B152B]/70 font-mono font-medium">
+                <p className="text-xs text-[#1C0630] font-mono font-black">
                   NO ES TEST CLÍNICO • NO EVALUACIÓN MÉDICA • TOTALMENTE ANÓNIMO Y SEGURO
                 </p>
 
-                <div className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-center mt-4">
+                <div className="text-sm font-black tracking-wider uppercase text-center mt-4">
                   <span className="text-[#36C4D8]">FORTALECE TU MENTE</span>
-                  <span className="text-gray-400 mx-2">•</span>
+                  <span className="text-gray-500 mx-2">•</span>
                   <span className="text-[#E86FA3]">TRANSFORMA TU VIDA</span>
                 </div>
               </section>
 
               {/* ECOSISTEMA BY TU PODER MENTAL MUJER */}
               <section id="ecosistema_branding" className="max-w-3xl mx-auto py-6">
-                <div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl border-2 border-dashed border-[#E86FA3]/30 bg-gradient-to-br from-white via-[#EDE0F0]/25 to-white shadow-[0_10px_30px_rgba(110,72,138,0.04)] text-center space-y-4">
+                <div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl border-2 border-dashed border-[#E86FA3]/50 bg-gradient-to-br from-white via-[#EDE0F0]/35 to-white shadow-[0_10px_30px_rgba(110,72,138,0.04)] text-center space-y-4">
                   <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-[#E86FA3]/5 rounded-full blur-2xl pointer-events-none" />
                   <div className="absolute -left-16 -top-16 w-32 h-32 bg-[#36C4D8]/5 rounded-full blur-2xl pointer-events-none" />
                   
-                  <div className="inline-flex items-center space-x-2 bg-[#E86FA3]/10 border border-[#E86FA3]/30 py-1 px-4 rounded-full">
+                  <div className="inline-flex items-center space-x-2 bg-[#E86FA3]/15 border border-[#E86FA3]/40 py-1 px-4 rounded-full">
                     <Sparkles className="w-4 h-4 text-[#E86FA3] animate-pulse" />
-                    <span className="text-xs font-mono font-extrabold text-[#E86FA3] uppercase tracking-widest">
+                    <span className="text-xs font-mono font-black text-[#E86FA3] uppercase tracking-widest">
                       ECOSISTEMA INTEGRAL FEMENINO
                     </span>
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="font-display font-black text-2xl sm:text-3xl text-[#411F66]">
+                    <h3 className="font-display font-black text-3xl sm:text-4xl text-[#1C0630]">
                       M.A.P.A. Mujer
                     </h3>
-                    <p className="text-xs sm:text-sm font-bold text-[#56346F]/80 uppercase tracking-widest">
+                    <p className="text-xs sm:text-sm font-black text-[#1C0630]/90 uppercase tracking-widest">
                       Mapa de Activación y Protección Emocional
                     </p>
                     <div className="h-0.5 w-16 bg-gradient-to-r from-[#E86FA3] to-[#36C4D8] mx-auto my-3" />
-                    <p className="font-display font-extrabold text-lg sm:text-xl text-[#E86FA3] tracking-wide">
+                    <p className="font-display font-black text-xl sm:text-2xl text-[#E86FA3] tracking-wide">
                       By Tu Poder Mental Mujer
                     </p>
-                    <p className="text-sm font-sans font-semibold text-[#0B152B]/85 max-w-xl mx-auto italic leading-relaxed">
+                    <p className="text-base font-sans font-black text-[#1C0630] max-w-xl mx-auto italic leading-relaxed">
                       "El Ecosistema Inteligente para el Bienestar Emocional Femenino"
                     </p>
                   </div>
 
-                  <p className="text-xs font-mono text-[#411F66]/80 leading-relaxed max-w-lg mx-auto uppercase font-bold tracking-wider">
+                  <p className="text-xs font-mono text-[#1C0630] leading-relaxed max-w-lg mx-auto uppercase font-black tracking-wider">
                     Fortalece tu mente • Reconecta contigo • Transforma tu vida
                   </p>
                 </div>
               </section>
 
               {/* FASE 2: IDENTIFICACIÓN - "M.A.P.A. es para ti si..." */}
-              <section id="landing_identification" className="space-y-8 bg-[#EDE0F0]/30 rounded-3xl p-8 border border-[#411F66]/12">
+              <section id="landing_identification" className="space-y-8 bg-[#EDE0F0]/50 rounded-3xl p-8 border-2 border-[#1C0630]/20">
                 <div className="text-center space-y-2">
-                  <h2 className="font-display font-black text-2xl md:text-3xl text-[#411F66]">Este M.A.P.A. es para ti si...</h2>
-                  <p className="text-sm text-[#0B152B]/85 max-w-lg mx-auto font-medium">Selecciona las tarjetas con las que te sientas identificada hoy para ver la calibración del radar.</p>
+                  <h2 className="font-display font-black text-3xl text-[#1C0630]">Este M.A.P.A. es para ti si...</h2>
+                  <p className="text-sm sm:text-base text-[#1C0630] max-w-lg mx-auto font-black">Selecciona las tarjetas con las que te sientas identificada hoy para ver la calibración del radar.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -3160,29 +3160,29 @@ export default function App() {
                       <div
                         key={card.id}
                         onClick={() => toggleLandingCheck(card.id)}
-                        className={`p-6 rounded-2xl cursor-pointer transition-all border text-left flex flex-col justify-between h-44 relative ${
+                        className={`p-6 rounded-2xl cursor-pointer transition-all border-2 text-left flex flex-col justify-between h-44 relative ${
                           isChecked 
                             ? "bg-white border-[#E86FA3] shadow-[0_0_25px_rgba(232,111,163,0.18)]" 
-                            : "bg-white/80 border-[#411F66]/10 hover:border-[#411F66]/25 hover:bg-white"
+                            : "bg-white border-[#1C0630]/20 hover:border-[#1C0630]/55 hover:bg-white"
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase bg-[#EDE0F0] text-[#411F66] px-2 py-0.5 rounded font-extrabold">
+                          <span className="text-xs font-mono uppercase bg-[#EDE0F0] text-[#1C0630] px-2 py-0.5 rounded font-black">
                             {card.tag}
                           </span>
                           <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                            isChecked ? "bg-[#E86FA3]" : "border border-[#411F66]/25"
+                            isChecked ? "bg-[#E86FA3]" : "border-2 border-[#1C0630]/25"
                           }`}>
                             {isChecked && <Check className="w-3 h-3 text-white stroke-[3]" />}
                           </div>
                         </div>
 
-                        <p className="text-sm text-[#0B152B] mt-4 leading-relaxed flex-1 font-semibold">
+                        <p className="text-base text-[#1C0630] mt-4 leading-relaxed flex-1 font-bold">
                           "{card.text}"
                         </p>
                         
                         {isChecked && (
-                          <span className="absolute bottom-3 right-4 flex items-center text-[10px] font-mono text-[#E86FA3] animate-pulse font-bold">
+                          <span className="absolute bottom-3 right-4 flex items-center text-[10px] font-mono text-[#E86FA3] animate-pulse font-black">
                             ● Alerta calibrando
                           </span>
                         )}
@@ -3327,20 +3327,20 @@ export default function App() {
               className="max-w-md mx-auto space-y-8 py-8"
             >
               <div className="text-center space-y-3">
-                <div className="mx-auto w-14 h-14 rounded-2xl bg-[#EDE0F0] border border-[#6E488A]/20 flex items-center justify-center shadow-md">
-                  <Lock className="w-6 h-6 text-[#36C4D8] animate-pulse" />
+                <div className="mx-auto w-14 h-14 rounded-2xl bg-[#EDE0F0] border-2 border-[#6E488A]/30 flex items-center justify-center shadow-md">
+                  <Lock className="w-6 h-6 text-[#127280] animate-pulse" />
                 </div>
-                <h2 className="font-display font-bold text-3xl text-[#6E488A]">
+                <h2 className="font-display font-black text-3xl sm:text-4xl text-[#1C0630]">
                   Identificación M.A.P.A.™
                 </h2>
-                <p className="text-[#56346F]/90 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed font-medium font-sans">
+                <p className="text-[#1C0630] text-sm sm:text-base max-w-sm mx-auto leading-relaxed font-black font-sans">
                   Ingresa tu correo para personalizar tus resultados, resguardar tus respuestas e imprimir tu reporte de orientación personalizado de 7 días.
                 </p>
               </div>
 
               <form 
                 onSubmit={handleUserLoginSubmit} 
-                className="glass-card p-8 rounded-3xl space-y-6 shadow-2xl text-left relative"
+                className="glass-card p-8 rounded-3xl space-y-6 shadow-2xl text-left relative border-2 border-[#1C0630]/25 bg-white"
               >
                 {/* Visual glow element behind */}
                 <div className="absolute top-0 right-0 w-24 h-24 bg-[#36C4D8]/5 rounded-full blur-2xl pointer-events-none" />
@@ -3348,18 +3348,18 @@ export default function App() {
                 <div className="space-y-4">
                   {/* Correo Electrónico */}
                   <div className="space-y-1">
-                    <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
+                    <label className="block text-xs font-mono text-[#1C0630] uppercase tracking-widest font-black">
                       Correo Electrónico
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E488A]/60" />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C0630]/60" />
                       <input 
                         type="email" 
                         required
                         placeholder="ejemplo@correo.com"
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
-                        className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all font-sans font-medium"
+                        className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] placeholder:text-gray-500 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#1C0630] font-black transition-all font-sans"
                       />
                     </div>
                   </div>
@@ -3377,9 +3377,9 @@ export default function App() {
                             <motion.div 
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs text-emerald-800 flex items-center space-x-2.5 font-sans font-medium"
+                              className="bg-emerald-50 border-2 border-emerald-300 p-3 rounded-xl text-xs text-emerald-950 flex items-center space-x-2.5 font-sans font-black"
                             >
-                              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 animate-bounce" />
                               <span>
                                 ¡Cuenta detectada! Recuperaremos tu perfil de <strong>{parsed.leadInfo?.nombre || "Usuaria"}</strong> ({completedCount} de 7 días listos).
                               </span>
@@ -3396,7 +3396,7 @@ export default function App() {
                           <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="bg-purple-50 border border-[#6E488A]/10 p-3 rounded-xl text-xs text-[#6E488A] flex items-center space-x-2.5 font-sans font-medium"
+                            className="bg-purple-50 border-2 border-[#6E488A]/20 p-3 rounded-xl text-xs text-[#1C0630] flex items-center space-x-2.5 font-sans font-black"
                           >
                             <Sparkles className="w-4 h-4 text-[#E36DB4] shrink-0" />
                             <span>¡Nuevo registro! Crearemos un M.A.P.A.™ completamente nuevo para ti.</span>
@@ -3415,11 +3415,11 @@ export default function App() {
                     
                     return (
                       <div className="space-y-1">
-                        <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
+                        <label className="block text-xs font-mono text-[#1C0630] uppercase tracking-widest font-black">
                           {isAdm ? "Contraseña de Administrador (Maestra)" : "Código de Acceso (6 caracteres)"}
                         </label>
                         <div className="relative">
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E488A]/60" />
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C0630]/60" />
                           <input 
                             type={isAdm ? "password" : "text"} 
                             required
@@ -3427,11 +3427,11 @@ export default function App() {
                             maxLength={isAdm ? 100 : 6}
                             value={loginAccessCode}
                             onChange={(e) => setLoginAccessCode(isAdm ? e.target.value : e.target.value.toUpperCase())}
-                            className={`w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all ${isAdm ? "font-sans" : "font-mono font-bold tracking-widest uppercase"}`}
+                            className={`w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] placeholder:text-gray-500 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#1C0630] transition-all ${isAdm ? "font-sans font-bold" : "font-mono font-black tracking-widest uppercase text-base"}`}
                           />
                         </div>
                         <div className="flex justify-between items-center pt-1">
-                          <span className="block text-[10px] text-[#56346F]/70 font-mono">
+                          <span className="block text-[11px] text-[#1C0630] font-mono font-bold leading-normal">
                             {isAdm ? "Protección exclusiva para el acceso de Administración M.A.P.A.™" : "Ingresa el código enviado tras tu compra en Hotmart."}
                           </span>
                           {!isAdm && (
@@ -3439,7 +3439,7 @@ export default function App() {
                               type="button"
                               onClick={handleRequestAccessCode}
                               disabled={isRequestingCode}
-                              className="text-[10px] text-[#36C4D8] hover:text-[#2DB3C7] transition-all font-mono font-bold underline bg-transparent border-none p-0 cursor-pointer inline-flex items-center"
+                              className="text-[11px] text-[#127280] hover:text-[#2DB3C7] transition-all font-mono font-black underline bg-transparent border-none p-0 cursor-pointer inline-flex items-center shrink-0"
                             >
                               {isRequestingCode ? "Enviando..." : "Solicitar/Recuperar Código"}
                             </button>
@@ -3458,11 +3458,11 @@ export default function App() {
                     return (
                       <div className="space-y-4">
                         <div className="space-y-1">
-                          <label className="block text-xs font-mono text-[#6E488A] uppercase tracking-widest font-bold">
+                          <label className="block text-xs font-mono text-[#1C0630] uppercase tracking-widest font-black">
                             ¿Cómo quieres que te llamemos?
                           </label>
                           <div className="relative">
-                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6E488A]/60" />
+                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C0630]/60" />
                             <input 
                               type="text" 
                               required
@@ -3470,13 +3470,13 @@ export default function App() {
                               value={loginAlias}
                               onChange={(e) => {
                                 const val = e.target.value;
-                                setLoginAlias(val);
-                                setLoginNombre(val);
+                                  setLoginAlias(val);
+                                  setLoginNombre(val);
                               }}
-                              className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#56346F] transition-all font-sans font-medium"
+                              className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] placeholder:text-gray-500 rounded-xl p-3.5 pl-11 text-sm outline-none text-[#1C0630] font-black transition-all font-sans"
                             />
                           </div>
-                          <span className="block text-[10px] text-[#56346F]/70 font-mono mt-0.5">
+                          <span className="block text-[11px] text-[#1C0630] font-mono font-bold">
                             Se usará para personalizar tus saludos y tarjetas en la plataforma, respetando tu privacidad.
                           </span>
                         </div>
@@ -3491,9 +3491,9 @@ export default function App() {
                     id="acceptTerms"
                     checked={loginTermsAccepted}
                     onChange={(e) => setLoginTermsAccepted(e.target.checked)}
-                    className="mt-1 accent-[#36C4D8] rounded"
+                    className="mt-1 accent-[#36C4D8] rounded scale-125 shrink-0"
                   />
-                  <label htmlFor="acceptTerms" className="text-xs text-[#56346F]/80 leading-normal font-sans cursor-pointer select-none font-medium">
+                  <label htmlFor="acceptTerms" className="text-xs sm:text-sm text-[#1C0630] leading-relaxed font-sans cursor-pointer select-none font-bold">
                     Doy mi consentimiento para procesar mis datos de autoconocimiento y recibir herramientas terapéuticas complementarias gratuitas.
                   </label>
                 </div>
@@ -3502,34 +3502,30 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={!loginTermsAccepted}
-                    className="w-full py-4 rounded-xl font-display font-extrabold tracking-wider text-slate-950 bg-gradient-to-r from-[#36C4D8] via-[#7BE3E8] to-[#36C4D8] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_25px_rgba(54,196,216,0.3)] flex items-center justify-center space-x-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none disabled:transform-none border-2 border-[#262222]"
+                    className="w-full py-4 rounded-xl font-display font-black tracking-wider text-[#1C0630] bg-gradient-to-r from-[#36C4D8] via-[#7BE3E8] to-[#36C4D8] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_25px_rgba(54,196,216,0.3)] flex items-center justify-center space-x-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none disabled:transform-none border-2 border-[#262222]"
                   >
-                    <span>
-                      {loginEmail && localStorage.getItem(`MAPA_USER_PROGRESS_${loginEmail.toLowerCase().trim()}`)
-                        ? "INGRESAR A MI MAPA (ACCEDER) ➔" 
-                        : "INGRESAR A MI MAPA (ACCEDER) ➔"}
-                    </span>
+                    <span>INGRESAR A MI MAPA (ACCEDER) ➔</span>
                   </button>
                 </div>
 
                 {/* WhatsApp Support Section */}
                 <div className="relative flex items-center pt-2">
-                  <div className="flex-grow border-t border-[#6E488A]/10"></div>
-                  <span className="flex-shrink mx-4 text-[10px] text-[#6E488A]/50 font-mono uppercase tracking-widest font-bold">¿Tienes problemas para ingresar?</span>
-                  <div className="flex-grow border-t border-[#6E488A]/10"></div>
+                  <div className="flex-grow border-t-2 border-[#1C0630]/10"></div>
+                  <span className="flex-shrink mx-4 text-[11px] text-[#1C0630] font-mono uppercase tracking-widest font-black">¿Tienes problemas para ingresar?</span>
+                  <div className="flex-grow border-t-2 border-[#1C0630]/10"></div>
                 </div>
 
-                <div className="bg-[#FAF7FC] border border-[#6E488A]/10 p-4 rounded-2xl space-y-3 text-center">
-                  <p className="text-xs text-[#56346F]/80 font-medium leading-relaxed">
+                <div className="bg-[#FAF7FC] border-2 border-[#1C0630]/15 p-4 rounded-2xl space-y-3 text-center">
+                  <p className="text-xs sm:text-sm text-[#1C0630] font-black leading-relaxed">
                     Si eres compradora y tienes inconvenientes para iniciar sesión o conseguir tu código, no te preocupes. Clara te ayudará de inmediato.
                   </p>
                   <a
                     href={`https://wa.me/573207739761?text=${encodeURIComponent("¡Hola, Clara! 😊\nNecesito tu ayuda para ingresar a *M.A.P.A.™ Mujer.* Este es el correo electrónico con el que realicé la compra: " + (loginEmail || ""))}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 rounded-xl font-sans font-bold text-xs text-white bg-[#25D366] hover:bg-[#20BA56] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm no-underline"
+                    className="w-full py-3.5 px-4 rounded-xl font-sans font-black text-xs sm:text-sm text-white bg-[#25D366] hover:bg-[#20BA56] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm no-underline"
                   >
-                    <MessageCircle className="w-4 h-4 text-white fill-current" />
+                    <MessageCircle className="w-4 h-4 text-white fill-current shrink-0" />
                     <span>SOPORTE POR WHATSAPP</span>
                   </a>
                 </div>
@@ -3538,7 +3534,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setPhase("LANDING")}
-                    className="text-xs text-[#6E488A]/80 hover:text-[#6E488A] transition-colors font-mono cursor-pointer bg-transparent border-none py-1 font-semibold"
+                    className="text-xs text-[#1C0630] hover:text-black transition-colors font-mono cursor-pointer bg-transparent border-none py-1 font-black underline"
                   >
                     ← Volver a la página principal
                   </button>
@@ -4323,20 +4319,20 @@ export default function App() {
                     {/* Questionnaire Progress and Header */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-mono uppercase bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/15 px-2.5 py-0.5 rounded-full font-bold">
+                        <span className="text-xs sm:text-sm font-mono uppercase bg-[#EDE0F0] text-[#3A185C] border-2 border-[#6E488A]/35 px-3 py-1 rounded-full font-black">
                           Día {programProgress.currentDay} • Pilar: {
                             currentQ.category === "activacion" ? "Nivel de Activación" :
                             currentQ.category === "detonantes" ? "Desencadenantes" :
                             currentQ.category === "patrones" ? "Patrones Mentales" : "Factores de Protección"
                           }
                         </span>
-                        <span className="text-xs font-mono text-[#56346F]/60">
+                        <span className="text-xs sm:text-sm font-mono text-[#3A185C] font-black bg-white border border-[#6E488A]/15 py-1 px-2.5 rounded-lg shadow-xs">
                           Pregunta {currentQuestionIndex + 1} de 7
                         </span>
                       </div>
 
                       {/* Progress bar visual */}
-                      <div className="w-full bg-[#FAF7F9] h-2.5 rounded-full overflow-hidden border border-[#6E488A]/12 relative">
+                      <div className="w-full bg-[#FAF7F9] h-3.5 rounded-full overflow-hidden border-2 border-[#6E488A]/20 relative shadow-inner">
                         <div 
                           className="bg-gradient-to-r from-[#36C4D8] via-[#E36DB4] to-[#6E488A] h-full rounded-full transition-all duration-300" 
                           style={{ width: `${((currentQuestionIndex + 1) / 7) * 100}%` }}
@@ -4348,34 +4344,34 @@ export default function App() {
                         />
                       </div>
 
-                      <div className="flex items-center justify-between text-[11px] font-mono text-[#56346F]/60">
-                        <span>Porcentaje Completo: <strong>{Math.round(((currentQuestionIndex + 1) / 7) * 100)}%</strong></span>
-                        <span>{7 - currentQuestionIndex - 1} restantes de hoy</span>
+                      <div className="flex items-center justify-between text-xs sm:text-sm font-mono text-[#3A185C] font-extrabold bg-[#FAF7F9] p-2.5 border border-[#6E488A]/12 rounded-xl">
+                        <span>Porcentaje Completo: <strong className="text-[#3A185C] font-black">{Math.round(((currentQuestionIndex + 1) / 7) * 100)}%</strong></span>
+                        <span className="text-[#E36DB4] font-black">{7 - currentQuestionIndex - 1} restantes de hoy</span>
                       </div>
                     </div>
 
                     {/* Companion Coaching Avatar UI */}
-                    <div className="bg-[#EDE0F0]/30 border border-[#6E488A]/12 rounded-2xl p-4 flex items-start space-x-3 text-left">
-                      <div className="w-9 h-9 rounded-full bg-[#EDE0F0] flex items-center justify-center border border-[#6E488A]/15 shrink-0">
-                        <Sparkles className="w-4 h-4 text-[#E36DB4]" />
+                    <div className="bg-[#EDE0F0]/50 border-2 border-[#6E488A]/25 rounded-2xl p-5 flex items-start space-x-3.5 text-left shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-2 border-[#6E488A]/30 shadow-xs shrink-0">
+                        <Sparkles className="w-5 h-5 text-[#E36DB4]" />
                       </div>
                       <div className="space-y-1">
-                        <p className="text-[10px] font-mono text-[#6E488A] uppercase tracking-widest font-semibold">Mentora Clara • Tu Guía Emocional</p>
-                        <p className="text-xs text-[#56346F]/85 leading-relaxed italic">
+                        <p className="text-[11px] sm:text-xs font-mono text-[#3A185C] uppercase tracking-wider font-black">Mentora Clara • Tu Guía Emocional</p>
+                        <p className="text-xs sm:text-sm text-[#3A185C] leading-relaxed italic font-bold">
                           "{getCBTAdvice()}"
                         </p>
                       </div>
                     </div>
 
                     {/* The Active Question Card Display */}
-                    <div className="bg-white border border-[#6E488A]/12 rounded-3xl p-8 space-y-8 min-h-[350px] flex flex-col justify-between text-left shadow-sm">
+                    <div className="bg-white border-2 border-[#6E488A]/15 rounded-3xl p-8 space-y-8 min-h-[350px] flex flex-col justify-between text-left shadow-md">
                       
                       <div className="space-y-3">
-                        <h3 className="font-display font-medium text-xl sm:text-2xl text-[#6E488A] leading-snug">
+                        <h3 className="font-display font-black text-xl sm:text-2xl text-[#3A185C] leading-snug">
                           {currentQ.text}
                         </h3>
                         {currentQ.subtext && (
-                          <p className="text-sm text-[#56346F]/70 font-sans">
+                          <p className="text-sm sm:text-base text-[#3A185C]/90 font-sans font-semibold leading-relaxed">
                             {currentQ.subtext}
                           </p>
                         )}
@@ -4386,17 +4382,17 @@ export default function App() {
                         
                         {/* TYPE: EMOJI */}
                         {currentQ.type === "emoji" && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             {currentQ.options?.map((opt) => (
                               <button
                                 key={opt.value}
                                 onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="p-4 rounded-xl bg-[#FAF7F9] border border-[#6E488A]/8 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/30 transition-all text-left flex items-center space-x-4 cursor-pointer group"
+                                className="p-4 sm:p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/30 transition-all text-left flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
                               >
-                                <span className="text-3xl group-hover:scale-125 transition-all outline-none animate-fadeIn" role="img">
+                                <span className="text-3xl sm:text-4xl group-hover:scale-125 transition-all outline-none animate-fadeIn" role="img">
                                   {opt.emoji}
                                 </span>
-                                <span className="text-xs text-[#56346F]/80 font-medium group-hover:text-[#6E488A]">
+                                <span className="text-xs sm:text-sm text-[#3A185C] font-black group-hover:text-[#3A185C]">
                                   {opt.label}
                                 </span>
                               </button>
@@ -4407,25 +4403,25 @@ export default function App() {
                         {/* TYPE: SCALE */}
                         {currentQ.type === "scale" && (
                           <div className="space-y-6">
-                            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2.5">
                               {currentQ.options?.map((opt) => (
                                 <button
                                   key={opt.value}
                                   onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                  className="h-12 w-full rounded-xl bg-[#FAF7F9] border border-[#6E488A]/8 hover:border-[#36C4D8] hover:bg-[#36C4D8] hover:text-white transition-all text-sm font-mono flex items-center justify-center text-[#56346F]/85 font-bold cursor-pointer"
+                                  className="h-12 w-full rounded-xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#36C4D8] hover:text-white transition-all text-sm sm:text-base font-mono flex items-center justify-center text-[#3A185C] font-black cursor-pointer shadow-sm hover:shadow-md"
                                 >
                                   {opt.label}
                                 </button>
                               ))}
                             </div>
-                            <div className="flex justify-between items-center text-xs font-mono text-[#56346F]/50">
-                              <span className="flex items-center space-x-1">
-                                <ChevronLeft className="w-3 h-3 text-[#E36DB4]" />
+                            <div className="flex justify-between items-center text-xs sm:text-sm font-mono text-[#3A185C] font-black">
+                              <span className="flex items-center space-x-1.5 bg-[#FAF7F9] px-2.5 py-1 rounded-lg border border-[#6E488A]/12">
+                                <ChevronLeft className="w-4 h-4 text-[#E36DB4]" />
                                 <span>{currentQ.minLabel || "Mínimo"}</span>
                               </span>
-                              <span className="flex items-center space-x-1">
+                              <span className="flex items-center space-x-1.5 bg-[#FAF7F9] px-2.5 py-1 rounded-lg border border-[#6E488A]/12">
                                 <span>{currentQ.maxLabel || "Máximo"}</span>
-                                <ChevronRight className="w-3 h-3 text-[#36C4D8]" />
+                                <ChevronRight className="w-4 h-4 text-[#36C4D8]" />
                               </span>
                             </div>
                           </div>
@@ -4438,13 +4434,13 @@ export default function App() {
                               <button
                                 key={opt.value}
                                 onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="p-5 rounded-xl bg-[#FAF7F9] border border-[#6E488A]/8 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex flex-col justify-between h-36 cursor-pointer group"
+                                className="p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex flex-col justify-between h-36 cursor-pointer group shadow-sm hover:shadow-md"
                               >
                                 <div className="flex items-center justify-between w-full">
-                                  <span className="text-2xl group-hover:rotate-12 transition-all">{opt.emoji}</span>
+                                  <span className="text-2xl sm:text-3xl group-hover:rotate-12 transition-all">{opt.emoji}</span>
                                   <div className="w-5 h-5 rounded-full border border-[#36C4D8]/30 group-hover:bg-[#36C4D8]/10" />
                                 </div>
-                                <span className="text-xs text-[#56346F]/85 mt-2 font-medium leading-relaxed group-hover:text-[#6E488A]">
+                                <span className="text-xs sm:text-sm text-[#3A185C] mt-2 font-black leading-relaxed group-hover:text-[#3A185C]">
                                   {opt.label}
                                 </span>
                               </button>
@@ -4454,15 +4450,15 @@ export default function App() {
 
                         {/* TYPE: SCENARIOS (SITUACIONES REALES) */}
                         {currentQ.type === "scenario" && (
-                          <div className="space-y-2.5">
+                          <div className="space-y-3">
                             {currentQ.options?.map((opt) => (
                               <button
                                 key={opt.value}
                                 onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="w-full p-4 rounded-xl bg-[#FAF7F9] border border-[#6E488A]/8 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex items-center space-x-3 cursor-pointer group"
+                                className="w-full p-4 sm:p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex items-center space-x-3 cursor-pointer group shadow-sm hover:shadow-md"
                               >
-                                <span className="text-xl bg-[#EDE0F0]/50 p-1.5 rounded-lg text-[#6E488A] group-hover:bg-[#36C4D8] group-hover:text-white transition-all">{opt.emoji}</span>
-                                <span className="text-xs text-[#56346F]/85 leading-relaxed font-semibold group-hover:text-[#6E488A]">
+                                <span className="text-xl sm:text-2xl bg-[#EDE0F0] p-2 rounded-xl text-[#3A185C] font-black group-hover:bg-[#36C4D8] group-hover:text-white transition-all">{opt.emoji}</span>
+                                <span className="text-xs sm:text-sm text-[#3A185C] leading-relaxed font-black group-hover:text-[#3A185C]">
                                   {opt.label}
                                 </span>
                               </button>
@@ -4477,12 +4473,12 @@ export default function App() {
                               <button
                                 key={opt.value}
                                 onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="w-full p-4 rounded-xl bg-[#FAF7F9] border border-[#6E488A]/8 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex items-center justify-between cursor-pointer group"
+                                className="w-full p-4 sm:p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex items-center justify-between cursor-pointer group shadow-sm hover:shadow-md"
                               >
-                                <span className="text-xs text-[#56346F]/80 group-hover:text-[#6E488A] font-medium">
+                                <span className="text-xs sm:text-sm text-[#3A185C] group-hover:text-[#3A185C] font-black">
                                   {opt.label}
                                 </span>
-                                <ChevronRight className="w-4 h-4 text-[#56346F]/50 group-hover:text-[#36C4D8] transition-all" />
+                                <ChevronRight className="w-5 h-5 text-[#3A185C] group-hover:text-[#36C4D8] transition-all" />
                               </button>
                             ))}
                           </div>
@@ -4491,18 +4487,20 @@ export default function App() {
                       </div>
 
                       {/* Back button and indicators */}
-                      <div className="flex items-center justify-between border-t border-[#6E488A]/12 pt-4 text-xs font-mono text-[#56346F]/60">
+                      <div className="flex items-center justify-between border-t-2 border-[#6E488A]/15 pt-4 text-xs sm:text-sm font-mono text-[#3A185C] font-extrabold">
                         <button
                           onClick={handlePrevQuestion}
                           disabled={currentQuestionIndex === 0}
                           className={`flex items-center space-x-1.5 ${
-                            currentQuestionIndex === 0 ? "opacity-30 cursor-not-allowed" : "hover:text-[#6E488A] cursor-pointer font-bold"
+                            currentQuestionIndex === 0 ? "opacity-35 cursor-not-allowed" : "hover:text-[#E36DB4] cursor-pointer font-black"
                           }`}
                         >
-                          <ChevronLeft className="w-4 h-4" />
+                          <ChevronLeft className="w-5 h-5" />
                           <span>Anterior</span>
                         </button>
-                        <span className="font-semibold">Día {programProgress.currentDay} / 7 de Autoconocimiento</span>
+                        <span className="font-black bg-[#EDE0F0] px-2.5 py-1 rounded-lg text-[#3A185C] border border-[#6E488A]/15">
+                          Día {programProgress.currentDay} / 7 de Autoconocimiento
+                        </span>
                       </div>
 
                     </div>
@@ -5155,18 +5153,18 @@ export default function App() {
 
               {/* FASE 12: CAPTURA DE LEAD PARA INFORME COMPLETO (Dual WhatsApp / Email) */}
               {!leadCaptured ? (
-                <section id="lead_capture" className="bg-white border-2 border-[#36C4D8] p-8 rounded-3xl max-w-xl mx-auto text-left space-y-6 relative overflow-hidden shadow-xl">
+                <section id="lead_capture" className="bg-white border-3 border-[#36C4D8] p-8 rounded-3xl max-w-xl mx-auto text-left space-y-6 relative overflow-hidden shadow-xl">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-[#36C4D8]/10 rounded-full blur-3xl pointer-events-none" />
                   
                   <div className="space-y-2">
-                    <div className="inline-flex items-center space-x-2 bg-[#36C4D8]/15 text-[#36C4D8] py-1 px-3 rounded-full text-[10px] font-mono uppercase tracking-wider font-bold border border-[#36C4D8]/30">
-                      <Lock className="w-3 h-3 animate-pulse" />
+                    <div className="inline-flex items-center space-x-2 bg-[#36C4D8]/20 text-[#127280] py-1 px-3 rounded-full text-xs font-mono uppercase tracking-wider font-black border border-[#36C4D8]/40">
+                      <Lock className="w-3.5 h-3.5 animate-pulse" />
                       <span>Reporte Técnico y Clínico Avanzado</span>
                     </div>
-                    <h3 className="font-display font-semibold text-2xl text-[#6E488A] tracking-tight">
+                    <h3 className="font-display font-black text-2xl sm:text-3xl text-[#1C0630] tracking-tight">
                       Desbloquea tus 49 Marcadores Biológicos
                     </h3>
-                    <p className="text-[#56346F]/85 text-xs sm:text-sm leading-relaxed">
+                    <p className="text-[#1C0630] text-sm sm:text-base leading-relaxed font-bold">
                       La Mentora Clara ha compilado tu informe completo de 12 páginas con tus anclas cerebrales, análisis cognitivo-conductual de reactividad y el plan definitivo de descompresión simpática. Elige tu canal preferido para recibirlo de inmediato:
                     </p>
                   </div>
@@ -5175,15 +5173,15 @@ export default function App() {
                     <div className="py-12 text-center space-y-4">
                       <div className="w-14 h-14 border-4 border-[#36C4D8] border-t-transparent rounded-full animate-spin mx-auto" />
                       <div className="space-y-1">
-                        <p className="text-sm font-semibold text-[#6E488A]">Compilando y firmando tu expediente clínico...</p>
-                        <p className="text-xs text-[#36C4D8] font-mono animate-pulse">{emailSendingStep}</p>
+                        <p className="text-base font-black text-[#1C0630]">Compilando y firmando tu expediente clínico...</p>
+                        <p className="text-sm text-[#27A1B2] font-mono font-bold animate-pulse">{emailSendingStep}</p>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-4 pt-2">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label htmlFor="nombre" className="block text-xs font-mono text-[#56346F]/70 uppercase font-bold">Nombre Completo</label>
+                          <label htmlFor="nombre" className="block text-xs font-mono text-[#1C0630] uppercase font-black">Nombre Completo</label>
                           <input 
                             type="text" 
                             id="nombre"
@@ -5191,12 +5189,12 @@ export default function App() {
                             placeholder="Ej. Sofía Valenzuela"
                             value={leadInfo.nombre}
                             onChange={(e)=>setLeadInfo(prev=>({...prev, nombre: e.target.value}))}
-                            className="w-full bg-[#FAF7F9] border border-[#6E488A]/20 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#56346F]/40 rounded-xl p-3.5 text-sm outline-none text-[#56346F] transition-all font-sans"
+                            className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#1C0630]/50 rounded-xl p-3.5 text-sm outline-none text-[#1C0630] font-bold transition-all font-sans"
                           />
                         </div>
                         
                         <div className="space-y-1">
-                          <label htmlFor="email" className="block text-xs font-mono text-[#56346F]/70 uppercase font-bold">Correo Electrónico</label>
+                          <label htmlFor="email" className="block text-xs font-mono text-[#1C0630] uppercase font-black">Correo Electrónico</label>
                           <input 
                             type="email" 
                             id="email"
@@ -5204,14 +5202,14 @@ export default function App() {
                             placeholder="Ej. sofia@gmail.com"
                             value={leadInfo.email}
                             onChange={(e)=>setLeadInfo(prev=>({...prev, email: e.target.value}))}
-                            className="w-full bg-[#FAF7F9] border border-[#6E488A]/20 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#56346F]/40 rounded-xl p-3.5 text-sm outline-none text-[#56346F] transition-all font-sans"
+                            className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#1C0630]/50 rounded-xl p-3.5 text-sm outline-none text-[#1C0630] font-bold transition-all font-sans"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label htmlFor="confirmEmail" className="block text-xs font-mono text-[#56346F]/70 uppercase font-bold">Confirmar Correo</label>
+                          <label htmlFor="confirmEmail" className="block text-xs font-mono text-[#1C0630] uppercase font-black">Confirmar Correo</label>
                           <input 
                             type="email" 
                             id="confirmEmail"
@@ -5219,17 +5217,17 @@ export default function App() {
                             placeholder="Ej. sofia@gmail.com"
                             value={confirmEmail}
                             onChange={(e)=>setConfirmEmail(e.target.value)}
-                            className="w-full bg-[#FAF7F9] border border-[#6E488A]/20 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#56346F]/40 rounded-xl p-3.5 text-sm outline-none text-[#56346F] transition-all font-sans"
+                            className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#1C0630]/50 rounded-xl p-3.5 text-sm outline-none text-[#1C0630] font-bold transition-all font-sans"
                           />
                         </div>
 
                         <div className="space-y-1">
-                          <label className="block text-xs font-mono text-[#56346F]/70 uppercase font-bold">Número de WhatsApp</label>
+                          <label className="block text-xs font-mono text-[#1C0630] uppercase font-black">Número de WhatsApp</label>
                           <div className="flex space-x-1.5">
                             <select
                               value={whatsappCountryCode}
                               onChange={(e)=>setWhatsappCountryCode(e.target.value)}
-                              className="bg-[#FAF7F9] border border-[#6E488A]/20 rounded-xl text-xs p-2 text-[#56346F] focus:border-[#36C4D8] outline-none"
+                              className="bg-[#FAF7F9] border-2 border-[#6E488A]/25 rounded-xl text-xs p-2 text-[#1C0630] font-bold focus:border-[#36C4D8] outline-none"
                             >
                               <option value="+34">🇪🇸 +34</option>
                               <option value="+52">🇲🇽 +52</option>
@@ -5248,20 +5246,20 @@ export default function App() {
                               placeholder="612345678"
                               value={whatsappNumber}
                               onChange={(e)=>setWhatsappNumber(e.target.value)}
-                              className="w-full bg-[#FAF7F9] border border-[#6E488A]/20 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#56346F]/40 rounded-xl p-3.5 text-sm outline-none text-[#56346F] transition-all font-sans"
+                              className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#1C0630]/50 rounded-xl p-3.5 text-sm outline-none text-[#1C0630] font-bold transition-all font-sans"
                             />
                           </div>
                         </div>
                       </div>
 
                       {/* Remitente Info Box */}
-                      <div className="bg-[#36C4D8]/5 border border-[#36C4D8]/20 p-4 rounded-2xl text-xs space-y-1">
-                        <div className="flex items-center space-x-2 text-[#36C4D8] font-bold">
+                      <div className="bg-[#36C4D8]/10 border border-[#36C4D8]/30 p-4 rounded-2xl text-xs space-y-1">
+                        <div className="flex items-center space-x-2 text-[#127280] font-black text-sm">
                           <Mail className="w-4 h-4 text-[#36C4D8] shrink-0" />
                           <span>Remisión y Seguridad Garantizada:</span>
                         </div>
-                        <p className="text-[#56346F]/80 pl-6 leading-relaxed">
-                          Recibirás el PDF remitido directamente de <strong className="text-[#36C4D8] font-mono select-all font-semibold">mapa@podermentalia.club</strong> o vía nuestro canal oficial verificado de WhatsApp.
+                        <p className="text-[#1C0630] pl-6 leading-relaxed font-bold">
+                          Recibirás el PDF remitido directamente de <strong className="text-[#27A1B2] font-mono select-all font-extrabold">mapa@podermentalia.club</strong> o vía nuestro canal oficial verificado de WhatsApp.
                         </p>
                       </div>
 
@@ -5270,7 +5268,7 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => handleDualLeadSubmit("whatsapp")}
-                          className="w-full py-4 rounded-xl font-display font-bold tracking-wider bg-emerald-600 hover:bg-emerald-700 transition-all text-white cursor-pointer text-center text-xs shadow-md border border-emerald-500 inline-flex items-center justify-center space-x-2"
+                          className="w-full py-4 rounded-xl font-display font-black tracking-wider bg-emerald-600 hover:bg-emerald-700 transition-all text-white cursor-pointer text-center text-xs shadow-md border border-emerald-500 inline-flex items-center justify-center space-x-2"
                         >
                           <Smartphone className="w-4 h-4 shrink-0 text-white" />
                           <span>ENVIAR REPORTE VÍA WHATSAPP</span>
@@ -5279,14 +5277,14 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => handleDualLeadSubmit("email")}
-                          className="w-full py-4 rounded-xl font-display font-bold tracking-wider bg-gradient-to-r from-[#36C4D8] to-[#E36DB4] hover:opacity-95 transition-all text-white cursor-pointer text-center text-xs shadow-md border border-[#36C4D8]/30 inline-flex items-center justify-center space-x-2"
+                          className="w-full py-4 rounded-xl font-display font-black tracking-wider bg-gradient-to-r from-[#36C4D8] to-[#E36DB4] hover:opacity-95 transition-all text-white cursor-pointer text-center text-xs shadow-md border border-[#36C4D8]/30 inline-flex items-center justify-center space-x-2"
                         >
                           <Mail className="w-4 h-4 shrink-0 text-white" />
                           <span>ENVIAR REPORTE VÍA EMAIL</span>
                         </button>
                       </div>
                       
-                      <p className="text-[10px] text-[#56346F]/50 font-mono text-center">
+                      <p className="text-[10px] text-[#1C0630]/70 font-mono text-center font-bold">
                         🔒 Tratamiento de datos bajo secreto profesional. Nunca compartimos tu información personal.
                       </p>
                     </div>
@@ -5413,43 +5411,45 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <footer id="app_footer" className="bg-[#000000] px-6 py-8 border-t border-white/10 relative z-10 text-white/60">
-        <div className="max-w-5xl mx-auto space-y-4">
-          <div className="flex flex-col justify-center items-center gap-4 text-center border-b border-white/5 pb-4">
-            <div className="w-full text-center">
-              <p className="text-xs font-bold text-[#E86FA3] tracking-wider uppercase font-display text-center">
-                M.A.P.A.™ Mujer • By Tu Poder Mental Mujer
-              </p>
-              <p className="text-[10px] text-white/50 text-center max-w-2xl mx-auto mt-1">
-                El Ecosistema Inteligente para el Bienestar Emocional Femenino. Fortalece tu mente - Reconecta contigo - Transforma tu vida.
-              </p>
+      {!(focusMode && phase === "DASHBOARD") && (
+        <footer id="app_footer" className="bg-[#000000] px-6 py-8 border-t border-white/10 relative z-10 text-white/60">
+          <div className="max-w-5xl mx-auto space-y-4">
+            <div className="flex flex-col justify-center items-center gap-4 text-center border-b border-white/5 pb-4">
+              <div className="w-full text-center">
+                <p className="text-xs font-bold text-[#E86FA3] tracking-wider uppercase font-display text-center">
+                  M.A.P.A.™ Mujer • By Tu Poder Mental Mujer
+                </p>
+                <p className="text-[10px] text-white/50 text-center max-w-2xl mx-auto mt-1">
+                  El Ecosistema Inteligente para el Bienestar Emocional Femenino. Fortalece tu mente - Reconecta contigo - Transforma tu vida.
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <div className="space-y-1">
-              <p className="text-xs font-mono text-white/60">© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
-              <p className="text-[10px] text-white/40 font-sans leading-relaxed max-w-md">
-                Aviso legal: M.A.P.A.™ no sustituye el consejo clínico, diagnóstico ni tratamiento de profesionales sanitarios o de salud mental. Si experimentas síntomas agudos de emergencia psicológica, por favor consulta de inmediato con un psiquiatra o servicio oficial de urgencias.
-              </p>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+              <div className="space-y-1">
+                <p className="text-xs font-mono text-white/60">© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
+                <p className="text-[10px] text-white/40 font-sans leading-relaxed max-w-md">
+                  Aviso legal: M.A.P.A.™ no sustituye el consejo clínico, diagnóstico ni tratamiento de profesionales sanitarios o de salud mental. Si experimentas síntomas agudos de emergencia psicológica, por favor consulta de inmediato con un psiquiatra o servicio oficial de urgencias.
+                </p>
+              </div>
+              <div className="flex space-x-4 text-xs font-mono text-white/50">
+              <button 
+                onClick={() => setActiveDocumentModal("PRIVACY")}
+                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white/50 font-mono text-xs outline-none"
+              >
+                Política de Privacidad
+              </button>
+              <span>•</span>
+              <button 
+                onClick={() => setActiveDocumentModal("TERMS")}
+                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white/50 font-mono text-xs outline-none"
+              >
+                Términos de la Experiencia
+              </button>
             </div>
-            <div className="flex space-x-4 text-xs font-mono text-white/50">
-            <button 
-              onClick={() => setActiveDocumentModal("PRIVACY")}
-              className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white/50 font-mono text-xs outline-none"
-            >
-              Política de Privacidad
-            </button>
-            <span>•</span>
-            <button 
-              onClick={() => setActiveDocumentModal("TERMS")}
-              className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white/50 font-mono text-xs outline-none"
-            >
-              Términos de la Experiencia
-            </button>
           </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+      )}
 
       {/* LEGAL AGREEMENTS MODALS */}
       <TermsAndPrivacy
@@ -5507,48 +5507,50 @@ export default function App() {
       </AnimatePresence>
 
       {/* FLOATING ACTION UTILITIES CONTAINER */}
-      <div className="fixed bottom-6 right-6 z-[999] flex items-center gap-3">
-        {/* Floating Alarm Toggle Button */}
-        <motion.button
-          onClick={() => setAlarmPanelOpen(!alarmPanelOpen)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className={`p-3 sm:p-3.5 rounded-full border-2 border-white shadow-xl text-white flex items-center justify-center cursor-pointer transition-all ${
-            activeTaskAlarm && activeTaskAlarm.isRunning 
-              ? "bg-emerald-500 hover:bg-emerald-600 animate-pulse" 
-              : "bg-[#411F66] hover:bg-[#522b7d]"
-          }`}
-          title="Sintonizador de Alarmas y Recordatorios"
-        >
-          {activeTaskAlarm && activeTaskAlarm.isRunning ? (
-            <div className="relative">
-              <Bell className="w-5 h-5 animate-bounce" />
-              <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-red-500 rounded-full border border-white flex items-center justify-center text-[7px] font-black">
-                !
-              </span>
-            </div>
-          ) : (
-            <Bell className="w-5 h-5" />
-          )}
-        </motion.button>
+      {!(focusMode && phase === "DASHBOARD") && (
+        <div className="fixed bottom-6 right-6 z-[999] flex items-center gap-3">
+          {/* Floating Alarm Toggle Button */}
+          <motion.button
+            onClick={() => setAlarmPanelOpen(!alarmPanelOpen)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className={`p-3 sm:p-3.5 rounded-full border-2 border-white shadow-xl text-white flex items-center justify-center cursor-pointer transition-all ${
+              activeTaskAlarm && activeTaskAlarm.isRunning 
+                ? "bg-emerald-500 hover:bg-emerald-600 animate-pulse" 
+                : "bg-[#411F66] hover:bg-[#522b7d]"
+            }`}
+            title="Sintonizador de Alarmas y Recordatorios"
+          >
+            {activeTaskAlarm && activeTaskAlarm.isRunning ? (
+              <div className="relative">
+                <Bell className="w-5 h-5 animate-bounce" />
+                <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-red-500 rounded-full border border-white flex items-center justify-center text-[7px] font-black">
+                  !
+                </span>
+              </div>
+            ) : (
+              <Bell className="w-5 h-5" />
+            )}
+          </motion.button>
 
-        {/* Back to top indicator */}
-        <AnimatePresence>
-          {showScrollTop && (
-            <motion.button
-              key="scroll-to-top"
-              initial={{ opacity: 0, scale: 0.8, x: 20 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.8, x: 20 }}
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="p-3 sm:p-3.5 rounded-full bg-[#E86FA3] text-white border-2 border-white shadow-xl hover:bg-[#d55d91] hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group"
-              title="Volver arriba"
-            >
-              <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
+          {/* Back to top indicator */}
+          <AnimatePresence>
+            {showScrollTop && (
+              <motion.button
+                key="scroll-to-top"
+                initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.8, x: 20 }}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="p-3 sm:p-3.5 rounded-full bg-[#E86FA3] text-white border-2 border-white shadow-xl hover:bg-[#d55d91] hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group"
+                title="Volver arriba"
+              >
+                <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* ALARM MANAGER DRAWER / SHEET */}
       <AnimatePresence>

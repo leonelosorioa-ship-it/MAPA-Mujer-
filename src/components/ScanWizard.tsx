@@ -153,22 +153,22 @@ export const ScanWizard: React.FC<ScanWizardProps> = ({ onScanComplete, onBackTo
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#36C4D8] animate-ping inline-block shrink-0" />
-            <span className="text-[10px] font-mono uppercase bg-[#EDE0F0] text-[#6E488A] px-2.5 py-1 rounded-md font-bold tracking-wider">
+            <span className="text-xs font-mono uppercase bg-[#EDE0F0] text-[#3A185C] border border-[#6E488A]/30 px-3 py-1 rounded-md font-black tracking-wider">
               {currentQ.pilar}
             </span>
           </div>
-          <span className="text-xs font-mono text-[#56346F] font-semibold uppercase">
+          <span className="text-xs sm:text-sm font-mono text-[#3A185C] font-black uppercase bg-white border border-[#6E488A]/15 px-2.5 py-1 rounded-lg">
             Escaneo {currentIndex + 1} de 7
           </span>
         </div>
 
         {/* Customized Progress Track */}
-        <div className="w-full bg-[#EDE0F0]/50 h-3 rounded-full overflow-hidden border border-[#6E488A]/10 relative shadow-inner">
+        <div className="w-full bg-[#EDE0F0]/50 h-3.5 rounded-full overflow-hidden border-2 border-[#6E488A]/15 relative shadow-inner">
           <motion.div
             initial={{ width: "0%" }}
             animate={{ width: `${progressPercent}%` }}
             transition={{ type: "spring", stiffness: 80, damping: 15 }}
-            className="h-full bg-[#36C4D8]"
+            className="h-full bg-gradient-to-r from-[#36C4D8] to-[#E36DB4]"
           />
         </div>
       </div>
@@ -191,19 +191,19 @@ export const ScanWizard: React.FC<ScanWizardProps> = ({ onScanComplete, onBackTo
             <div className="flex items-center space-x-3.5">
               <span className="text-[2.2rem] shrink-0">{currentQ.icon}</span>
               <div>
-                <h3 className="font-display font-bold text-xl sm:text-2xl text-[#6E488A] tracking-tight">
+                <h3 className="font-display font-black text-xl sm:text-2xl text-[#3A185C] tracking-tight">
                   {currentQ.title}
                 </h3>
-                <span className="text-[10px] font-mono text-[#E36DB4] tracking-widest font-bold block uppercase mt-0.5">
+                <span className="text-xs font-mono text-[#E36DB4] tracking-widest font-black block uppercase mt-0.5">
                   ESCANEAR FACTOR
                 </span>
               </div>
             </div>
 
-            <p className="text-base text-[#56346F] pt-3 leading-relaxed font-sans font-medium">
+            <p className="text-lg text-[#3A185C] pt-3 leading-relaxed font-sans font-black">
               {currentQ.subtitle}
             </p>
-            <p className="text-xs text-[#56346F]/80 italic font-sans font-light">
+            <p className="text-sm text-[#3A185C]/90 italic font-sans font-semibold bg-[#FAF7F9] p-3 rounded-xl border border-[#6E488A]/10 mt-2">
               💡 {currentQ.desc}
             </p>
           </div>
@@ -218,24 +218,24 @@ export const ScanWizard: React.FC<ScanWizardProps> = ({ onScanComplete, onBackTo
                 <button
                   key={opt.value}
                   onClick={() => handleSelectOption(opt.value, opt.label)}
-                  className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all duration-250 cursor-pointer ${
+                  className={`w-full p-4 rounded-2xl border-2 text-left flex items-center justify-between transition-all duration-250 cursor-pointer ${
                     isSelected
                       ? "bg-[#36C4D8]/10 border-[#36C4D8] shadow-[0_4px_15px_rgba(54,196,216,0.15)] scale-[1.01]"
-                      : "bg-white/80 border-[#6E488A]/10 hover:border-[#6E488A]/25 hover:bg-white"
+                      : "bg-white/80 border-[#6E488A]/15 hover:border-[#36C4D8] hover:bg-white"
                   }`}
                 >
                   <div className="flex items-center space-x-3 w-[90%]">
-                    <span className="text-xl sm:text-2xl bg-[#EDE0F0]/50 p-1.5 rounded-xl shrink-0">
+                    <span className="text-xl sm:text-2xl bg-[#EDE0F0]/70 p-2 rounded-xl shrink-0 border border-[#6E488A]/15">
                       {opt.emoji}
                     </span>
-                    <span className={`text-xs sm:text-sm leading-snug font-semibold font-sans ${
-                      isSelected ? "text-[#6E488A]" : "text-[#56346F]"
+                    <span className={`text-xs sm:text-sm leading-snug font-black font-sans ${
+                      isSelected ? "text-[#3A185C]" : "text-[#3A185C]/90"
                     }`}>
                       {opt.label}
                     </span>
                   </div>
-                  <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${
-                    isSelected ? "translate-x-1 text-[#36C4D8]" : "text-gray-400"
+                  <ChevronRight className={`w-5 h-5 shrink-0 transition-transform ${
+                    isSelected ? "translate-x-1 text-[#36C4D8]" : "text-[#3A185C]"
                   }`} />
                 </button>
               );
@@ -248,12 +248,12 @@ export const ScanWizard: React.FC<ScanWizardProps> = ({ onScanComplete, onBackTo
       <div className="flex items-center justify-between pt-2">
         <button
           onClick={handleGoBack}
-          className="px-5 py-2.5 rounded-xl bg-transparent border border-[#6E488A]/20 text-xs sm:text-sm font-semibold text-[#6E488A] hover:bg-[#EDE0F0]/50 hover:border-[#6E488A]/40 transition-all cursor-pointer"
+          className="px-5 py-2.5 rounded-xl bg-transparent border-2 border-[#6E488A]/35 text-xs sm:text-sm font-black text-[#3A185C] hover:bg-[#EDE0F0]/50 hover:border-[#36C4D8] transition-all cursor-pointer shadow-xs"
         >
           ← {currentIndex === 0 ? "Cancelar Escaneo" : "Volver"}
         </button>
 
-        <p className="text-[10px] font-mono text-[#56346F]/60 max-w-[150px] text-right">
+        <p className="text-xs font-mono text-[#3A185C] font-extrabold max-w-[150px] text-right">
           M.A.P.A.™ Escaneo de Activación y Alerta
         </p>
       </div>
