@@ -226,6 +226,7 @@ export default function App() {
     hasDownloadedApp?: boolean;
     unlockedAudios?: string[];
     onboardingCompletado?: boolean;
+    exerciseLogs?: Array<{ taskName: string; timestamp: string; feeling: string }>;
   }>(() => {
     const activeEmail = localStorage.getItem("MAPA_CURRENT_USER_EMAIL") || "";
     if (activeEmail) {
@@ -531,6 +532,45 @@ export default function App() {
   const [testReminderFired, setTestReminderFired] = useState<boolean>(false);
   const [activeTaskAlarm, setActiveTaskAlarm] = useState<{ taskName: string; secondsLeft: number; isRunning: boolean } | null>(null);
   const [alarmPanelOpen, setAlarmPanelOpen] = useState<boolean>(false);
+  const [completedTaskFeedback, setCompletedTaskFeedback] = useState<{ taskName: string; timestamp: string } | null>(null);
+
+  const logExerciseFeeling = async (taskName: string, feeling: string) => {
+    const logEntry = {
+      taskName,
+      timestamp: new Date().toISOString(),
+      feeling
+    };
+    const updatedProgress = {
+      ...programProgress,
+      exerciseLogs: [...(programProgress.exerciseLogs || []), logEntry]
+    };
+    setProgramProgress(updatedProgress);
+    
+    const emailKey = currentUserEmail ? currentUserEmail.toLowerCase().trim() : "";
+    if (emailKey) {
+      localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(updatedProgress));
+    }
+    localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(updatedProgress));
+
+    try {
+      const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
+      if (token && emailKey) {
+        await fetch("/api/update-user-progress", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            email: emailKey,
+            userProgress: updatedProgress
+          })
+        });
+      }
+    } catch (e) {
+      console.error("Error syncing exercise log to server:", e);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem("MAPA_TEST_REMINDER_ENABLED", String(testReminderAlarmEnabled));
@@ -640,6 +680,13 @@ export default function App() {
           if (!prev) return null;
           if (prev.secondsLeft <= 1) {
             triggerAlarm(`¡Alarma de Bienestar! Es hora de tu ejercicio: "${prev.taskName}"`);
+            const finishedTask = prev.taskName;
+            setTimeout(() => {
+              setCompletedTaskFeedback({
+                taskName: finishedTask,
+                timestamp: new Date().toISOString()
+              });
+            }, 50);
             return null; // triggered, stop
           }
           return { ...prev, secondsLeft: prev.secondsLeft - 1 };
@@ -5889,7 +5936,7 @@ export default function App() {
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[#411F66] animate-spin" style={{ animationDuration: '6s' }} />
                       <div className="text-left">
-                        <span className="text-xs font-bold text-[#411F66] block truncate max-w-[150px]">
+                        <span className="text-xs font-bold text-[#411F66] block truncate max-w-[130px]">
                           {activeTaskAlarm.taskName}
                         </span>
                         <span className="text-[10px] text-gray-500 block">
@@ -5897,12 +5944,70 @@ export default function App() {
                         </span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => setActiveTaskAlarm(null)}
-                      className="px-2.5 py-1 text-[10px] font-black uppercase text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
-                    >
-                      Cancelar
-                    </button>
+                    <div className="flex gap-1.5 shrink-0">
+                      <button
+                        onClick={() => {
+                          setCompletedTaskFeedback({
+                            taskName: activeTaskAlarm.taskName,
+                            timestamp: new Date().toISOString()
+                          });
+                          setActiveTaskAlarm(null);
+                        }}
+                        className="px-2 py-1 text-[10px] font-black uppercase text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all cursor-pointer"
+                      >
+                        ✓ Listo
+                      </button>
+                      <button
+                        onClick={() => setActiveTaskAlarm(null)}
+                        className="px-2 py-1 text-[10px] font-black uppercase text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
+                      >
+                        X
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Feedback "¿Cómo te sientes?" selection when an exercise completes */}
+              {completedTaskFeedback && (
+                <div className="border-t border-pink-100 pt-3 space-y-2 animate-fadeIn">
+                  <div className="bg-pink-50/40 rounded-xl p-3.5 border border-pink-100/70 text-left space-y-2.5">
+                    <div className="flex justify-between items-start">
+                      <p className="text-xs font-bold text-[#411F66] leading-tight">
+                        ✨ ¡Buen trabajo con <span className="italic text-[#E86FA3]">"{completedTaskFeedback.taskName}"</span>!
+                      </p>
+                      <button 
+                        onClick={() => setCompletedTaskFeedback(null)}
+                        className="text-[10px] font-bold text-gray-400 hover:text-gray-600 cursor-pointer"
+                      >
+                        Ignorar
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-gray-600 font-medium leading-normal">
+                      ¿Cómo te sientes después de completar esta práctica de sintonización?
+                    </p>
+                    <div className="grid grid-cols-3 gap-1.5 pt-1">
+                      {[
+                        { emoji: "🙂", label: "Mejor", value: "bien" },
+                        { emoji: "😐", label: "Igual", value: "neutral" },
+                        { emoji: "😟", label: "Abrumada", value: "ansiosa" }
+                      ].map((feeling) => (
+                        <button
+                          key={feeling.value}
+                          type="button"
+                          onClick={() => {
+                            logExerciseFeeling(completedTaskFeedback.taskName, feeling.value);
+                            setCompletedTaskFeedback(null);
+                            setDashboardNotice(`❤️ ¡Sentimiento guardado! Gracias por registrar tu asimilación.`);
+                            setTimeout(() => setDashboardNotice(null), 3000);
+                          }}
+                          className="flex flex-col items-center gap-1 p-2 rounded-lg border border-pink-200 bg-white hover:bg-pink-50 text-xs font-bold cursor-pointer transition-all hover:scale-105 active:scale-95 text-[#411F66]"
+                        >
+                          <span className="text-lg leading-none">{feeling.emoji}</span>
+                          <span className="text-[9px] font-semibold text-gray-500 uppercase font-mono tracking-wider">{feeling.label}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
