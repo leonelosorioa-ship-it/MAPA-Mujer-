@@ -21,6 +21,7 @@ import {
   Lock, 
   Unlock,
   Eye, 
+  EyeOff,
   Layers,
   Award,
   Zap,
@@ -261,6 +262,11 @@ export default function App() {
       unlockedAudios: [],
       onboardingCompletado: false
     };
+  });
+
+  // Focus Mode state to hide visual distractions and focus on active day & sound player
+  const [focusMode, setFocusMode] = useState<boolean>(() => {
+    return localStorage.getItem("MAPA_FOCUS_MODE") === "true";
   });
 
   // Tick state to drive the dynamic countdown timers every second
@@ -2669,118 +2675,120 @@ export default function App() {
       <PWAInstallBanner />
 
       {/* HEADER LOGO RAIL */}
-      <header id="app_header" className="relative z-10 w-full border-b-2 border-[#6E488A]/15 bg-[#E86FA3] shadow-[0_4px_20px_rgba(232,111,163,0.15)] px-4 py-4 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
-          <motion.div 
-            className="relative w-14 h-14 rounded-full border-2 border-white/60 bg-gradient-to-b from-white to-[#EDE0F0] flex items-center justify-center shadow-lg shadow-white/10 cursor-pointer overflow-hidden group select-none shrink-0"
-            whileHover={{ scale: 1.15, rotate: 10, boxShadow: "0 10px 25px rgba(255,255,255,0.4)" }}
-            whileTap={{ scale: 0.92 }}
-            transition={{ type: "spring", stiffness: 400, damping: 15 }}
-          >
-            {/* Compass outer dial ring (spinning slowly) */}
-            <div className="absolute inset-1 rounded-full border border-dashed border-[#36C4D8]/40 animate-spin" style={{ animationDuration: '10s' }} />
-            <div className="absolute inset-2 rounded-full border border-dotted border-[#E36DB4]/30 animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
-            
-            {/* Brain division background color split */}
-            <div className="absolute inset-2 rounded-full overflow-hidden flex opacity-65">
-              <div className="w-1/2 h-full bg-[#36C4D8]/15 border-r border-[#36C4D8]/20" />
-              <div className="w-1/2 h-full bg-[#E36DB4]/15" />
-            </div>
-
-            {/* Shiny compass needle rotater */}
-            <div className="absolute inset-0 flex items-center justify-center animate-spin" style={{ animationDuration: '6s' }}>
-              <div className="relative h-10 w-0.5 flex items-center justify-center">
-                {/* Needle point */}
-                <div className="absolute -top-0.5 w-1.5 h-1.5 bg-[#36C4D8] rotate-45 rounded" />
-                {/* Needle line */}
-                <div className="w-[1.5px] h-full bg-gradient-to-b from-[#36C4D8] via-transparent to-[#E36DB4]" />
-                {/* Needle gold/pink terminal */}
-                <div className="absolute -bottom-0.5 w-1.5 h-1.5 bg-[#E36DB4] rounded-full" />
-              </div>
-            </div>
-
-            <Compass className="relative z-10 w-7 h-7 text-[#36C4D8] animate-pulse group-hover:scale-110 transition-transform" />
-          </motion.div>
-          <div className="flex flex-col items-center sm:items-start">
-            <span className="font-display font-black text-2xl sm:text-3xl tracking-wider text-white block">
-              M.A.P.A. <span className="text-[#411F66] text-lg sm:text-xl font-black">Mujer</span>
-            </span>
-            <span className="block text-[9px] sm:text-xs text-[#FFF0F5] font-mono tracking-wide uppercase font-black">
-              Mapa de Activación y Protección Emocional
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
-          {currentUserEmail ? (
-            <div className="flex items-center gap-2 sm:gap-3 bg-white border border-[#6E488A]/12 py-1.5 px-3 rounded-xl text-xs sm:text-sm shadow-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="text-[#6E488A] font-sans font-black text-xs sm:text-sm max-w-[110px] xs:max-w-[155px] sm:max-w-none truncate whitespace-nowrap" title={leadInfo.nombre || "Usuaria"}>
-                {leadInfo.nombre || "Usuaria"}
-              </span>
-              <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-1.5 py-0.5 rounded-lg font-mono text-[9px] font-black flex items-center space-x-0.5 shrink-0" title="Sesiones de regulación completadas">
-                <span>{programProgress.completedDays?.length || 0}</span>
-                <span className="text-[8px]">✓</span>
-              </span>
-              <span className="text-[#56346F]/70 font-mono text-[10px] hidden md:inline shrink-0">
-                ({currentUserEmail})
-              </span>
-              {["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"].includes(currentUserEmail.toLowerCase()) && (
-                <button
-                  onClick={() => setPhase("ADMIN")}
-                  className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
-                >
-                  ⚙️ Admin
-                </button>
-              )}
-              <button
-                onClick={handleUserLogout}
-                className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
-                title="Cerrar sesión"
-              >
-                Salir
-              </button>
-            </div>
-          ) : null}
-
-          <motion.span 
-            animate={{ 
-              boxShadow: [
-                "0px 2px 8px rgba(255,255,255,0.3), 0 0 0 1px rgba(255,255,255,0.2)",
-                "0px 6px 18px rgba(255,255,255,0.7), 0 0 0 3px rgba(255,255,255,0.4)",
-                "0px 2px 8px rgba(255,255,255,0.3), 0 0 0 1px rgba(255,255,255,0.2)"
-              ],
-              scale: [1, 1.03, 1]
-            }}
-            transition={{ 
-              duration: 2.5, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-            whileHover={{ 
-              scale: 1.06, 
-              backgroundColor: "rgba(255, 255, 255, 1)",
-              boxShadow: "0px 8px 24px rgba(255,255,255,0.9), 0 0 0 4px rgba(255,255,255,0.5)"
-            }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center space-x-1.5 bg-white/95 border-2 border-white text-[#411F66] rounded-full py-1 px-2.5 sm:px-3 text-[9px] sm:text-[10px] font-mono font-black shadow-md cursor-pointer select-none transition-all shrink-0"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-80" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span className="tracking-widest uppercase font-black">SISTEMA ACTIVO</span>
-          </motion.span>
-          {phase === "RESULTS" && (
-            <button 
-              onClick={handleRestart}
-              className="flex items-center space-x-2 border-2 border-[#262222] bg-[#EDE0F0] text-xs text-[#262222] font-extrabold py-1.5 px-3 rounded-lg hover:bg-white transition-all cursor-pointer"
+      {!(focusMode && phase === "DASHBOARD") && (
+        <header id="app_header" className="relative z-10 w-full border-b-2 border-[#6E488A]/15 bg-[#E86FA3] shadow-[0_4px_20px_rgba(232,111,163,0.15)] px-4 py-4 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
+            <motion.div 
+              className="relative w-14 h-14 rounded-full border-2 border-white/60 bg-gradient-to-b from-white to-[#EDE0F0] flex items-center justify-center shadow-lg shadow-white/10 cursor-pointer overflow-hidden group select-none shrink-0"
+              whileHover={{ scale: 1.15, rotate: 10, boxShadow: "0 10px 25px rgba(255,255,255,0.4)" }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Reiniciar</span>
-            </button>
-          )}
-        </div>
-      </header>
+              {/* Compass outer dial ring (spinning slowly) */}
+              <div className="absolute inset-1 rounded-full border border-dashed border-[#36C4D8]/40 animate-spin" style={{ animationDuration: '10s' }} />
+              <div className="absolute inset-2 rounded-full border border-dotted border-[#E36DB4]/30 animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
+              
+              {/* Brain division background color split */}
+              <div className="absolute inset-2 rounded-full overflow-hidden flex opacity-65">
+                <div className="w-1/2 h-full bg-[#36C4D8]/15 border-r border-[#36C4D8]/20" />
+                <div className="w-1/2 h-full bg-[#E36DB4]/15" />
+              </div>
+
+              {/* Shiny compass needle rotater */}
+              <div className="absolute inset-0 flex items-center justify-center animate-spin" style={{ animationDuration: '6s' }}>
+                <div className="relative h-10 w-0.5 flex items-center justify-center">
+                  {/* Needle point */}
+                  <div className="absolute -top-0.5 w-1.5 h-1.5 bg-[#36C4D8] rotate-45 rounded" />
+                  {/* Needle line */}
+                  <div className="w-[1.5px] h-full bg-gradient-to-b from-[#36C4D8] via-transparent to-[#E36DB4]" />
+                  {/* Needle gold/pink terminal */}
+                  <div className="absolute -bottom-0.5 w-1.5 h-1.5 bg-[#E36DB4] rounded-full" />
+                </div>
+              </div>
+
+              <Compass className="relative z-10 w-7 h-7 text-[#36C4D8] animate-pulse group-hover:scale-110 transition-transform" />
+            </motion.div>
+            <div className="flex flex-col items-center sm:items-start">
+              <span className="font-display font-black text-2xl sm:text-3xl tracking-wider text-white block">
+                M.A.P.A. <span className="text-[#411F66] text-lg sm:text-xl font-black">Mujer</span>
+              </span>
+              <span className="block text-[9px] sm:text-xs text-[#FFF0F5] font-mono tracking-wide uppercase font-black">
+                Mapa de Activación y Protección Emocional
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
+            {currentUserEmail ? (
+              <div className="flex items-center gap-2 sm:gap-3 bg-white border border-[#6E488A]/12 py-1.5 px-3 rounded-xl text-xs sm:text-sm shadow-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="text-[#6E488A] font-sans font-black text-xs sm:text-sm max-w-[110px] xs:max-w-[155px] sm:max-w-none truncate whitespace-nowrap" title={leadInfo.nombre || "Usuaria"}>
+                  {leadInfo.nombre || "Usuaria"}
+                </span>
+                <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-1.5 py-0.5 rounded-lg font-mono text-[9px] font-black flex items-center space-x-0.5 shrink-0" title="Sesiones de regulación completadas">
+                  <span>{programProgress.completedDays?.length || 0}</span>
+                  <span className="text-[8px]">✓</span>
+                </span>
+                <span className="text-[#56346F]/70 font-mono text-[10px] hidden md:inline shrink-0">
+                  ({currentUserEmail})
+                </span>
+                {["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"].includes(currentUserEmail.toLowerCase()) && (
+                  <button
+                    onClick={() => setPhase("ADMIN")}
+                    className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
+                  >
+                    ⚙️ Admin
+                  </button>
+                )}
+                <button
+                  onClick={handleUserLogout}
+                  className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
+                  title="Cerrar sesión"
+                >
+                  Salir
+                </button>
+              </div>
+            ) : null}
+
+            <motion.span 
+              animate={{ 
+                boxShadow: [
+                  "0px 2px 8px rgba(255,255,255,0.3), 0 0 0 1px rgba(255,255,255,0.2)",
+                  "0px 6px 18px rgba(255,255,255,0.7), 0 0 0 3px rgba(255,255,255,0.4)",
+                  "0px 2px 8px rgba(255,255,255,0.3), 0 0 0 1px rgba(255,255,255,0.2)"
+                ],
+                scale: [1, 1.03, 1]
+              }}
+              transition={{ 
+                duration: 2.5, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              }}
+              whileHover={{ 
+                scale: 1.06, 
+                backgroundColor: "rgba(255, 255, 255, 1)",
+                boxShadow: "0px 8px 24px rgba(255,255,255,0.9), 0 0 0 4px rgba(255,255,255,0.5)"
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center space-x-1.5 bg-white/95 border-2 border-white text-[#411F66] rounded-full py-1 px-2.5 sm:px-3 text-[9px] sm:text-[10px] font-mono font-black shadow-md cursor-pointer select-none transition-all shrink-0"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-80" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className="tracking-widest uppercase font-black">SISTEMA ACTIVO</span>
+            </motion.span>
+            {phase === "RESULTS" && (
+              <button 
+                onClick={handleRestart}
+                className="flex items-center space-x-2 border-2 border-[#262222] bg-[#EDE0F0] text-xs text-[#262222] font-extrabold py-1.5 px-3 rounded-lg hover:bg-white transition-all cursor-pointer"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Reiniciar</span>
+              </button>
+            )}
+          </div>
+        </header>
+      )}
 
       {/* MAIN CONTAINER */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 md:py-12 relative z-10 flex flex-col justify-center">
@@ -3519,7 +3527,7 @@ export default function App() {
                     href={`https://wa.me/573207739761?text=${encodeURIComponent("¡Hola, Clara! 😊\nNecesito tu ayuda para ingresar a *M.A.P.A.™ Mujer.* Este es el correo electrónico con el que realicé la compra: " + (loginEmail || ""))}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 rounded-xl font-sans font-bold text-xs text-white bg-[#25D366] hover:bg-[#20BA56] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm no-underline border-none"
+                    className="w-full py-3 px-4 rounded-xl font-sans font-bold text-xs text-white bg-[#25D366] hover:bg-[#20BA56] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm no-underline"
                   >
                     <MessageCircle className="w-4 h-4 text-white fill-current" />
                     <span>SOPORTE POR WHATSAPP</span>
@@ -3539,74 +3547,113 @@ export default function App() {
             </motion.div>
           )}
 
-          {/* =========================================================
-              PHASE: DASHBOARD (7-DAY CHRONOGRAPH PATH CONTROL)
-              ========================================================= */}
           {phase === "DASHBOARD" && (
             <motion.div
               key="dashboard_phase"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="space-y-8 max-w-4xl mx-auto"
+              className="space-y-8 max-w-4xl mx-auto animate-fadeIn"
             >
-              {/* Elegant Header Card */}
-              <div className="bg-white border-2 border-[#6E488A]/12 border-b-[6px] border-b-[#EDE0F0] rounded-3xl p-6 sm:p-8 text-left relative overflow-hidden shadow-[0_15px_35px_rgba(110,72,138,0.06),_0_5px_15px_rgba(110,72,138,0.03)] hover:scale-[1.005] transition-all duration-300">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-radial-gradient from-[#36C4D8]/10 to-transparent blur-2xl pointer-events-none" />
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  <div className="space-y-2">
-                    <div className="inline-flex items-center space-x-1.5 bg-[#EDE0F0] text-[#6E488A] px-3 py-1 rounded-full text-[10px] font-mono uppercase font-bold tracking-widest border border-[#6E488A]/15">
-                      <Compass className="w-3.5 h-3.5 animate-spin text-[#E36DB4]" style={{ animationDuration: '6s' }} />
-                      <span>BRÚJULA DIARIA ACTIVA</span>
+              {/* INTERRUPTOR MODO ENFOQUE (FOCUS MODE) */}
+              <div id="focus_mode_toggle_bar" className="bg-white border-2 border-[#6E488A]/10 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-center gap-4 text-left shadow-[0_4px_12px_rgba(110,72,138,0.02)]">
+                <div className="flex items-start space-x-3 w-full">
+                  <div className={`p-2.5 rounded-xl transition-all duration-300 shrink-0 ${focusMode ? 'bg-[#36C4D8]/12 text-[#27A1B2]' : 'bg-[#EDE0F0] text-[#6E488A]'}`}>
+                    <EyeOff className={`w-5 h-5 ${focusMode ? 'animate-pulse text-[#36C4D8]' : ''}`} />
+                  </div>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="text-sm font-extrabold text-[#6E488A] font-display uppercase tracking-wider">Modo Enfoque</h3>
+                      {focusMode && (
+                        <span className="bg-emerald-100 text-emerald-800 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded">CALMA TOTAL</span>
+                      )}
                     </div>
-                    <h2 className="font-display font-semibold text-2xl sm:text-3xl text-[#6E488A]">
-                      Tu Plan de Alivio Emocional
-                    </h2>
-                    <p className="text-[#56346F]/80 text-sm font-sans max-w-xl leading-relaxed">
-                      Te damos la bienvenida a tu panel de 7 días. Como mujer comprometida con tu bienestar, cada día responderás 7 preguntas breves diseñadas especialmente para reducir la tensión corporal, liberarte del sobrepensamiento y calmar tu mente de forma sencilla.
+                    <p className="text-[11px] sm:text-xs text-[#56346F]/80 leading-relaxed font-sans">
+                      {focusMode 
+                        ? "Has silenciado el ruido visual. Solo tú, tu práctica y la terapia de sonido de hoy." 
+                        : "Oculta barras de navegación, avisos, promos y mantén el foco exclusivo en la práctica del día."}
                     </p>
-                    
-                    {/* Dynamic Archetype Overview badge */}
-                    {(() => {
-                      const slug = getUserArchetypeSlug();
-                      const archetypeInfo = {
-                        VIGILANTE: { name: "El Vigilante", avatar: "👁️", color: "text-[#36C4D8]", bg: "bg-[#36C4D8]/5 border-[#36C4D8]/15", desc: "Escaneas tu entorno físico, social y emocional buscando señales de tensión." },
-                        ANTICIPADOR: { name: "El Anticipador", avatar: "🔮", color: "text-[#E36DB4]", bg: "bg-[#E36DB4]/5 border-[#E36DB4]/15", desc: "Creas escenarios de tragedias futuras para ensayar preventivamente tus respuestas." },
-                        HIPERCONTROLADOR: { name: "El Hipercontrolador", avatar: "⚙️", color: "text-amber-600", bg: "bg-amber-500/5 border-amber-500/15", desc: "Sientes que si dejas de supervisar o intervenir todo colapsará a tu alrededor." },
-                        SOBRECARGADO: { name: "El Sobrecargado", avatar: "🎒", color: "text-sky-600", bg: "bg-sky-500/5 border-sky-500/15", desc: "Cargas inconscientemente con el bienestar y las necesidades de todos los demás." },
-                        PROTECTOR: { name: "El Protector Silencioso", avatar: "🎭", color: "text-purple-600", bg: "bg-purple-500/5 border-purple-500/15", desc: "Construyes una máscara impecable de optimismo exterior mientras batallas sola." }
-                      }[slug];
-
-                      return (
-                        <div className={`p-3.5 rounded-2xl border ${archetypeInfo.bg} flex items-center gap-3 text-left max-w-xl animate-fadeIn`}>
-                          <span className="text-2xl shrink-0">{archetypeInfo.avatar}</span>
-                          <div className="space-y-0.5">
-                            <span className="text-[9px] font-mono uppercase tracking-widest text-[#6E488A]/60 block font-bold">Enfoque de tu Arquetipo Predominante:</span>
-                            <span className={`text-xs font-black ${archetypeInfo.color} block`}>{archetypeInfo.name}</span>
-                            <p className="text-[11px] text-[#56346F]/85 font-medium leading-relaxed">{archetypeInfo.desc}</p>
-                          </div>
-                        </div>
-                      );
-                    })()}
                   </div>
-                  <div className="bg-[#FAF7F9] border border-[#6E488A]/10 p-4 rounded-2xl text-center shrink-0 w-full md:w-auto shadow-inner">
-                    <span className="block text-[10px] font-mono text-[#56346F]/60 uppercase tracking-wider">PROGRESO GENERAL</span>
-                    <span className="font-display font-extrabold text-3xl text-[#36C4D8] block my-1">
-                      {Math.round((programProgress.completedDays.length / 7) * 100)}%
-                    </span>
-                    <span className="text-[10px] font-mono text-emerald-800 block bg-emerald-500/10 py-1 px-2.5 rounded-full font-semibold">
-                      {programProgress.completedDays.length} de 7 Días Listos
-                    </span>
-                  </div>
+                </div>
+                <div className="flex items-center space-x-3 shrink-0 w-full sm:w-auto justify-end border-t sm:border-none pt-3 sm:pt-0 border-slate-100">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#56346F]/60">
+                    {focusMode ? "ENFOQUE" : "NORMAL"}
+                  </span>
+                  <button
+                    onClick={() => {
+                      const next = !focusMode;
+                      setFocusMode(next);
+                      localStorage.setItem("MAPA_FOCUS_MODE", String(next));
+                    }}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none ${focusMode ? 'bg-[#36C4D8]' : 'bg-slate-300'}`}
+                    aria-label="Toggle Focus Mode"
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${focusMode ? 'translate-x-5' : 'translate-x-0'}`}
+                    />
+                  </button>
                 </div>
               </div>
 
+              {/* Elegant Header Card (Hidden in Focus Mode) */}
+              {!focusMode && (
+                <div className="bg-white border-2 border-[#6E488A]/12 border-b-[6px] border-b-[#EDE0F0] rounded-3xl p-6 sm:p-8 text-left relative overflow-hidden shadow-[0_15px_35px_rgba(110,72,138,0.06),_0_5px_15px_rgba(110,72,138,0.03)] hover:scale-[1.005] transition-all duration-300 animate-fadeIn">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-radial-gradient from-[#36C4D8]/10 to-transparent blur-2xl pointer-events-none" />
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center space-x-1.5 bg-[#EDE0F0] text-[#6E488A] px-3 py-1 rounded-full text-[10px] font-mono uppercase font-bold tracking-widest border border-[#6E488A]/15">
+                        <Compass className="w-3.5 h-3.5 animate-spin text-[#E36DB4]" style={{ animationDuration: '6s' }} />
+                        <span>BRÚJULA DIARIA ACTIVA</span>
+                      </div>
+                      <h2 className="font-display font-semibold text-2xl sm:text-3xl text-[#6E488A]">
+                        Tu Plan de Alivio Emocional
+                      </h2>
+                      <p className="text-[#56346F]/80 text-sm font-sans max-w-xl leading-relaxed">
+                        Te damos la bienvenida a tu panel de 7 días. Como mujer comprometida con tu bienestar, cada día responderás 7 preguntas breves diseñadas especialmente para reducir la tensión corporal, liberarte del sobrepensamiento y calmar tu mente de forma sencilla.
+                      </p>
+                      
+                      {/* Dynamic Archetype Overview badge */}
+                      {(() => {
+                        const slug = getUserArchetypeSlug();
+                        const archetypeInfo = {
+                          VIGILANTE: { name: "El Vigilante", avatar: "👁️", color: "text-[#36C4D8]", bg: "bg-[#36C4D8]/5 border-[#36C4D8]/15", desc: "Escaneas tu entorno físico, social y emocional buscando señales de tensión." },
+                          ANTICIPADOR: { name: "El Anticipador", avatar: "🔮", color: "text-[#E36DB4]", bg: "bg-[#E36DB4]/5 border-[#E36DB4]/15", desc: "Creas escenarios de tragedias futuras para ensayar preventivamente tus respuestas." },
+                          HIPERCONTROLADOR: { name: "El Hipercontrolador", avatar: "⚙️", color: "text-amber-600", bg: "bg-amber-500/5 border-amber-500/15", desc: "Sientes que si dejas de supervisar o intervenir todo colapsará a tu alrededor." },
+                          SOBRECARGADO: { name: "El Sobrecargado", avatar: "🎒", color: "text-sky-600", bg: "bg-sky-500/5 border-sky-500/15", desc: "Cargas inconscientemente con el bienestar y las necesidades de todos los demás." },
+                          PROTECTOR: { name: "El Protector Silencioso", avatar: "🎭", color: "text-purple-600", bg: "bg-purple-500/5 border-purple-500/15", desc: "Construyes una máscara impecable de optimismo exterior mientras batallas sola." }
+                        }[slug];
+
+                        return (
+                          <div className={`p-3.5 rounded-2xl border ${archetypeInfo.bg} flex items-center gap-3 text-left max-w-xl animate-fadeIn`}>
+                            <span className="text-2xl shrink-0">{archetypeInfo.avatar}</span>
+                            <div className="space-y-0.5">
+                              <span className="text-[9px] font-mono uppercase tracking-widest text-[#6E488A]/60 block font-bold">Enfoque de tu Arquetipo Predominante:</span>
+                              <span className={`text-xs font-black ${archetypeInfo.color} block`}>{archetypeInfo.name}</span>
+                              <p className="text-[11px] text-[#56346F]/85 font-medium leading-relaxed">{archetypeInfo.desc}</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                    <div className="bg-[#FAF7F9] border border-[#6E488A]/10 p-4 rounded-2xl text-center shrink-0 w-full md:w-auto shadow-inner">
+                      <span className="block text-[10px] font-mono text-[#56346F]/60 uppercase tracking-wider">PROGRESO GENERAL</span>
+                      <span className="font-display font-extrabold text-3xl text-[#36C4D8] block my-1">
+                        {Math.round((programProgress.completedDays.length / 7) * 100)}%
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-800 block bg-emerald-500/10 py-1 px-2.5 rounded-full font-semibold">
+                        {programProgress.completedDays.length} de 7 Días Listos
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Notice banner if any exists */}
-              {dashboardNotice && (
+              {!focusMode && dashboardNotice && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className="bg-emerald-50 border border-emerald-200/60 text-emerald-800 rounded-2xl p-4 text-xs font-medium text-left flex items-start space-x-2"
+                  className="bg-emerald-50 border border-emerald-200/60 text-emerald-800 rounded-2xl p-4 text-xs font-medium text-left flex items-start space-x-2 animate-fadeIn"
                 >
                   <Sparkles className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5 animate-pulse" />
                   <span>{dashboardNotice}</span>
@@ -3614,7 +3661,7 @@ export default function App() {
               )}
 
               {/* Daily Web App Download prompt for registered users */}
-              {currentUserEmail && (
+              {!focusMode && currentUserEmail && (
                 <AppDownloadPrompt
                   userEmail={currentUserEmail}
                   hasDownloadedApp={!!programProgress.hasDownloadedApp}
@@ -3623,22 +3670,24 @@ export default function App() {
               )}
 
               {/* COMPANION NOTIFICATIONS SHIELDS */}
-              <div id="emotional_regulation_labs">
-                <PushNotificationManager 
-                  userEmail={currentUserEmail} 
-                  currentDay={programProgress.currentDay}
-                  onGoToDay={(dayNum) => {
-                    setSelectedDayPreview(dayNum);
-                    // Smooth scroll directly to the dedicated day guide view or the timeline container
-                    setTimeout(() => {
-                      const element = document.getElementById("dedicated_day_guide_view") || document.getElementById("emotional_timeline_section");
-                      if (element) {
-                        element.scrollIntoView({ behavior: "smooth", block: "start" });
-                      }
-                    }, 100);
-                  }}
-                />
-              </div>
+              {!focusMode && (
+                <div id="emotional_regulation_labs" className="animate-fadeIn">
+                  <PushNotificationManager 
+                    userEmail={currentUserEmail} 
+                    currentDay={programProgress.currentDay}
+                    onGoToDay={(dayNum) => {
+                      setSelectedDayPreview(dayNum);
+                      // Smooth scroll directly to the dedicated day guide view or the timeline container
+                      setTimeout(() => {
+                        const element = document.getElementById("dedicated_day_guide_view") || document.getElementById("emotional_timeline_section");
+                        if (element) {
+                          element.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                      }, 100);
+                    }}
+                  />
+                </div>
+              )}
 
               {/* The 7-Day Program Timeline Cards Grid */}
               <div id="emotional_timeline_section" className="space-y-6">
@@ -3913,14 +3962,16 @@ export default function App() {
                         <div className="text-left">
                           <h3 className="font-display font-semibold text-2xl text-[#6E488A] tracking-tight flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-[#E36DB4]" />
-                            Cronograma del Viaje Emocional
+                            {focusMode ? "Tu Práctica de Hoy" : "Cronograma del Viaje Emocional"}
                           </h3>
                           <p className="text-xs text-[#56346F]/80 mt-1">
-                            Tu ruta estructurada de 7 días consecutivos para regular tu sistema nervioso y desactivar la ansiedad crónica.
+                            {focusMode 
+                              ? "Espacio exclusivo para tu regulación, respiración y terapia de sonido de hoy." 
+                              : "Tu ruta estructurada de 7 días consecutivos para regular tu sistema nervioso y desactivar la ansiedad crónica."}
                           </p>
                         </div>
                         <span className="text-xs font-mono bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/15 px-3 py-1.5 rounded-full inline-block text-center whitespace-nowrap font-bold shrink-0 self-start md:self-center">
-                          📅 PROGRAMA DE 7 DÍAS
+                          {focusMode ? `✨ DÍA ${programProgress.currentDay} EN FOCUS` : "📅 PROGRAMA DE 7 DÍAS"}
                         </span>
                       </div>
 
@@ -3962,8 +4013,8 @@ export default function App() {
                       )}
 
                       {/* TIMELINE CARDS MATRIX */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
+                      <div className={focusMode ? "max-w-md mx-auto w-full animate-fadeIn" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
+                        {(focusMode ? [Math.min(7, Math.max(1, programProgress.currentDay))] : [1, 2, 3, 4, 5, 6, 7]).map((dayNum) => {
                           const isCompleted = programProgress.completedDays.includes(dayNum);
                           const isActive = programProgress.currentDay === dayNum;
                           const { maxAllowedDay } = getChronologicalState();
@@ -4238,7 +4289,7 @@ export default function App() {
               )}
 
               {/* ESPACIO PREMIUM M.A.P.A.™ COMPLETO INTEGRADO */}
-              {currentUserEmail && (
+              {!focusMode && currentUserEmail && (
                 <PremiumDashboard 
                   userEmail={currentUserEmail} 
                   userName={leadInfo.nombre || "Usuaria"} 
