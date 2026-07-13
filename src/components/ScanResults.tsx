@@ -254,13 +254,30 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
             </div>
 
             <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
-              <button
+              <motion.button
                 onClick={() => setShowSignup(true)}
-                className="px-6 py-3.5 sm:px-10 sm:py-4 rounded-xl font-display font-extrabold tracking-wider text-white bg-gradient-to-r from-[#411F66] to-[#E86FA3] hover:scale-[1.03] transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-[0_4px_25px_rgba(232,111,163,0.35)] hover:shadow-[0_0_25px_rgba(54,196,216,0.6)] duration-300 text-xs sm:text-sm border-2 border-[#262222]"
+                animate={{ 
+                  scale: [1, 1.03, 1],
+                  boxShadow: [
+                    "0 4px 20px rgba(232, 111, 163, 0.35)",
+                    "0 4px 32px rgba(232, 111, 163, 0.7)",
+                    "0 4px 20px rgba(232, 111, 163, 0.35)"
+                  ]
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 2.0, 
+                  ease: "easeInOut" 
+                }}
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.97 }}
+                className="group relative overflow-hidden px-6 py-3.5 sm:px-10 sm:py-4 rounded-xl font-display font-extrabold tracking-wider text-white bg-gradient-to-r from-[#411F66] via-[#B23B7C] to-[#E86FA3] flex items-center justify-center space-x-2 cursor-pointer border-2 border-white/30 shadow-2xl duration-300 text-xs sm:text-sm"
               >
-                <span>COMENZAR PROGRAMA</span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </button>
+                {/* Premium sweep light highlight */}
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect" />
+                <span className="relative z-10">COMENZAR PROGRAMA</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white relative z-10 transition-transform duration-300 group-hover:translate-x-1.5" />
+              </motion.button>
               <button
                 onClick={onRestart}
                 className="px-4 py-3 sm:px-6 sm:py-4 rounded-xl border border-[#6E488A]/20 text-[#411F66] hover:bg-[#EDE0F0]/40 text-xs font-bold transition-all cursor-pointer"

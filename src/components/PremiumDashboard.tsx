@@ -1309,15 +1309,16 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
       )}
 
       {/* Main Tab Contents */}
-      {isLoading ? (
-        <div className="py-12 text-center text-slate-400 space-y-2">
-          <div className="w-8 h-8 rounded-full border-2 border-amber-500 border-t-transparent animate-spin mx-auto" />
-          <p className="text-xs font-mono">Conectando con base de datos premium...</p>
-        </div>
-      ) : (
-        <div className="min-h-[350px]">
-          
-          {/* PESTAÑA: MENTOR M.A.P.A.™ */}
+      {activeTab !== "menu" && (
+        isLoading ? (
+          <div className="py-12 text-center text-slate-400 space-y-2">
+            <div className="w-8 h-8 rounded-full border-2 border-amber-500 border-t-transparent animate-spin mx-auto" />
+            <p className="text-xs font-mono">Conectando con base de datos premium...</p>
+          </div>
+        ) : (
+          <div className="min-h-[350px]">
+            
+            {/* PESTAÑA: MENTOR M.A.P.A.™ */}
           {activeTab === "coach" && (
             <div className="space-y-6 animate-fadeIn">
               
@@ -2469,7 +2470,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
           {/* PESTAÑA: GMAIL MINDFUL REMOVED */}
 
         </div>
-      )}
+      ))}
 
       {/* EMERGENCY MODE PANIC MODAL PORTAL (🚨 Botón de pánico interactivo inmersivo) */}
       <AnimatePresence>
