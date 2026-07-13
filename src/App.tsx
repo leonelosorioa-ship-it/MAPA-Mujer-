@@ -266,9 +266,7 @@ export default function App() {
   });
 
   // Focus Mode state to hide visual distractions and focus on active day & sound player
-  const [focusMode, setFocusMode] = useState<boolean>(() => {
-    return localStorage.getItem("MAPA_FOCUS_MODE") === "true";
-  });
+  const [focusMode, setFocusMode] = useState<boolean>(false);
 
   // Tick state to drive the dynamic countdown timers every second
   const [tick, setTick] = useState<number>(0);
@@ -3707,46 +3705,6 @@ export default function App() {
               exit={{ opacity: 0, y: -15 }}
               className="space-y-8 max-w-4xl mx-auto animate-fadeIn"
             >
-              {/* INTERRUPTOR MODO ENFOQUE (FOCUS MODE) */}
-              <div id="focus_mode_toggle_bar" className="bg-white border-2 border-[#6E488A]/10 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-center gap-4 text-left shadow-[0_4px_12px_rgba(110,72,138,0.02)]">
-                <div className="flex items-start space-x-3 w-full">
-                  <div className={`p-2.5 rounded-xl transition-all duration-300 shrink-0 ${focusMode ? 'bg-[#36C4D8]/12 text-[#27A1B2]' : 'bg-[#EDE0F0] text-[#6E488A]'}`}>
-                    <EyeOff className={`w-5 h-5 ${focusMode ? 'animate-pulse text-[#36C4D8]' : ''}`} />
-                  </div>
-                  <div className="space-y-0.5">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="text-sm font-extrabold text-[#6E488A] font-display uppercase tracking-wider">Modo Enfoque</h3>
-                      {focusMode && (
-                        <span className="bg-emerald-100 text-emerald-800 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded">CALMA TOTAL</span>
-                      )}
-                    </div>
-                    <p className="text-[11px] sm:text-xs text-[#56346F]/80 leading-relaxed font-sans">
-                      {focusMode 
-                        ? "Has silenciado el ruido visual. Solo tú, tu práctica y la terapia de sonido de hoy." 
-                        : "Oculta barras de navegación, avisos, promos y mantén el foco exclusivo en la práctica del día."}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 shrink-0 w-full sm:w-auto justify-end border-t sm:border-none pt-3 sm:pt-0 border-slate-100">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#56346F]/60">
-                    {focusMode ? "ENFOQUE" : "NORMAL"}
-                  </span>
-                  <button
-                    onClick={() => {
-                      const next = !focusMode;
-                      setFocusMode(next);
-                      localStorage.setItem("MAPA_FOCUS_MODE", String(next));
-                    }}
-                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none ${focusMode ? 'bg-[#36C4D8]' : 'bg-slate-300'}`}
-                    aria-label="Toggle Focus Mode"
-                  >
-                    <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${focusMode ? 'translate-x-5' : 'translate-x-0'}`}
-                    />
-                  </button>
-                </div>
-              </div>
-
               {/* Elegant Header Card (Hidden in Focus Mode) */}
               {!focusMode && (
                 <div className="bg-white border-2 border-[#6E488A]/12 border-b-[6px] border-b-[#EDE0F0] rounded-3xl p-6 sm:p-8 text-left relative overflow-hidden shadow-[0_15px_35px_rgba(110,72,138,0.06),_0_5px_15px_rgba(110,72,138,0.03)] hover:scale-[1.005] transition-all duration-300 animate-fadeIn">
@@ -5568,36 +5526,36 @@ export default function App() {
 
       {/* FOOTER */}
       {!(focusMode && phase === "DASHBOARD") && (
-        <footer id="app_footer" className="bg-[#000000] px-6 py-8 border-t border-white/10 relative z-10 text-white/60">
+        <footer id="app_footer" className="bg-black px-6 py-8 border-t border-white/10 relative z-10 text-slate-100">
           <div className="max-w-5xl mx-auto space-y-4">
             <div className="flex flex-col justify-center items-center gap-4 text-center border-b border-white/5 pb-4">
               <div className="w-full text-center">
                 <p className="text-xs font-bold text-[#E86FA3] tracking-wider uppercase font-display text-center">
                   M.A.P.A.™ Mujer • By Tu Poder Mental Mujer
                 </p>
-                <p className="text-[10px] text-white/50 text-center max-w-2xl mx-auto mt-1">
+                <p className="text-[10px] text-slate-200 text-center max-w-2xl mx-auto mt-1">
                   El Ecosistema Inteligente para el Bienestar Emocional Femenino. Fortalece tu mente - Reconecta contigo - Transforma tu vida.
                 </p>
               </div>
             </div>
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
               <div className="space-y-1">
-                <p className="text-xs font-mono text-white/60">© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
-                <p className="text-[10px] text-white/40 font-sans leading-relaxed max-w-md">
+                <p className="text-xs font-mono text-slate-100">© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
+                <p className="text-[10px] text-slate-300 font-sans leading-relaxed max-w-md">
                   Aviso legal: M.A.P.A.™ no sustituye el consejo clínico, diagnóstico ni tratamiento de profesionales sanitarios o de salud mental. Si experimentas síntomas agudos de emergencia psicológica, por favor consulta de inmediato con un psiquiatra o servicio oficial de urgencias.
                 </p>
               </div>
-              <div className="flex space-x-4 text-xs font-mono text-white/50">
+              <div className="flex space-x-4 text-xs font-mono text-slate-200">
               <button 
                 onClick={() => setActiveDocumentModal("PRIVACY")}
-                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white/50 font-mono text-xs outline-none"
+                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-slate-200 font-mono text-xs outline-none"
               >
                 Política de Privacidad
               </button>
               <span>•</span>
               <button 
                 onClick={() => setActiveDocumentModal("TERMS")}
-                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white/50 font-mono text-xs outline-none"
+                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-slate-200 font-mono text-xs outline-none"
               >
                 Términos de la Experiencia
               </button>
