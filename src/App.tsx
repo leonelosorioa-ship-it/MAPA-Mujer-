@@ -2946,7 +2946,7 @@ export default function App() {
 
   if (phase === "ADMIN") {
     return (
-      <div id="app_root_admin" className="min-h-screen bg-[#000000] text-white flex flex-col font-sans selection:bg-[#00F0FF]/30 selection:text-white relative overflow-x-hidden">
+      <div id="app_root_admin" className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#36C4D8]/30 selection:text-[#0F172A] relative overflow-x-hidden">
         <AdminPanel
           onLogoutAdmin={() => {
             localStorage.removeItem("MAPA_CURRENT_USER_EMAIL");
