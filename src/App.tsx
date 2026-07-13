@@ -427,6 +427,11 @@ export default function App() {
   const [unlockedAudioModal, setUnlockedAudioModal] = useState<{ isOpen: boolean; type: "day3" | "day4" | "day5" | "day7" | null }>({ isOpen: false, type: null });
   const [milestoneModal, setMilestoneModal] = useState<{ isOpen: boolean; daysCount: number }>({ isOpen: false, daysCount: 3 });
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState<boolean>(false);
+  const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState<boolean>(false);
+  const [adminFormEmail, setAdminFormEmail] = useState<string>("contacto@tupodermental.club");
+  const [adminFormPass, setAdminFormPass] = useState<string>("");
+  const [adminLoginError, setAdminLoginError] = useState<string | null>(null);
+  const [isAdminLoggingIn, setIsAdminLoggingIn] = useState<boolean>(false);
 
   // Email sending states for the final report
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
@@ -1202,6 +1207,62 @@ export default function App() {
         }
       }
       alert("No pudimos validar tus credenciales de Hotmart. Asegúrate de tener conexión a Internet para tu primer inicio de sesión.");
+    });
+  };
+
+  const handleAdminModalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adminFormEmail || !adminFormPass) {
+      setAdminLoginError("El correo y la contraseña son obligatorios.");
+      return;
+    }
+
+    setIsAdminLoggingIn(true);
+    setAdminLoginError(null);
+
+    const emailKey = adminFormEmail.toLowerCase().trim();
+    const rawPass = adminFormPass.trim();
+
+    fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: emailKey,
+        accessCode: rawPass
+      })
+    })
+    .then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) {
+        setAdminLoginError(data.error || "La contraseña o el correo de administración son incorrectos.");
+        return;
+      }
+
+      // Save token & email
+      localStorage.setItem("MAPA_ACCESS_TOKEN", data.token);
+      localStorage.setItem("MAPA_CURRENT_USER_EMAIL", emailKey);
+      setCurrentUserEmail(emailKey);
+
+      // Hydrate progress
+      const loadedProgress = data.userProgress;
+      if (loadedProgress) {
+        setProgramProgress(loadedProgress);
+        localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(loadedProgress));
+        setLeadInfo(loadedProgress.leadInfo || { nombre: "Administrador", email: emailKey, whatsapp: "" });
+        setLeadCaptured(true);
+      }
+
+      // Close modal & enter Admin mode
+      setIsAdminLoginModalOpen(false);
+      setAdminFormPass(""); // Clear password field
+      setPhase("ADMIN");
+    })
+    .catch((err) => {
+      console.error("Error logging in admin:", err);
+      setAdminLoginError("Hubo un error de conexión con el servidor de seguridad.");
+    })
+    .finally(() => {
+      setIsAdminLoggingIn(false);
     });
   };
 
@@ -2963,12 +3024,19 @@ export default function App() {
                 <span className="text-[#56346F]/70 font-mono text-[10px] hidden md:inline shrink-0">
                   ({currentUserEmail})
                 </span>
-                {["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"].includes(currentUserEmail.toLowerCase()) && (
+                {["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"].includes(currentUserEmail.toLowerCase()) ? (
                   <button
                     onClick={() => setPhase("ADMIN")}
                     className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
                   >
                     ⚙️ Admin
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsAdminLoginModalOpen(true)}
+                    className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
+                  >
+                    ⚙️ Acceso Admin
                   </button>
                 )}
                 <button
@@ -2979,7 +3047,14 @@ export default function App() {
                   Salir
                 </button>
               </div>
-            ) : null}
+            ) : (
+              <button
+                onClick={() => setIsAdminLoginModalOpen(true)}
+                className="text-white/85 hover:text-[#36C4D8] font-mono text-[10px] tracking-wider uppercase font-extrabold px-3 py-1.5 rounded-lg bg-[#411F66]/30 border border-white/10 transition-colors cursor-pointer mr-2"
+              >
+                ⚙️ Acceso Admin
+              </button>
+            )}
 
             <motion.span 
               animate={{ 
@@ -3056,6 +3131,16 @@ export default function App() {
                         <span className="text-[10px] font-mono text-[#D6448D] uppercase tracking-wider font-extrabold flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                           ¡VIAJE EN PROGRESO DETECTADO!
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsAdminLoginModalOpen(true);
+                            }}
+                            className="ml-2 px-2 py-0.5 bg-[#411F66] text-[#7EF9FF] border border-[#7EF9FF]/20 rounded-md hover:bg-opacity-95 transition-all text-[9px] font-mono flex items-center gap-1 cursor-pointer font-extrabold shadow-sm active:scale-95"
+                            title="Acceso de Administración"
+                          >
+                            🔒 Admin
+                          </button>
                         </span>
                         <h4 className="text-sm font-display font-black text-[#3A185C]">Tienes un autodiagnóstico activo</h4>
                         <p className="text-xs text-black font-sans font-bold">
@@ -5716,6 +5801,106 @@ export default function App() {
         currentAvatar={programProgress.customAvatar}
         defaultEmoji={evaluationResult?.avatar || "🧘"}
       />
+
+      {/* ADMIN MASTER LOGIN MODAL */}
+      <AnimatePresence>
+        {isAdminLoginModalOpen && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[#120721] border-2 border-[#7EF9FF]/30 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl relative text-left font-sans"
+            >
+              {/* Decorative top bar */}
+              <div className="h-1.5 bg-gradient-to-r from-[#7EF9FF] via-[#00D4FF] to-[#E86FA3]" />
+
+              <button
+                onClick={() => {
+                  setIsAdminLoginModalOpen(false);
+                  setAdminLoginError(null);
+                }}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer p-1.5 hover:bg-white/5 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#7EF9FF]/10 flex items-center justify-center border border-[#7EF9FF]/20">
+                    <ShieldCheck className="w-5 h-5 text-[#7EF9FF]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-black text-lg text-white" style={{ color: "#ffffff" }}>
+                      Acceso de Administración
+                    </h3>
+                    <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+                      Exclusivo para Mentores Autorizados
+                    </p>
+                  </div>
+                </div>
+
+                {adminLoginError && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-300 font-sans font-bold"
+                  >
+                    ⚠️ {adminLoginError}
+                  </motion.div>
+                )}
+
+                <form onSubmit={handleAdminModalSubmit} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-slate-300">
+                      Correo Electrónico
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input
+                        type="email"
+                        required
+                        value={adminFormEmail}
+                        onChange={(e) => setAdminFormEmail(e.target.value)}
+                        placeholder="contacto@tupodermental.club"
+                        className="w-full bg-[#1b1030] border border-slate-700 focus:border-[#7EF9FF] rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none transition-colors"
+                        style={{ color: "#ffffff" }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-slate-300">
+                      Contraseña Maestra
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input
+                        type="password"
+                        required
+                        value={adminFormPass}
+                        onChange={(e) => setAdminFormPass(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full bg-[#1b1030] border border-slate-700 focus:border-[#7EF9FF] rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none transition-colors font-sans font-bold"
+                        style={{ color: "#ffffff" }}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isAdminLoggingIn}
+                    className="w-full py-3 mt-2 bg-gradient-to-r from-[#7EF9FF] to-[#00D4FF] hover:opacity-95 text-slate-950 font-display font-black text-xs rounded-xl tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg shadow-cyan-400/10 disabled:opacity-50 disabled:pointer-events-none"
+                    style={{ color: "#090d16" }}
+                  >
+                    <span>{isAdminLoggingIn ? "VERIFICANDO..." : "INGRESAR AL PANEL ADMIN"}</span>
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* MILESTONE CONGRATULATORY BADGE MODALS */}
       <MilestoneModal
