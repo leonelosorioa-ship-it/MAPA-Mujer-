@@ -1718,8 +1718,8 @@ app.post("/api/auth/login", (req, res) => {
     const cleanEmail = email.toLowerCase().trim();
     const db = readUsersDB();
     
-    // Lista de administradores maestros autorizados
-    const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+    // Lista de administradores maestros autorizados (Restringido al administrador principal)
+    const adminEmails = ["contacto@tupodermental.club"];
     const isSpecialAdmin = adminEmails.includes(cleanEmail);
 
     const rawInputCode = (accessCode || "").trim();
@@ -1755,9 +1755,7 @@ app.post("/api/auth/login", (req, res) => {
     // Auto-creación de registro de administrador si no existiera en la BD local
     if (userIndex === -1 && isSpecialAdmin) {
       const getAdminName = (emailStr: string) => {
-        if (emailStr === "contacto@tupodermental.club") return "Administración Principal";
-        if (emailStr === "tupodermentaloficial@gmail.com") return "Administración Oficial";
-        return "Administración Agencia";
+        return "Administración Principal";
       };
       const newAdminUser = {
         nombre: getAdminName(cleanEmail),
@@ -1791,10 +1789,9 @@ app.post("/api/auth/login", (req, res) => {
 
     const cleanDbCode = (user.accessCode || "").trim().toUpperCase();
 
-    // Comprobación de Administradores Maestros Duales
+    // Comprobación de Administradores Maestros Duales (Solo LEO777 para contacto@tupodermental.club)
     if (isSpecialAdmin) {
-      const adminPass = process.env.ADMIN_PASSWORD || "Santiago250816@#";
-      if (rawInputCode !== adminPass && rawInputCode !== "LEO777") {
+      if (rawInputCode !== "LEO777") {
         return res.status(401).json({ error: "Contraseña de administración incorrecta. Acceso denegado." });
       }
 
@@ -1963,7 +1960,7 @@ function authenticateAdminJWT(req: any, res: any, next: any) {
       const isAdmin = decoded.isAdmin;
 
       // Validar que sea una de las cuentas exclusivas y tenga el rol firmado
-      const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+      const adminEmails = ["contacto@tupodermental.club"];
       if (!adminEmails.includes(email) || !isAdmin) {
         return res.status(403).json({ error: "Acceso prohibido. No tiene privilegios de administrador maestro." });
       }
@@ -2002,7 +1999,7 @@ app.post("/api/register-user", (req, res) => {
     const cleanAccessCode = (accessCode || "").trim().toUpperCase();
     const db = readUsersDB();
     
-    const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+    const adminEmails = ["contacto@tupodermental.club"];
     const isSpecialAdmin = adminEmails.includes(cleanEmail);
 
     let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
@@ -2010,9 +2007,7 @@ app.post("/api/register-user", (req, res) => {
     // Auto-creación de registro de administrador si no existiera en la BD local
     if (userIndex === -1 && isSpecialAdmin) {
       const getAdminName = (emailStr: string) => {
-        if (emailStr === "contacto@tupodermental.club") return "Administración Principal";
-        if (emailStr === "tupodermentaloficial@gmail.com") return "Administración Oficial";
-        return "Administración Agencia";
+        return "Administración Principal";
       };
       const newAdminUser = {
         nombre: getAdminName(cleanEmail),
@@ -2109,10 +2104,9 @@ app.post("/api/register-user", (req, res) => {
       return res.status(403).json({ error: "Tu acceso ha sido inhabilitado por el administrador del sistema." });
     }
 
-    // Verificar Código de Acceso
+    // Verificar Código de Acceso (Solo LEO777 para contacto@tupodermental.club)
     if (isSpecialAdmin) {
-      const adminPass = process.env.ADMIN_PASSWORD || "Santiago250816@#";
-      if (cleanAccessCode !== adminPass && cleanAccessCode !== "ADMIN") {
+      if (cleanAccessCode !== "LEO777") {
         return res.status(401).json({ error: "Contraseña de administración incorrecta. Acceso denegado." });
       }
     } else {

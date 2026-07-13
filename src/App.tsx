@@ -1039,7 +1039,7 @@ export default function App() {
             setLeadInfo(loadedProgress.leadInfo);
             setLeadCaptured(true);
             
-            const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+            const adminEmails = ["contacto@tupodermental.club"];
             if (adminEmails.includes(cleanEmail) || data.isAdmin) {
               setPhase("ADMIN");
             } else {
@@ -1176,7 +1176,7 @@ export default function App() {
       setLeadCaptured(true);
 
       // Go to Admin phase if administrator, else Dashboard phase
-      const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+      const adminEmails = ["contacto@tupodermental.club"];
       if (adminEmails.includes(emailKey) || data.isAdmin) {
         setPhase("ADMIN");
       } else {
@@ -1448,7 +1448,7 @@ export default function App() {
       setLeadCaptured(true);
 
       // Ir a la fase correspondiente (Admin si aplica, sino Dashboard)
-      const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+      const adminEmails = ["contacto@tupodermental.club"];
       if (adminEmails.includes(emailKey) || data.isAdmin) {
         setPhase("ADMIN");
       } else {
@@ -3024,21 +3024,14 @@ export default function App() {
                 <span className="text-[#56346F]/70 font-mono text-[10px] hidden md:inline shrink-0">
                   ({currentUserEmail})
                 </span>
-                {["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"].includes(currentUserEmail.toLowerCase()) ? (
+                {currentUserEmail.toLowerCase() === "contacto@tupodermental.club" ? (
                   <button
                     onClick={() => setPhase("ADMIN")}
                     className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
                   >
                     ⚙️ Admin
                   </button>
-                ) : (
-                  <button
-                    onClick={() => setIsAdminLoginModalOpen(true)}
-                    className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
-                  >
-                    ⚙️ Acceso Admin
-                  </button>
-                )}
+                ) : null}
                 <button
                   onClick={handleUserLogout}
                   className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
@@ -3047,14 +3040,7 @@ export default function App() {
                   Salir
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={() => setIsAdminLoginModalOpen(true)}
-                className="text-white/85 hover:text-[#36C4D8] font-mono text-[10px] tracking-wider uppercase font-extrabold px-3 py-1.5 rounded-lg bg-[#411F66]/30 border border-white/10 transition-colors cursor-pointer mr-2"
-              >
-                ⚙️ Acceso Admin
-              </button>
-            )}
+            ) : null}
 
             <motion.span 
               animate={{ 
@@ -3131,16 +3117,18 @@ export default function App() {
                         <span className="text-[10px] font-mono text-[#D6448D] uppercase tracking-wider font-extrabold flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                           ¡VIAJE EN PROGRESO DETECTADO!
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setIsAdminLoginModalOpen(true);
-                            }}
-                            className="ml-2 px-2 py-0.5 bg-[#411F66] text-[#7EF9FF] border border-[#7EF9FF]/20 rounded-md hover:bg-opacity-95 transition-all text-[9px] font-mono flex items-center gap-1 cursor-pointer font-extrabold shadow-sm active:scale-95"
-                            title="Acceso de Administración"
-                          >
-                            🔒 Admin
-                          </button>
+                          {currentUserEmail?.toLowerCase() === "contacto@tupodermental.club" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPhase("ADMIN");
+                              }}
+                              className="ml-2 px-2 py-0.5 bg-[#411F66] text-[#7EF9FF] border border-[#7EF9FF]/20 rounded-md hover:bg-opacity-95 transition-all text-[9px] font-mono flex items-center gap-1 cursor-pointer font-extrabold shadow-sm active:scale-95"
+                              title="Acceso de Administración"
+                            >
+                              ⚙️ Admin
+                            </button>
+                          )}
                         </span>
                         <h4 className="text-sm font-display font-black text-[#3A185C]">Tienes un autodiagnóstico activo</h4>
                         <p className="text-xs text-black font-sans font-bold">
@@ -3706,7 +3694,7 @@ export default function App() {
                           return null;
                         }
                       } else {
-                        const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+                        const adminEmails = ["contacto@tupodermental.club"];
                         const isAdm = adminEmails.includes(emailKey);
                         if (isAdm) return null;
                         return (
@@ -3727,7 +3715,7 @@ export default function App() {
                   {/* Código de Acceso / Contraseña Administrador */}
                   {(() => {
                     const emailKey = loginEmail.toLowerCase().trim();
-                    const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+                    const adminEmails = ["contacto@tupodermental.club"];
                     const isAdm = adminEmails.includes(emailKey);
                     
                     return (
@@ -3769,7 +3757,7 @@ export default function App() {
                   {/* ¿Cómo quieres que te llamemos? - Solo para no-administradores */}
                   {(() => {
                     const emailKey = loginEmail.toLowerCase().trim();
-                    const adminEmails = ["contacto@tupodermental.club", "tupodermentaloficial@gmail.com", "agencialeps@gmail.com"];
+                    const adminEmails = ["contacto@tupodermental.club"];
                     const isAdm = adminEmails.includes(emailKey);
                     if (isAdm) return null;
                     return (
@@ -5805,37 +5793,37 @@ export default function App() {
       {/* ADMIN MASTER LOGIN MODAL */}
       <AnimatePresence>
         {isAdminLoginModalOpen && (
-          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-[#120721] border-2 border-[#7EF9FF]/30 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl relative text-left font-sans"
+              className="bg-white border-2 border-[#6E488A]/20 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl relative text-left font-sans"
             >
               {/* Decorative top bar */}
-              <div className="h-1.5 bg-gradient-to-r from-[#7EF9FF] via-[#00D4FF] to-[#E86FA3]" />
+              <div className="h-1.5 bg-gradient-to-r from-[#6E488A] via-[#E86FA3] to-[#36C4D8]" />
 
               <button
                 onClick={() => {
                   setIsAdminLoginModalOpen(false);
                   setAdminLoginError(null);
                 }}
-                className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer p-1.5 hover:bg-white/5 rounded-lg"
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer p-1.5 hover:bg-slate-100 rounded-lg"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-slate-500" />
               </button>
 
               <div className="p-6 sm:p-8 space-y-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#7EF9FF]/10 flex items-center justify-center border border-[#7EF9FF]/20">
-                    <ShieldCheck className="w-5 h-5 text-[#7EF9FF]" />
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-200">
+                    <ShieldCheck className="w-5 h-5 text-[#B5179E]" />
                   </div>
                   <div>
-                    <h3 className="font-display font-black text-lg text-white" style={{ color: "#ffffff" }}>
+                    <h3 className="font-display font-black text-lg text-[#1C0630]">
                       Acceso de Administración
                     </h3>
-                    <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
-                      Exclusivo para Mentores Autorizados
+                    <p className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+                      Exclusivo para el Administrador Principal
                     </p>
                   </div>
                 </div>
@@ -5844,7 +5832,7 @@ export default function App() {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-300 font-sans font-bold"
+                    className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-sans font-bold"
                   >
                     ⚠️ {adminLoginError}
                   </motion.div>
@@ -5852,7 +5840,7 @@ export default function App() {
 
                 <form onSubmit={handleAdminModalSubmit} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-mono uppercase tracking-widest text-slate-300">
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-slate-500 font-black">
                       Correo Electrónico
                     </label>
                     <div className="relative">
@@ -5863,14 +5851,13 @@ export default function App() {
                         value={adminFormEmail}
                         onChange={(e) => setAdminFormEmail(e.target.value)}
                         placeholder="contacto@tupodermental.club"
-                        className="w-full bg-[#1b1030] border border-slate-700 focus:border-[#7EF9FF] rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none transition-colors"
-                        style={{ color: "#ffffff" }}
+                        className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/15 focus:border-[#36C4D8] rounded-xl py-2.5 pl-10 pr-4 text-sm text-[#1C0630] placeholder-slate-400 outline-none transition-all font-sans font-bold"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-mono uppercase tracking-widest text-slate-300">
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-slate-500 font-black">
                       Contraseña Maestra
                     </label>
                     <div className="relative">
@@ -5881,8 +5868,7 @@ export default function App() {
                         value={adminFormPass}
                         onChange={(e) => setAdminFormPass(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full bg-[#1b1030] border border-slate-700 focus:border-[#7EF9FF] rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none transition-colors font-sans font-bold"
-                        style={{ color: "#ffffff" }}
+                        className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/15 focus:border-[#36C4D8] rounded-xl py-2.5 pl-10 pr-4 text-sm text-[#1C0630] placeholder-slate-400 outline-none transition-all font-sans font-bold"
                       />
                     </div>
                   </div>
@@ -5890,8 +5876,7 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={isAdminLoggingIn}
-                    className="w-full py-3 mt-2 bg-gradient-to-r from-[#7EF9FF] to-[#00D4FF] hover:opacity-95 text-slate-950 font-display font-black text-xs rounded-xl tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg shadow-cyan-400/10 disabled:opacity-50 disabled:pointer-events-none"
-                    style={{ color: "#090d16" }}
+                    className="w-full py-3 mt-2 bg-gradient-to-r from-[#6E488A] to-[#E86FA3] hover:opacity-95 text-white font-display font-black text-xs rounded-xl tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg shadow-purple-400/10 disabled:opacity-50 disabled:pointer-events-none uppercase"
                   >
                     <span>{isAdminLoggingIn ? "VERIFICANDO..." : "INGRESAR AL PANEL ADMIN"}</span>
                   </button>

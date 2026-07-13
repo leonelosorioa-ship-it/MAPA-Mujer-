@@ -237,7 +237,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
               M.A.P.A.™ Panel Administrativo
             </h2>
             <p className="text-xs text-slate-500 font-sans tracking-wide">
-              Métricas exclusivas para administradores autorizados (contacto@tupodermental.club / tupodermentaloficial@gmail.com / agencialeps@gmail.com)
+              Métricas exclusivas para el Administrador Principal (contacto@tupodermental.club)
             </p>
           </div>
         </div>
