@@ -21,7 +21,10 @@ import {
   AlertTriangle,
   RefreshCw,
   Check,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Plus,
+  Key
 } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -57,6 +60,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Invitation codes state
+  const [inviteCodes, setInviteCodes] = useState<any[]>([]);
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  const [justGeneratedCode, setJustGeneratedCode] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
   // Hotmart Webhook Logs states
   const [hotmartLogs, setHotmartLogs] = useState<any[]>([]);
   const [hotmartSecretLen, setHotmartSecretLen] = useState<number>(0);
@@ -70,6 +79,53 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
   const [notifyTargetEmail, setNotifyTargetEmail] = useState("ALL");
   const [notifyLoading, setNotifyLoading] = useState(false);
   const [notifySuccessMsg, setNotifySuccessMsg] = useState<string | null>(null);
+
+  const fetchInviteCodes = async () => {
+    try {
+      const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
+      const res = await fetch("/api/admin/invite-codes", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setInviteCodes(data.codes || []);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching invite codes:", err);
+    }
+  };
+
+  const handleGenerateInviteCode = async () => {
+    try {
+      setIsGeneratingCode(true);
+      setJustGeneratedCode(null);
+      const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
+      const res = await fetch("/api/admin/generate-invite-code", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.codeObj) {
+          setInviteCodes(prev => [...prev, data.codeObj]);
+          setJustGeneratedCode(data.codeObj.code);
+          setTimeout(() => setJustGeneratedCode(null), 10000);
+        }
+      } else {
+        alert("Error al generar código.");
+      }
+    } catch (err: any) {
+      alert("Error al conectar: " + err.message);
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
 
   const fetchHotmartLogs = async () => {
     try {
@@ -110,6 +166,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
         setUsersList(data.capturedEmails);
       }
       await fetchHotmartLogs();
+      await fetchInviteCodes();
     } catch (e: any) {
       setErrorMessage(e.message || "Fallo crítico al conectar con el servidor administrativo.");
     } finally {
@@ -556,6 +613,145 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogoutAdmin }) => {
 
             </div>
 
+          </div>
+
+          {/* SECCIÓN EXCLUSIVA DE GESTIÓN DE INVITACIONES (OPCIONES 2 Y 3) */}
+          <div 
+            className="w-full bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-sm text-left mt-6 text-slate-800 animate-fadeIn"
+            id="admin_invite_codes_section"
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+              <div>
+                <h3 className="font-display font-black text-xl text-[#56346F] flex items-center gap-2">
+                  <Key className="w-5 h-5 text-[#B5179E]" />
+                  Códigos de Invitadas M.A.P.A.™ (Un solo uso)
+                </h3>
+                <p className="text-xs text-slate-500">Gestor de códigos aleatorios únicos para dar acceso gratuito a integrantes o comunidad.</p>
+              </div>
+              <button 
+                onClick={handleGenerateInviteCode}
+                disabled={isGeneratingCode}
+                className="px-5 py-2.5 bg-purple-50 hover:bg-purple-100 text-[#B5179E] border border-purple-200 rounded-xl text-xs font-mono transition-all flex items-center gap-2 active:scale-95 cursor-pointer disabled:opacity-50 font-bold"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{isGeneratingCode ? 'Generando...' : 'Generar Código de Invitada'}</span>
+              </button>
+            </div>
+
+            {/* IF JUST GENERATED */}
+            {justGeneratedCode && (
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 animate-pulse">
+                <div>
+                  <span className="text-xs font-bold text-emerald-800 block">✨ ¡CÓDIGO ÚNICO GENERADO CON ÉXITO!</span>
+                  <p className="text-xs text-emerald-600 mt-0.5">Cópialo y envíaselo directamente a tu invitada. Es de un solo uso.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xl font-black bg-white px-4 py-1.5 rounded-xl border border-emerald-300 text-emerald-800 tracking-wider">
+                    {justGeneratedCode}
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(justGeneratedCode || "");
+                      setCopiedCode(justGeneratedCode);
+                      setTimeout(() => setCopiedCode(null), 3000);
+                    }}
+                    className="p-2 bg-[#B5179E] hover:bg-[#9E1280] text-white rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold border-none"
+                  >
+                    {copiedCode === justGeneratedCode ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedCode === justGeneratedCode ? 'Copiado' : 'Copiar'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* STATS ROW */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs font-sans">
+              <div className="text-left space-y-1">
+                <span className="text-slate-500 block font-mono text-[9px] uppercase tracking-wider">CÓDIGOS TOTALES</span>
+                <span className="font-bold text-[#56346F] text-lg block">{inviteCodes.length} registrados</span>
+              </div>
+              <div className="text-left space-y-1">
+                <span className="text-slate-500 block font-mono text-[9px] uppercase tracking-wider">CÓDIGOS DISPONIBLES</span>
+                <span className="font-bold text-emerald-600 text-lg block">
+                  {inviteCodes.filter(c => !c.used).length} listos para usar
+                </span>
+              </div>
+              <div className="text-left space-y-1">
+                <span className="text-slate-500 block font-mono text-[9px] uppercase tracking-wider">CÓDIGOS UTILIZADOS</span>
+                <span className="font-bold text-slate-600 text-lg block">
+                  {inviteCodes.filter(c => c.used).length} canjeados
+                </span>
+              </div>
+            </div>
+
+            {/* CODES LIST */}
+            <div className="space-y-3">
+              <h4 className="font-mono text-xs font-bold text-[#56346F] uppercase tracking-wider">Historial de Códigos Pre-generados y Dinámicos:</h4>
+              {inviteCodes.length === 0 ? (
+                <div className="text-center py-8 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  <p className="text-xs text-slate-500 font-mono">No se han registrado códigos de invitadas en el sistema todavía.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm max-h-[300px] overflow-y-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 font-mono text-[9px] uppercase tracking-wider text-slate-600 sticky top-0 z-10">
+                        <th className="p-3">Código</th>
+                        <th className="p-3">Origen</th>
+                        <th className="p-3">Estado</th>
+                        <th className="p-3">Canjeado por</th>
+                        <th className="p-3">Fecha Canje</th>
+                        <th className="p-3 text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="font-sans divide-y divide-slate-100">
+                      {[...inviteCodes].reverse().map((c, idx) => (
+                        <tr key={idx} className={`hover:bg-slate-50/50 transition-all ${c.used ? 'opacity-65' : ''}`}>
+                          <td className="p-3 font-mono font-black text-[#56346F] text-sm tracking-wider">
+                            {c.code}
+                          </td>
+                          <td className="p-3 font-mono text-[10px] text-slate-500 uppercase">
+                            {c.type === 'pregenerated' ? 'Lista Reserva (Opción 2)' : 'Generador Admin (Opción 3)'}
+                          </td>
+                          <td className="p-3">
+                            {c.used ? (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded-full font-mono text-[9px] font-bold border border-slate-200">
+                                CANJEADO
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full font-mono text-[9px] font-bold border border-emerald-200">
+                                DISPONIBLE
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3 font-medium text-slate-800">
+                            {c.usedBy || <span className="text-slate-400 italic">Nadie todavía</span>}
+                          </td>
+                          <td className="p-3 font-mono text-slate-500">
+                            {c.usedAt ? new Date(c.usedAt).toLocaleString("es-ES") : "N/A"}
+                          </td>
+                          <td className="p-3 text-right">
+                            {!c.used && (
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(c.code);
+                                  setCopiedCode(c.code);
+                                  setTimeout(() => setCopiedCode(null), 2000);
+                                }}
+                                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-lg text-[10px] font-mono transition-all flex items-center gap-1 ml-auto active:scale-95 cursor-pointer border-none"
+                              >
+                                {copiedCode === c.code ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                                <span>{copiedCode === c.code ? 'Copiado' : 'Copiar'}</span>
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* SECCIÓN EXCLUSIVA DE DIAGNÓSTICO DE SINCRONIZACIÓN HOTMART */}

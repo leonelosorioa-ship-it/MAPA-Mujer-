@@ -142,6 +142,68 @@ function writeHotmartLogs(logs: any[]) {
   }
 }
 
+const INVITE_CODES_PATH = path.join(process.cwd(), "data_invite_codes.json");
+
+function readInviteCodes() {
+  try {
+    if (!fs.existsSync(INVITE_CODES_PATH)) {
+      const initialCodes = [
+        { code: "842915", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "375046", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "194820", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "603719", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "528147", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "916403", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "480251", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "739162", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "251684", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "304975", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "682139", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "597304", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "148562", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "823617", type: "pregenerated", used: false, usedBy: null, usedAt: null },
+        { code: "907451", type: "pregenerated", used: false, usedBy: null, usedAt: null }
+      ];
+      fs.writeFileSync(INVITE_CODES_PATH, JSON.stringify(initialCodes, null, 2));
+      return initialCodes;
+    }
+    const raw = fs.readFileSync(INVITE_CODES_PATH, "utf-8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    console.error("Error reading invite codes:", err);
+    return [];
+  }
+}
+
+function writeInviteCodes(codes: any[]) {
+  try {
+    fs.writeFileSync(INVITE_CODES_PATH, JSON.stringify(codes, null, 2));
+  } catch (err) {
+    console.error("Error writing invite codes:", err);
+  }
+}
+
+function checkAndConsumeInviteCode(inputCode: string, userEmail: string): boolean {
+  const codes = readInviteCodes();
+  const cleanInput = (inputCode || "").trim().toUpperCase();
+  const index = codes.findIndex((c: any) => c.code.toUpperCase() === cleanInput && !c.used);
+  if (index !== -1) {
+    codes[index].used = true;
+    codes[index].usedBy = userEmail.toLowerCase().trim();
+    codes[index].usedAt = new Date().toISOString();
+    writeInviteCodes(codes);
+    return true;
+  }
+  return false;
+}
+
+function isUnusedInviteCode(inputCode: string): boolean {
+  const codes = readInviteCodes();
+  const cleanInput = (inputCode || "").trim().toUpperCase();
+  return codes.some((c: any) => c.code.toUpperCase() === cleanInput && !c.used);
+}
+
 function addHotmartLog(email: string, payload: any, authorized: boolean, authDetails: any, status: string, errorMessage?: string) {
   try {
     const logs = readHotmartLogs();
@@ -1728,8 +1790,13 @@ app.post("/api/auth/login", (req, res) => {
 
     let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
 
-    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777"
-    if (userIndex === -1 && isPromoBypass) {
+    const isUnusedInvite = isUnusedInviteCode(cleanInputCode);
+
+    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777" o un código de la lista
+    if (userIndex === -1 && (isPromoBypass || isUnusedInvite)) {
+      if (isUnusedInvite) {
+        checkAndConsumeInviteCode(cleanInputCode, cleanEmail);
+      }
       const newPromoUser = {
         nombre: "Invitada Especial M.A.P.A.",
         email: cleanEmail,
@@ -1744,7 +1811,7 @@ app.post("/api/auth/login", (req, res) => {
         initialScanResults: null,
         isCompleted: false,
         disabled: false,
-        accessCode: "LEO777",
+        accessCode: cleanInputCode,
         hotmartApproved: true
       };
       db.push(newPromoUser);
@@ -2030,8 +2097,13 @@ app.post("/api/register-user", (req, res) => {
       userIndex = db.length - 1;
     }
 
-    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777"
-    if (userIndex === -1 && cleanAccessCode === "LEO777") {
+    const isUnusedInvite = isUnusedInviteCode(cleanAccessCode);
+
+    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777" o un código de la lista
+    if (userIndex === -1 && (cleanAccessCode === "LEO777" || isUnusedInvite)) {
+      if (isUnusedInvite) {
+        checkAndConsumeInviteCode(cleanAccessCode, cleanEmail);
+      }
       const newPromoUser = {
         nombre: nombre ? nombre.trim() : "Invitada Especial M.A.P.A.",
         email: cleanEmail,
@@ -2046,7 +2118,7 @@ app.post("/api/register-user", (req, res) => {
         initialScanResults: initialScanResults || null,
         isCompleted: false,
         disabled: false,
-        accessCode: "LEO777",
+        accessCode: cleanAccessCode,
         hotmartApproved: true
       };
       db.push(newPromoUser);
@@ -3278,6 +3350,55 @@ app.post("/api/admin/toggle-user-status", authenticateAdminJWT, (req, res) => {
   } catch (err) {
     console.error("Error toggling user status:", err);
     return res.status(500).json({ error: "Error interno del servidor." });
+  }
+});
+
+app.get("/api/admin/invite-codes", authenticateAdminJWT, (req, res) => {
+  try {
+    const codes = readInviteCodes();
+    return res.json({
+      success: true,
+      codes
+    });
+  } catch (err: any) {
+    console.error("Error retrieving invite codes:", err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post("/api/admin/generate-invite-code", authenticateAdminJWT, (req, res) => {
+  try {
+    const codes = readInviteCodes();
+    
+    // Generate a unique 6-digit code
+    let code = "";
+    let attempts = 0;
+    while (attempts < 100) {
+      code = Math.floor(100000 + Math.random() * 900000).toString();
+      if (!codes.some((c: any) => c.code === code)) {
+        break;
+      }
+      attempts++;
+    }
+
+    const newCodeObj = {
+      code,
+      type: "admin_generated",
+      used: false,
+      usedBy: null,
+      usedAt: null
+    };
+
+    codes.push(newCodeObj);
+    writeInviteCodes(codes);
+
+    return res.json({
+      success: true,
+      codeObj: newCodeObj
+    });
+  } catch (err: any) {
+    console.error("Error generating invite code:", err);
+    return res.status(500).json({ success: false, error: err.message });
   }
 });
 
