@@ -5961,13 +5961,28 @@ export default function App() {
 
       {/* FLOATING ACTION UTILITIES CONTAINER */}
       {!(focusMode && phase === "DASHBOARD") && (
-        <div className="fixed bottom-6 right-6 z-[999] flex items-center gap-3">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[999] flex items-center gap-2 sm:gap-3">
+          {/* Floating WhatsApp Share Button */}
+          <motion.button
+            onClick={() => {
+              const message = "¡Hola! Te recomiendo de todo corazón M.A.P.A.™ Mujer. Mi experiencia con esta aplicación ha sido excelente para mi calma y equilibrio emocional. Descubre tu mapa hoy y pruébala tú también en: https://quizmapa.tupodermental.club/";
+              const link = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+              window.open(link, "_blank", "noopener,noreferrer");
+            }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2 sm:p-3 rounded-full bg-[#25D366] text-white border-2 border-white shadow-xl hover:bg-[#20ba5a] transition-all cursor-pointer flex items-center justify-center"
+            title="Compartir M.A.P.A.™ Mujer en WhatsApp"
+          >
+            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 fill-current text-white" />
+          </motion.button>
+
           {/* Floating Alarm Toggle Button */}
           <motion.button
             onClick={() => setAlarmPanelOpen(!alarmPanelOpen)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className={`p-3 sm:p-3.5 rounded-full border-2 border-white shadow-xl text-white flex items-center justify-center cursor-pointer transition-all ${
+            className={`p-2 sm:p-3 rounded-full border-2 border-white shadow-xl text-white flex items-center justify-center cursor-pointer transition-all ${
               activeTaskAlarm && activeTaskAlarm.isRunning 
                 ? "bg-emerald-500 hover:bg-emerald-600 animate-pulse" 
                 : "bg-[#411F66] hover:bg-[#522b7d]"
@@ -5976,13 +5991,13 @@ export default function App() {
           >
             {activeTaskAlarm && activeTaskAlarm.isRunning ? (
               <div className="relative">
-                <Bell className="w-5 h-5 animate-bounce" />
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5 animate-bounce" />
                 <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-red-500 rounded-full border border-white flex items-center justify-center text-[7px] font-black">
                   !
                 </span>
               </div>
             ) : (
-              <Bell className="w-5 h-5" />
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
             )}
           </motion.button>
 
@@ -5995,10 +6010,10 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: 20 }}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="p-3 sm:p-3.5 rounded-full bg-[#E86FA3] text-white border-2 border-white shadow-xl hover:bg-[#d55d91] hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group"
+                className="p-2 sm:p-3 rounded-full bg-[#E86FA3] text-white border-2 border-white shadow-xl hover:bg-[#d55d91] hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group"
                 title="Volver arriba"
               >
-                <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5 group-hover:-translate-y-0.5 transition-transform" />
               </motion.button>
             )}
           </AnimatePresence>
