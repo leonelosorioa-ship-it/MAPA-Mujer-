@@ -96,6 +96,10 @@ export function useAuthSynchronizer({
 
     if (!userEmail || !token || isOffline) return;
 
+    if (setDashboardNotice) {
+      setDashboardNotice("🔄 Sincronizando tu proceso de 7 días con la nube...");
+    }
+
     try {
       setSyncing(true);
       const res = await fetch("/api/get-user-progress", {
@@ -141,8 +145,13 @@ export function useAuthSynchronizer({
           localStorage.setItem("MAPA_7DAY_PROGRESS_V2", serialized);
 
           if (setDashboardNotice) {
-            setDashboardNotice("🔄 Tus datos se han sincronizado con tus otros dispositivos.");
+            setDashboardNotice("✅ ¡Tu proceso e historial de 7 días se han sincronizado y actualizado!");
             setTimeout(() => setDashboardNotice(null), 4000);
+          }
+        } else {
+          if (setDashboardNotice) {
+            setDashboardNotice("✅ ¡Tu avance de 7 días está al día y sincronizado en la nube!");
+            setTimeout(() => setDashboardNotice(null), 3000);
           }
         }
         setSyncError(null);
@@ -150,6 +159,10 @@ export function useAuthSynchronizer({
     } catch (err: any) {
       console.warn("[M.A.P.A. Sync] Error fetching progress from server:", err);
       setSyncError("Error de sincronización con el servidor.");
+      if (setDashboardNotice) {
+        setDashboardNotice("⚠️ Error de sincronización, tu progreso se encuentra seguro localmente.");
+        setTimeout(() => setDashboardNotice(null), 4000);
+      }
     } finally {
       setSyncing(false);
     }

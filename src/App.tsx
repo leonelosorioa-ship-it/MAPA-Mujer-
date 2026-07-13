@@ -570,6 +570,11 @@ export default function App() {
   const [alarmPanelOpen, setAlarmPanelOpen] = useState<boolean>(false);
   const [completedTaskFeedback, setCompletedTaskFeedback] = useState<{ taskName: string; timestamp: string } | null>(null);
 
+  // Global background ambient music (https://f005.backblazeb2.com/file/M.A.P.A/Tu+mapa.mp3)
+  const ambientAudioRef = React.useRef<HTMLAudioElement | null>(null);
+  const [isAmbientPlaying, setIsAmbientPlaying] = useState<boolean>(false);
+  const [ambientMuted, setAmbientMuted] = useState<boolean>(false);
+
   const logExerciseFeeling = async (taskName: string, feeling: string) => {
     const logEntry = {
       taskName,
@@ -918,6 +923,80 @@ export default function App() {
       window.removeEventListener("click", handleGlobalClick, { capture: true });
     };
   }, []);
+
+  // Ambient Background Audio Lifecycle
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof Audio === "undefined") return;
+
+    const audio = new Audio("https://f005.backblazeb2.com/file/M.A.P.A/Tu+mapa.mp3");
+    audio.loop = false; // Plays only once as requested (no ambient looping)
+    audio.volume = 0.20; // Safe low-medium volume (Bajo-Medio) so it is never annoying
+    ambientAudioRef.current = audio;
+
+    const savedMuted = localStorage.getItem("MAPA_AMBIENT_MUTED") === "true";
+    if (savedMuted) {
+      audio.muted = true;
+      setAmbientMuted(true);
+    }
+
+    const startAudio = () => {
+      if (audio.paused && !savedMuted) {
+        audio.play().then(() => {
+          setIsAmbientPlaying(true);
+          setAmbientMuted(false);
+        }).catch((err) => {
+          console.log("[Ambient Audio] Autoplay deferred waiting for first user gesture:", err);
+        });
+      }
+    };
+
+    const handleEnded = () => {
+      setIsAmbientPlaying(false);
+    };
+
+    audio.addEventListener("ended", handleEnded);
+
+    // Try starting immediately
+    startAudio();
+
+    // Interaction fallback trigger
+    const handleGesture = () => {
+      startAudio();
+      window.removeEventListener("click", handleGesture);
+      window.removeEventListener("touchstart", handleGesture);
+      window.removeEventListener("keydown", handleGesture);
+    };
+
+    window.addEventListener("click", handleGesture);
+    window.addEventListener("touchstart", handleGesture);
+    window.addEventListener("keydown", handleGesture);
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("ended", handleEnded);
+      window.removeEventListener("click", handleGesture);
+      window.removeEventListener("touchstart", handleGesture);
+      window.removeEventListener("keydown", handleGesture);
+    };
+  }, []);
+
+  const toggleAmbientAudio = () => {
+    const audio = ambientAudioRef.current;
+    if (!audio) return;
+    if (isAmbientPlaying) {
+      audio.pause();
+      setIsAmbientPlaying(false);
+      localStorage.setItem("MAPA_AMBIENT_MUTED", "true");
+      setAmbientMuted(true);
+    } else {
+      audio.muted = false;
+      audio.play().then(() => {
+        setIsAmbientPlaying(true);
+        setAmbientMuted(false);
+        localStorage.setItem("MAPA_AMBIENT_MUTED", "false");
+      }).catch(e => console.warn(e));
+    }
+  };
 
   const handleConfirmAppDownloaded = () => {
     setProgramProgress(prev => {
@@ -5962,6 +6041,25 @@ export default function App() {
       {/* FLOATING ACTION UTILITIES CONTAINER */}
       {!(focusMode && phase === "DASHBOARD") && (
         <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[999] flex items-center gap-2 sm:gap-3">
+          {/* Floating Ambient Music Control Button */}
+          <motion.button
+            onClick={toggleAmbientAudio}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className={`p-2 sm:p-3 rounded-full border-2 border-white shadow-xl text-white flex items-center justify-center cursor-pointer transition-all ${
+              isAmbientPlaying 
+                ? "bg-[#9D4EDD] hover:bg-[#7b2cbf]" 
+                : "bg-slate-600 hover:bg-slate-700"
+            }`}
+            title={isAmbientPlaying ? "Pausar música de fondo" : "Reproducir música de fondo"}
+          >
+            {isAmbientPlaying ? (
+              <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            ) : (
+              <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-slate-200" />
+            )}
+          </motion.button>
+
           {/* Floating WhatsApp Share Button */}
           <motion.button
             onClick={() => {
