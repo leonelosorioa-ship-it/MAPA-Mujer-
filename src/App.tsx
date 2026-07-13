@@ -2965,7 +2965,13 @@ export default function App() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-gradient-to-b from-[#EDE0F0]/50 via-transparent to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Persistent PWA Install Banner */}
-      {!(focusMode && phase === "DASHBOARD") && <PWAInstallBanner />}
+      {!(focusMode && phase === "DASHBOARD") && (
+        <PWAInstallBanner
+          currentUserEmail={currentUserEmail}
+          hasDownloadedApp={!!programProgress.hasDownloadedApp}
+          onConfirmDownloaded={handleConfirmAppDownloaded}
+        />
+      )}
 
       {/* HEADER LOGO RAIL */}
       {!(focusMode && phase === "DASHBOARD") && (

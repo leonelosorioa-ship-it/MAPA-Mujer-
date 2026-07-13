@@ -2,7 +2,17 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Download, Smartphone, Monitor, Plus, Share2, X, Check } from "lucide-react";
 
-export const PWAInstallBanner: React.FC = () => {
+interface PWAInstallBannerProps {
+  currentUserEmail?: string;
+  hasDownloadedApp?: boolean;
+  onConfirmDownloaded?: () => void;
+}
+
+export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
+  currentUserEmail,
+  hasDownloadedApp = false,
+  onConfirmDownloaded
+}) => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -14,6 +24,29 @@ export const PWAInstallBanner: React.FC = () => {
     isFirefox: false,
     isMobile: false,
   });
+
+  const [isDismissedPermanently, setIsDismissedPermanently] = useState(() => {
+    return localStorage.getItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT") === "true" ||
+           localStorage.getItem("mapa_downloaded_pwa") === "true";
+  });
+
+  // Load progress dynamically when currentUserEmail changes to see if downloaded
+  useEffect(() => {
+    if (currentUserEmail) {
+      const emailKey = currentUserEmail.toLowerCase().trim();
+      const savedProgress = localStorage.getItem(`MAPA_USER_PROGRESS_${emailKey}`);
+      if (savedProgress) {
+        try {
+          const parsed = JSON.parse(savedProgress);
+          if (parsed && parsed.hasDownloadedApp) {
+            setIsDismissedPermanently(true);
+          }
+        } catch (e) {
+          console.error("[PWA] Error parsing user progress", e);
+        }
+      }
+    }
+  }, [currentUserEmail]);
 
   useEffect(() => {
     // 1. Check if running in standalone mode (already installed & opened as app)
@@ -45,9 +78,9 @@ export const PWAInstallBanner: React.FC = () => {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // If we are not in standalone and haven't dismissed in this session (or if we are on the test URL, always show), show
       const isDismissedThisSession = sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") === "true";
-      if (!standalone && (!isDismissedThisSession || isTestUrl)) {
+      const isAlreadyDownloaded = hasDownloadedApp || isDismissedPermanently;
+      if (!standalone && !isAlreadyDownloaded && (!isDismissedThisSession || isTestUrl)) {
         setIsVisible(true);
       }
     };
@@ -55,10 +88,9 @@ export const PWAInstallBanner: React.FC = () => {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // 4. Fallback show for non-Chromium browsers (Safari iOS/macOS, Firefox etc)
-    // Since beforeinstallprompt is NOT fired on iOS Safari, we trigger the banner manually
     const isDismissedThisSession = sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") === "true";
-    if (!standalone && (!isDismissedThisSession || isTestUrl)) {
-      // Show banner after 3 seconds, or 500ms on the test URL for instant prompt/activation of download
+    const isAlreadyDownloaded = hasDownloadedApp || isDismissedPermanently;
+    if (!standalone && !isAlreadyDownloaded && (!isDismissedThisSession || isTestUrl)) {
       const delay = isTestUrl ? 500 : 3000;
       const timer = setTimeout(() => {
         setIsVisible(true);
@@ -69,7 +101,7 @@ export const PWAInstallBanner: React.FC = () => {
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
-  }, [isStandalone]);
+  }, [isStandalone, hasDownloadedApp, isDismissedPermanently]);
 
   // Listen to successful installations to hide banner permanently
   useEffect(() => {
@@ -77,39 +109,53 @@ export const PWAInstallBanner: React.FC = () => {
       console.log("[PWA] App successfully installed!");
       setIsStandalone(true);
       setIsVisible(false);
+      localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
+      localStorage.setItem("mapa_downloaded_pwa", "true");
+      setIsDismissedPermanently(true);
+      if (onConfirmDownloaded) {
+        onConfirmDownloaded();
+      }
     };
 
     window.addEventListener("appinstalled", handleAppInstalled);
     return () => {
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, []);
+  }, [onConfirmDownloaded]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
-      // Trigger native installation dialog
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`[PWA] Installation prompt user decision: ${outcome}`);
-      if (outcome === "accepted") {
-        setDeferredPrompt(null);
-        setIsVisible(false);
+      try {
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`[PWA] Installation prompt user decision: ${outcome}`);
+        if (outcome === "accepted") {
+          setDeferredPrompt(null);
+          setIsVisible(false);
+          localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
+          localStorage.setItem("mapa_downloaded_pwa", "true");
+          setIsDismissedPermanently(true);
+          if (onConfirmDownloaded) {
+            onConfirmDownloaded();
+          }
+        }
+      } catch (err) {
+        console.error("Error executing prompt", err);
       }
     } else {
-      // Show manual step-by-step instructions for Safari/Firefox
       setShowInstructions(true);
     }
   };
 
   const handleDismiss = () => {
-    // Hide for this visit/session only as per requirement:
-    // "Si el usuario no instala la aplicación, el sistema deberá volver a mostrar la invitación en cada nueva visita."
-    sessionStorage.setItem("MAPA_PWA_BANNER_DISMISSED", "true");
+    // Dismiss permanently to never annoy the user again
+    localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
+    setIsDismissedPermanently(true);
     setIsVisible(false);
   };
 
-  // Do not render anything if already installed/standalone
-  if (isStandalone) return null;
+  // Do not render anything if already installed/standalone or dismissed permanently
+  if (isStandalone || hasDownloadedApp || isDismissedPermanently) return null;
 
   return (
     <AnimatePresence>
@@ -122,8 +168,18 @@ export const PWAInstallBanner: React.FC = () => {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-2xl bg-gradient-to-r from-[#07111F] via-[#0D1F38] to-[#07111F] border border-[#7EF9FF]/30 rounded-3xl p-5 shadow-2xl shadow-cyan-500/10 backdrop-blur-xl"
         >
+          {/* White 'X' close button at the absolute top-left corner */}
+          <button
+            onClick={handleDismiss}
+            className="absolute top-3.5 left-3.5 z-[60] p-1.5 bg-white/10 hover:bg-white/20 border border-white/25 text-white hover:text-slate-200 rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
+            title="Cerrar y no recordar de nuevo"
+            id="pwa_banner_close_button"
+          >
+            <X className="w-3.5 h-3.5 text-white" style={{ color: "#ffffff", strokeWidth: 3 }} />
+          </button>
+
           {!showInstructions ? (
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-3 pl-7 sm:pl-9">
               <div className="flex items-center space-x-3.5 text-left">
                 <div className="w-12 h-12 rounded-2xl bg-[#113A63]/70 border border-[#7EF9FF]/30 flex items-center justify-center shrink-0 shadow-lg shadow-cyan-500/20">
                   <Download className="w-6 h-6 text-[#7EF9FF] animate-bounce" />
@@ -150,17 +206,10 @@ export const PWAInstallBanner: React.FC = () => {
                   {platformInfo.isMobile ? <Smartphone className="w-4 h-4 text-slate-900 btn-install-text" style={{ color: "#0f172a" }} /> : <Monitor className="w-4 h-4 text-slate-900 btn-install-text" style={{ color: "#0f172a" }} />}
                   <span className="btn-install-text" style={{ color: "#0f172a" }}>INSTALAR AHORA</span>
                 </button>
-                <button
-                  onClick={handleDismiss}
-                  className="p-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl transition-all cursor-pointer"
-                  title="Recordar en la siguiente visita"
-                >
-                  <X className="w-4 h-4 text-gray-400" />
-                </button>
               </div>
             </div>
           ) : (
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left pt-3 pl-7 sm:pl-9">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <h4 className="font-display font-bold text-sm sm:text-base !text-white flex items-center gap-2" style={{ color: "#ffffff" }}>
                   <Smartphone className="w-5 h-5 text-sky-accent" />
@@ -191,13 +240,12 @@ export const PWAInstallBanner: React.FC = () => {
                     <p className="font-semibold text-sky-accent" style={{ color: "#7EF9FF" }}>Para instalar en tu Mac (Safari):</p>
                     <ol className="list-decimal pl-5 space-y-2 text-white" style={{ color: "#ffffff" }}>
                       <li style={{ color: "#ffffff" }}>Haz clic en <span className="font-bold text-white" style={{ color: "#ffffff" }}>Archivo</span> en la barra superior o presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#ffffff" }}>Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
-                      <li style={{ color: "#ffffff" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded text-sky-accent" style={{ color: "#ffffff" }}>Agregar al Dock...</span> en la lista.</li>
+                      <li style={{ color: "#ffffff" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded text-sky-accent" style={{ color: "#7EF9FF" }}>Agregar al Dock...</span> en la lista.</li>
                       <li style={{ color: "#ffffff" }}>Confirma haciendo clic en <span className="font-bold text-emerald-400 text-emerald-accent" style={{ color: "#34d399" }}>Agregar</span> para anclar M.A.P.A.™ junto a tus aplicaciones de escritorio.</li>
                     </ol>
                   </div>
                 )}
 
-                {/* General default instructions for other cases where prompt didn't fire */}
                 {!(platformInfo.isSafari && (platformInfo.isIOS || platformInfo.isMac)) && (
                   <div className="space-y-2">
                     <p className="font-semibold text-sky-accent" style={{ color: "#7EF9FF" }}>Guía de descarga e instalación rápida:</p>
