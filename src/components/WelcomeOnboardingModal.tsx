@@ -189,40 +189,38 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
           style={{ borderWidth: "1.5px" }}
-          className="relative w-full max-w-lg bg-white border-purple-100 rounded-3xl p-6 sm:p-8 space-y-6 shadow-[0_20px_50px_rgba(157,78,221,0.15)] text-left z-10"
+          className="relative w-full max-w-lg bg-white border-purple-100 rounded-3xl p-4 sm:p-7 space-y-4 sm:space-y-5 shadow-[0_20px_50px_rgba(157,78,221,0.15)] text-left z-10 max-h-[92vh] overflow-y-auto"
         >
           {/* Decorative premium header border glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-[#9D4EDD] via-[#B5179E] to-[#7b2cbf] rounded-full" />
 
           {/* Heading */}
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#9D4EDD]/10 border border-[#9D4EDD]/20 text-xs text-[#7b2cbf] font-mono tracking-wide uppercase font-bold">
               <Sparkles className="w-3.5 h-3.5 text-[#9D4EDD] animate-pulse" />
               <span>Paso Obligatorio • Bienvenida</span>
             </div>
             <h2 className="font-display font-black text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#7b2cbf] via-[#9D4EDD] to-[#B5179E] tracking-tight pt-1 leading-tight">
-              ¡Bienvenida a M.A.P.A.™ Mujer, {userName || "hermosa"}!
+              Clara Tu Mentora, te da la bienvenida
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-bold font-sans max-w-sm mx-auto">
-              Leonel Osorio Andrade y todo el equipo te damos la bienvenida oficial a tu proceso de transformación de 7 días.
+              ¡Bienvenida a M.A.P.A.™ Mujer, {userName || "hermosa"}!
             </p>
           </div>
 
           {/* Core persuasion copy */}
-          <div className="bg-purple-50/50 p-4 rounded-2xl border border-purple-100 space-y-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans font-medium">
+          <div className="bg-purple-50/50 p-3 sm:p-4 rounded-2xl border border-purple-100 space-y-1.5 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans font-medium">
             <p className="text-[#7b2cbf] font-black flex items-center gap-1">
               <Heart className="w-4 h-4 fill-current text-rose-500 animate-pulse" />
-              Un mensaje crítico de nuestra mentora Clara:
+              Tu audio guía de inicio:
             </p>
             <p>
-              Antes de iniciar tu evaluación, responder preguntas o comenzar el Día 1, 
-              <strong> es mandatorio e imprescindible</strong> que escuches este breve audio guía de inicio. 
-              En él aprenderás el verdadero sentido de este programa y cómo sacarle el máximo provecho para tu tranquilidad mental.
+              Debes escuchar este audio para conocer nuestra plataforma y utilizarla de la mejor manera en tu proceso de transformación.
             </p>
           </div>
 
           {/* CUSTOM PREMIUM AUDIO PLAYER */}
-          <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-4 shadow-sm">
+          <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3 sm:space-y-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-[#9D4EDD]/10 rounded-xl border border-[#9D4EDD]/20">
@@ -385,7 +383,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
           <div className="text-[10px] sm:text-xs text-slate-500 font-mono text-center flex items-center justify-center gap-1.5 font-semibold bg-slate-50 py-2.5 rounded-xl border border-slate-100">
             <span>Copyright © 2026 M.A.P.A.™</span>
             <span>•</span>
-            <span>Leonel Osorio Andrade</span>
+            <span>Clara Luz - Mentora de M.A.P.A.™ Mujer</span>
           </div>
 
         </motion.div>
