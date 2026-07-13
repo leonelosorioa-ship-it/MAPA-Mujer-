@@ -52,10 +52,11 @@ const SIMULATED_ALERTS: Omit<PushNotice, "id">[] = [
 export interface PushNotificationManagerProps {
   userEmail?: string;
   currentDay?: number;
+  isDayLocked?: boolean;
   onGoToDay?: (dayNum: number) => void;
 }
 
-const getActionDetails = (title: string, body: string, currentDay: number = 1) => {
+const getActionDetails = (title: string, body: string, currentDay: number = 1, isDayLocked: boolean = false) => {
   const fullText = (title + " " + body).toLowerCase();
   
   const isDailyTestReady = fullText.includes("prueba") || 
@@ -73,6 +74,12 @@ const getActionDetails = (title: string, body: string, currentDay: number = 1) =
                             fullText.includes("lista");
 
   if (isDailyTestReady) {
+    if (isDayLocked) {
+      return {
+        label: `⏳ Ver Tiempo para Día ${currentDay}`,
+        actionType: "waiting_lock"
+      };
+    }
     return {
       label: `✨ Realizar Prueba del Día ${currentDay}`,
       actionType: "daily_test"
@@ -84,6 +91,13 @@ const getActionDetails = (title: string, body: string, currentDay: number = 1) =
     };
   }
   
+  if (isDayLocked) {
+    return {
+      label: `📅 Ver Progreso del Viaje`,
+      actionType: "waiting_lock"
+    };
+  }
+
   return {
     label: `🚀 Iniciar Tarea de Hoy`,
     actionType: "generic"
@@ -93,6 +107,7 @@ const getActionDetails = (title: string, body: string, currentDay: number = 1) =
 export const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ 
   userEmail,
   currentDay = 1,
+  isDayLocked = false,
   onGoToDay
 }) => {
   const [activeNotice, setActiveNotice] = useState<PushNotice | null>(null);
@@ -709,8 +724,8 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
                               }}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#EDE0F0] hover:bg-[#EDE0F0]/80 text-[#6E488A] font-sans font-extrabold text-[10px] tracking-wide transition-all cursor-pointer border-none shadow-xs"
                             >
-                              <span>{getActionDetails(alertItem.title, alertItem.body, currentDay).label}</span>
-                              <ArrowRight className="w-3 h-3 text-[#6E488A]" />
+                              <span>{getActionDetails(alertItem.title, alertItem.body, currentDay, isDayLocked).label}</span>
+                              <ArrowRight className="w-3.5 h-3.5 text-[#6E488A]" />
                             </button>
                           </div>
                         )}
@@ -763,7 +778,7 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
                       }}
                       className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#E36DB4] to-[#6E488A] hover:opacity-95 text-white font-sans font-extrabold text-[11px] tracking-wide shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer border-none"
                     >
-                      <span>{getActionDetails(activeNotice.title, activeNotice.body, currentDay).label}</span>
+                      <span>{getActionDetails(activeNotice.title, activeNotice.body, currentDay, isDayLocked).label}</span>
                       <ArrowRight className="w-3.5 h-3.5 text-white animate-pulse" />
                     </button>
                   </div>

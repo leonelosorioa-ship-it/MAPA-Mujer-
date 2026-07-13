@@ -3800,6 +3800,7 @@ export default function App() {
                   <PushNotificationManager 
                     userEmail={currentUserEmail} 
                     currentDay={programProgress.currentDay}
+                    isDayLocked={getChronologicalState().isLocked}
                     onGoToDay={(dayNum) => {
                       setSelectedDayPreview(dayNum);
                       // Smooth scroll directly to the dedicated day guide view or the timeline container
