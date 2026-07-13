@@ -53,6 +53,7 @@ import { AppDownloadPrompt } from "./components/AppDownloadPrompt";
 import { PremiumDashboard } from "./components/PremiumDashboard";
 import { PWAInstallBanner } from "./components/PWAInstallBanner";
 import { RewardModal } from "./components/RewardModal";
+import { AvatarPickerModal } from "./components/AvatarPickerModal";
 import { MilestoneModal } from "./components/MilestoneModal";
 import { WelcomeOnboardingModal } from "./components/WelcomeOnboardingModal";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
@@ -425,6 +426,7 @@ export default function App() {
   // Rewards states
   const [unlockedAudioModal, setUnlockedAudioModal] = useState<{ isOpen: boolean; type: "day3" | "day4" | "day5" | "day7" | null }>({ isOpen: false, type: null });
   const [milestoneModal, setMilestoneModal] = useState<{ isOpen: boolean; daysCount: number }>({ isOpen: false, daysCount: 3 });
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState<boolean>(false);
 
   // Email sending states for the final report
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
@@ -598,6 +600,39 @@ export default function App() {
       }
     } catch (e) {
       console.error("Error syncing exercise log to server:", e);
+    }
+  };
+
+  const saveCustomAvatar = async (avatar: { type: "emoji" | "image"; value: string }) => {
+    const updatedProgress = {
+      ...programProgress,
+      customAvatar: avatar
+    };
+    setProgramProgress(updatedProgress);
+    
+    const emailKey = currentUserEmail ? currentUserEmail.toLowerCase().trim() : "";
+    if (emailKey) {
+      localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(updatedProgress));
+    }
+    localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(updatedProgress));
+
+    try {
+      const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
+      if (token && emailKey) {
+        await fetch("/api/update-user-progress", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            email: emailKey,
+            userProgress: updatedProgress
+          })
+        });
+      }
+    } catch (e) {
+      console.error("Error syncing custom avatar to server:", e);
     }
   };
 
@@ -4786,13 +4821,49 @@ export default function App() {
                 <div className="flex flex-col md:flex-row gap-8 items-center text-left">
                   
                   {/* Giant Avatar with dynamic visual style */}
-                  <div className="relative w-36 h-36 rounded-2xl bg-gradient-to-tr from-[#EDE0F0] to-[#FAF7F9] border-2 border-[#E36DB4] flex items-center justify-center text-6xl shadow-md shrink-0">
-                    <span role="img" aria-label={evaluationResult.name} className="animate-pulse">
-                      {evaluationResult.avatar}
-                    </span>
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#36C4D8] text-white font-mono text-[9px] px-2.5 py-0.5 rounded-full font-bold">
+                  <div className="relative group shrink-0">
+                    <div 
+                      onClick={() => setIsAvatarModalOpen(true)}
+                      className="relative w-36 h-36 rounded-2xl bg-gradient-to-tr from-[#EDE0F0] to-[#FAF7F9] border-2 border-[#E36DB4] flex items-center justify-center text-6xl shadow-md overflow-hidden cursor-pointer transition-transform hover:scale-105 active:scale-95 group"
+                      title="Personalizar tu foto o emoji de avatar"
+                    >
+                      {programProgress.customAvatar?.type === "image" ? (
+                        <img 
+                          src={programProgress.customAvatar.value} 
+                          alt="Avatar de usuario" 
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <span role="img" aria-label={evaluationResult.name} className="animate-pulse">
+                          {programProgress.customAvatar?.value || evaluationResult.avatar}
+                        </span>
+                      )}
+                      
+                      {/* Hover Edit Overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1 text-white">
+                        <svg className="w-6 h-6 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Personalizar</span>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#36C4D8] text-white font-mono text-[9px] px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap shadow-sm z-10">
                       PERFIL DOMINANTE
                     </div>
+                    
+                    {/* Tiny Edit helper trigger badge for mobile devices without hover */}
+                    <button 
+                      onClick={() => setIsAvatarModalOpen(true)}
+                      className="absolute -top-2 -right-2 bg-white text-[#6E488A] border border-[#6E488A]/20 p-1.5 rounded-full shadow-md hover:bg-[#EDE0F0] transition-colors md:hidden"
+                      aria-label="Cambiar avatar"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
                   </div>
 
                   <div className="space-y-4 flex-1">
@@ -5241,8 +5312,19 @@ export default function App() {
                   <div className="absolute top-2 right-4 text-[7px] font-mono text-[#56346F]/50 uppercase tracking-widest font-semibold">MAPA OFICIAL DE AUTODESCUBRIMIENTO</div>
                   
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 rounded-xl bg-[#EDE0F0] border border-[#36C4D8] flex items-center justify-center text-4xl shadow-sm">
-                      {evaluationResult.avatar}
+                    <div className="w-16 h-16 rounded-xl bg-[#EDE0F0] border border-[#36C4D8] flex items-center justify-center text-4xl shadow-sm overflow-hidden">
+                      {programProgress.customAvatar?.type === "image" ? (
+                        <img 
+                          src={programProgress.customAvatar.value} 
+                          alt="Avatar de usuario" 
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <span>
+                          {programProgress.customAvatar?.value || evaluationResult.avatar}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <h4 className="font-display font-bold text-xl text-[#6E488A]">Mi Perfil M.A.P.A.™ es:</h4>
@@ -5622,6 +5704,15 @@ export default function App() {
         type={unlockedAudioModal.type}
         onClose={() => setUnlockedAudioModal({ isOpen: false, type: null })}
         userName={leadInfo.nombre || "Usuaria"}
+      />
+
+      {/* AVATAR PICKER MODAL */}
+      <AvatarPickerModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        onSave={saveCustomAvatar}
+        currentAvatar={programProgress.customAvatar}
+        defaultEmoji={evaluationResult?.avatar || "🧘"}
       />
 
       {/* MILESTONE CONGRATULATORY BADGE MODALS */}
