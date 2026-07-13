@@ -5508,7 +5508,7 @@ export default function App() {
                       Desbloquea tus 49 Marcadores Biológicos
                     </h3>
                     <p className="text-[#1C0630] text-sm sm:text-base leading-relaxed font-bold">
-                      La Mentora Clara ha compilado tu informe completo de 12 páginas con tus anclas cerebrales, análisis cognitivo-conductual de reactividad y el plan definitivo de descompresión simpática. Elige tu canal preferido para recibirlo de inmediato:
+                      La Mentora Clara ha compilado tu informe completo de 12 páginas con tus anclas cerebrales, análisis cognitivo-conductual de reactividad y el plan definitivo de descompresión simpática. Elige tu canal preferido para recibirlo de inmediato: <span className="text-[#E86FA3] font-black">Los datos se solicitan con el único fin de trazabilidad, guardar tu progreso y enviar tus informes personalizados. Si lo prefieres, puedes usar un nombre simbólico para proteger al máximo tu privacidad y total discreción.</span>
                     </p>
                   </div>
 
@@ -5524,12 +5524,12 @@ export default function App() {
                     <div className="space-y-4 pt-2">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label htmlFor="nombre" className="block text-xs font-mono text-[#1C0630] uppercase font-black">Nombre Completo</label>
+                          <label htmlFor="nombre" className="block text-xs font-mono text-[#1C0630] uppercase font-black">¿Cómo quieres que te llamemos?</label>
                           <input 
                             type="text" 
                             id="nombre"
                             required
-                            placeholder="Ej. Sofía Valenzuela"
+                            placeholder="Ej. Valentina (puedes usar un nombre simbólico)"
                             value={leadInfo.nombre}
                             onChange={(e)=>setLeadInfo(prev=>({...prev, nombre: e.target.value}))}
                             className="w-full bg-[#FAF7F9] border-2 border-[#6E488A]/25 focus:border-[#36C4D8] focus:bg-white placeholder:text-[#1C0630]/50 rounded-xl p-3.5 text-sm outline-none text-[#1C0630] font-bold transition-all font-sans"

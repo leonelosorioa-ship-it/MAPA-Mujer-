@@ -304,7 +304,7 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
                 Ingresa al Programa
               </h3>
               <p className="text-xs text-[#0B152B]/85 font-sans leading-relaxed font-semibold">
-                Completa tus datos (regístrate con el mismo correo con el que realizaste la compra) para guardar tu avance, acceder cada día y recibir tu guía de ejercicios prácticos.
+                Completa tus datos (regístrate con el mismo correo con el que realizaste la compra) para guardar tu avance, acceder cada día y recibir tu guía de ejercicios prácticos. <span className="text-[#E86FA3] font-bold">Los datos suministrados se solicitan con el único fin de trazabilidad, guardar tu progreso y enviar tus informes personalizados.</span>
               </p>
             </div>
 
@@ -312,14 +312,14 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
               {/* Nombre Completo */}
               <div className="space-y-1">
                 <label className="block text-xs font-mono text-[#411F66] uppercase tracking-widest font-black">
-                  Nombre Completo
+                  ¿Cómo quieres que te llamemos?
                 </label>
                 <div className="relative">
                   <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#411F66]/60" />
                   <input 
                     type="text" 
                     required
-                    placeholder="Ej. María Pérez"
+                    placeholder="Ej. Valentina (puedes usar un nombre simbólico)"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
                     className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3 pl-11 text-sm outline-none text-[#0B152B] transition-all font-sans font-semibold"
