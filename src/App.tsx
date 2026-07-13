@@ -283,7 +283,51 @@ export default function App() {
   const { getShareText, shareToWhatsApp, shareWithFallback } = useWhatsAppShare();
 
   // Navigation Phases: "LANDING" | "SCAN_TEST" | "SCAN_RESULTS" | "LOGIN" | "DASHBOARD" | "WIZARD" | "LOADING" | "RESULTS" | "ADMIN"
-  const [phase, setPhase] = useState<"LANDING" | "SCAN_TEST" | "SCAN_RESULTS" | "LOGIN" | "DASHBOARD" | "WIZARD" | "LOADING" | "RESULTS" | "ADMIN">("LANDING");
+  const [phase, setPhase] = useState<"LANDING" | "SCAN_TEST" | "SCAN_RESULTS" | "LOGIN" | "DASHBOARD" | "WIZARD" | "LOADING" | "RESULTS" | "ADMIN">(() => {
+    // Check if deep link params are present in URL
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("email") || params.get("action") === "test") {
+        return "LANDING";
+      }
+    }
+
+    const activeEmail = typeof window !== "undefined" ? (localStorage.getItem("MAPA_CURRENT_USER_EMAIL") || "") : "";
+    if (activeEmail) {
+      const adminEmails = ["contacto@tupodermental.club"];
+      if (adminEmails.includes(activeEmail.toLowerCase().trim())) {
+        return "ADMIN";
+      }
+
+      // Check user progress
+      const savedUserProgress = typeof window !== "undefined" ? localStorage.getItem(`MAPA_USER_PROGRESS_${activeEmail.toLowerCase().trim()}`) : null;
+      if (savedUserProgress) {
+        try {
+          const parsed = JSON.parse(savedUserProgress);
+          if (parsed && parsed.activationDate) {
+            return "DASHBOARD";
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    // Fallback to legacy progress
+    const savedLegacy = typeof window !== "undefined" ? localStorage.getItem("MAPA_7DAY_PROGRESS_V2") : null;
+    if (savedLegacy) {
+      try {
+        const parsed = JSON.parse(savedLegacy);
+        if (parsed && parsed.activationDate) {
+          return "DASHBOARD";
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    return "LANDING";
+  });
   
   // Landing States
   const [selectedChecks, setSelectedChecks] = useState<Record<number, boolean>>({});
@@ -365,6 +409,22 @@ export default function App() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Auto-route active users or returning guests from LANDING to DASHBOARD or ADMIN
+  useEffect(() => {
+    if (phase === "LANDING") {
+      if (currentUserEmail) {
+        const adminEmails = ["contacto@tupodermental.club"];
+        if (adminEmails.includes(currentUserEmail.toLowerCase().trim())) {
+          setPhase("ADMIN");
+          return;
+        }
+      }
+      if (programProgress.activationDate) {
+        setPhase("DASHBOARD");
+      }
+    }
+  }, [currentUserEmail, programProgress.activationDate, phase]);
 
   // Precise chronological calculations for 24h consecutive lock logic (based on previous day completion)
   const getChronologicalState = () => {

@@ -58,7 +58,7 @@ function readUsersDB() {
     
     // Inyección / Validación incondicional del usuario de pruebas exclusivo leonelosorioa@gmail.com
     const testEmail = "leonelosorioa@gmail.com";
-    const testIndex = users.findIndex((u: any) => u.email === testEmail);
+    const testIndex = users.findIndex((u: any) => (u.email || "").toLowerCase().trim() === testEmail);
     if (testIndex === -1) {
       const testUser = {
         nombre: "Leonel Osorio (Prueba)",
@@ -1674,7 +1674,7 @@ const hotmartWebhookHandler = (req: express.Request, res: express.Response) => {
     }
 
     const db = readUsersDB();
-    const userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    const userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
     let user;
     const nowStr = new Date().toISOString();
     let code = "";
@@ -1788,7 +1788,7 @@ app.post("/api/auth/login", (req, res) => {
     const cleanInputCode = rawInputCode.toUpperCase();
     const isPromoBypass = cleanInputCode === "LEO777";
 
-    let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    let userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
 
     const isUnusedInvite = isUnusedInviteCode(cleanInputCode);
 
@@ -1941,7 +1941,7 @@ app.post("/api/auth/request-code", (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
     const db = readUsersDB();
-    const userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    const userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
 
     if (userIndex === -1) {
       return res.status(404).json({ error: "No encontramos un registro de compra para este correo electrónico en Hotmart." });
@@ -1990,7 +1990,7 @@ function authenticateJWT(req: any, res: any, next: any) {
 
       const email = decoded.email;
       const db = readUsersDB();
-      const user = db.find((u: any) => u.email === email);
+      const user = db.find((u: any) => (u.email || "").toLowerCase().trim() === (email || "").toLowerCase().trim());
 
       if (!user) {
         return res.status(403).json({ error: "El usuario ya no existe en el sistema." });
@@ -2033,7 +2033,7 @@ function authenticateAdminJWT(req: any, res: any, next: any) {
       }
 
       const db = readUsersDB();
-      const user = db.find((u: any) => u.email === email);
+      const user = db.find((u: any) => (u.email || "").toLowerCase().trim() === email);
 
       if (!user) {
         return res.status(403).json({ error: "El perfil de administrador no existe en el sistema." });
@@ -2069,7 +2069,7 @@ app.post("/api/register-user", (req, res) => {
     const adminEmails = ["contacto@tupodermental.club"];
     const isSpecialAdmin = adminEmails.includes(cleanEmail);
 
-    let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    let userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
 
     // Auto-creación de registro de administrador si no existiera en la BD local
     if (userIndex === -1 && isSpecialAdmin) {
@@ -2267,7 +2267,7 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
     }
 
     const db = readUsersDB();
-    const userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    const userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
 
     if (userIndex > -1) {
       if (db[userIndex].disabled) {
@@ -2330,7 +2330,7 @@ app.get("/api/get-user-progress", authenticateJWT, (req, res) => {
   try {
     const email = (req as any).user.email;
     const db = readUsersDB();
-    const user = db.find((u: any) => u.email === email);
+    const user = db.find((u: any) => (u.email || "").toLowerCase().trim() === (email || "").toLowerCase().trim());
 
     if (!user) {
       return res.status(404).json({ error: "Usuario no encontrado." });
@@ -2373,7 +2373,7 @@ app.post("/api/save-unlocked-audio", authenticateJWT, (req, res) => {
 
     const email = (req as any).user.email;
     const db = readUsersDB();
-    const userIndex = db.findIndex((u: any) => u.email === email);
+    const userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === (email || "").toLowerCase().trim());
 
     if (userIndex > -1) {
       if (db[userIndex].disabled) {
@@ -2589,7 +2589,7 @@ function getOrCreatePremiumData(user: any) {
 function getOrCreateUser(email: string, name?: string) {
   const db = readUsersDB();
   const cleanEmail = email.toLowerCase().trim();
-  let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+  let userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
   if (userIndex === -1) {
     const nowStr = new Date().toISOString();
     const newUser = {
@@ -3190,7 +3190,7 @@ app.post("/api/premium/submit-lead-report", authenticateJWT, (req, res) => {
     }
 
     const db = readUsersDB();
-    let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    let userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
 
     if (userIndex > -1) {
       db[userIndex].whatsapp = whatsapp || db[userIndex].whatsapp || "";
@@ -3340,7 +3340,7 @@ app.post("/api/admin/toggle-user-status", authenticateAdminJWT, (req, res) => {
     }
     const db = readUsersDB();
     const cleanEmail = email.toLowerCase().trim();
-    const userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    const userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
     if (userIndex > -1) {
       db[userIndex].disabled = !!disabled;
       writeUsersDB(db);
@@ -3422,7 +3422,7 @@ app.post("/api/push-subscribe", (req, res) => {
     const db = readUsersDB();
     
     // Find if user already exists
-    let userIndex = db.findIndex((u: any) => u.email === cleanEmail);
+    let userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
     if (userIndex > -1) {
       const user = db[userIndex];
       if (!user.pushSubscriptions) {
@@ -3525,7 +3525,7 @@ app.post("/api/admin/dispatch-push", authenticateAdminJWT, async (req, res) => {
     const targetEmailClean = userEmail ? String(userEmail).toLowerCase().trim() : "";
 
     if (targetEmailClean && targetEmailClean !== "all") {
-      const user = db.find((u: any) => u.email === targetEmailClean);
+      const user = db.find((u: any) => (u.email || "").toLowerCase().trim() === targetEmailClean);
       if (user) {
         // Enforce chronological check for action alerts
         if (isActionAlert && !isUserDayUnlocked(user)) {
