@@ -1298,6 +1298,14 @@ export default function App() {
       }
 
       console.log("Sincronización de registro con servidor exitosa:", data);
+
+      // Track Facebook Pixel event
+      if (typeof (window as any).fbq === "function") {
+        (window as any).fbq("track", "CompleteRegistration", {
+          content_name: "Registro M.A.P.A. Mujer",
+          status: "success"
+        });
+      }
       
       // Guardar sesión segura en localStorage
       localStorage.setItem("MAPA_ACCESS_TOKEN", data.token);
@@ -1814,6 +1822,13 @@ export default function App() {
           setCurrentUserEmail(emailKey);
           setProgramProgress(data.userProgress);
           localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(data.userProgress));
+
+          // Track Facebook Pixel event
+          if (typeof (window as any).fbq === "function") {
+            (window as any).fbq("track", "Lead", {
+              content_name: "Registro Lead M.A.P.A. Mujer"
+            });
+          }
         }
       }
     })
