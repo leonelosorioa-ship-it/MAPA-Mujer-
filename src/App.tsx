@@ -3319,7 +3319,7 @@ export default function App() {
                       onClick={startFreeScanTest}
                       className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-white bg-gradient-to-r from-[#411F66] to-[#E86FA3] btn-neon-pulse flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-[#262222]"
                     >
-                      <span>Iniciar Escaneo de Alerta y Activación Sobrecognitiva (M.A.P.A.™)</span>
+                      <span>Iniciar Ahora Escaneo de Alerta y Activación M.A.P.A™</span>
                       <ArrowRight className="w-5 h-5 text-white" />
                     </button>
                   )}
