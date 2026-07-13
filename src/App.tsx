@@ -5000,7 +5000,14 @@ export default function App() {
                 <div className="flex flex-col md:flex-row gap-8 items-center text-left">
                   
                   {/* Giant Avatar with dynamic visual style */}
-                  <div className="relative group shrink-0 transition-all duration-500 ease-out hover:scale-[1.04]">
+                  <motion.div 
+                    whileHover={{ 
+                      scale: 1.06, 
+                      filter: "drop-shadow(0 10px 25px rgba(227, 109, 180, 0.45))" 
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="relative group shrink-0 transition-all duration-500 ease-out"
+                  >
                     {/* Soft background glow that expands on hover */}
                     <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#E36DB4] to-[#36C4D8] opacity-20 blur-md group-hover:opacity-40 group-hover:blur-lg transition-all duration-500" />
                     
@@ -5046,7 +5053,7 @@ export default function App() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
                     </button>
-                  </div>
+                  </motion.div>
 
                   <div className="space-y-4 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
