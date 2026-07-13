@@ -5526,36 +5526,36 @@ export default function App() {
 
       {/* FOOTER */}
       {!(focusMode && phase === "DASHBOARD") && (
-        <footer id="app_footer" className="bg-black px-6 py-8 border-t border-white/10 relative z-10 text-slate-100">
+        <footer id="app_footer" className="bg-black px-6 py-8 border-t border-white/10 relative z-10 text-white">
           <div className="max-w-5xl mx-auto space-y-4">
             <div className="flex flex-col justify-center items-center gap-4 text-center border-b border-white/5 pb-4">
               <div className="w-full text-center">
-                <p className="text-xs font-bold text-[#E86FA3] tracking-wider uppercase font-display text-center">
+                <p className="text-xs font-bold text-white tracking-wider uppercase font-display text-center">
                   M.A.P.A.™ Mujer • By Tu Poder Mental Mujer
                 </p>
-                <p className="text-[10px] text-slate-200 text-center max-w-2xl mx-auto mt-1">
+                <p className="text-[10px] text-white text-center max-w-2xl mx-auto mt-1">
                   El Ecosistema Inteligente para el Bienestar Emocional Femenino. Fortalece tu mente - Reconecta contigo - Transforma tu vida.
                 </p>
               </div>
             </div>
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
               <div className="space-y-1">
-                <p className="text-xs font-mono text-slate-100">© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
-                <p className="text-[10px] text-slate-300 font-sans leading-relaxed max-w-md">
+                <p className="text-xs font-mono text-white">© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
+                <p className="text-[10px] text-white font-sans leading-relaxed max-w-md">
                   Aviso legal: M.A.P.A.™ no sustituye el consejo clínico, diagnóstico ni tratamiento de profesionales sanitarios o de salud mental. Si experimentas síntomas agudos de emergencia psicológica, por favor consulta de inmediato con un psiquiatra o servicio oficial de urgencias.
                 </p>
               </div>
-              <div className="flex space-x-4 text-xs font-mono text-slate-200">
+              <div className="flex space-x-4 text-xs font-mono text-white">
               <button 
                 onClick={() => setActiveDocumentModal("PRIVACY")}
-                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-slate-200 font-mono text-xs outline-none"
+                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white font-mono text-xs outline-none"
               >
                 Política de Privacidad
               </button>
               <span>•</span>
               <button 
                 onClick={() => setActiveDocumentModal("TERMS")}
-                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-slate-200 font-mono text-xs outline-none"
+                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white font-mono text-xs outline-none"
               >
                 Términos de la Experiencia
               </button>
