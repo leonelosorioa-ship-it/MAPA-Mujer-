@@ -16,6 +16,10 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
   onConfirmDownloaded
 }) => {
   const [isDismissedToday, setIsDismissedToday] = useState(false);
+  const [isDismissedPermanently, setIsDismissedPermanently] = useState(() => {
+    return localStorage.getItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT") === "true" ||
+           localStorage.getItem("mapa_downloaded_pwa") === "true";
+  });
   const [activeTab, setActiveTab] = useState<DeviceTab>("mobile");
   const [installPromptEvent, setInstallPromptEvent] = useState<any>(null);
   const [isInstalling, setIsInstalling] = useState(false);
@@ -27,6 +31,13 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
     const todayStr = new Date().toDateString();
     if (dismissedDate === todayStr) {
       setIsDismissedToday(true);
+    }
+
+    // Check if dismissed permanently
+    const isPerm = localStorage.getItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT") === "true" ||
+                   localStorage.getItem("mapa_downloaded_pwa") === "true";
+    if (isPerm) {
+      setIsDismissedPermanently(true);
     }
 
     // Capture standard PWA installation event
@@ -41,7 +52,7 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
     };
   }, []);
 
-  if (hasDownloadedApp || isDismissedToday || showInstallSuccess) {
+  if (hasDownloadedApp || isDismissedToday || showInstallSuccess || isDismissedPermanently) {
     if (showInstallSuccess) {
       return (
         <motion.div
@@ -97,6 +108,8 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
 
   const handleConfirmSuccess = () => {
     setShowInstallSuccess(true);
+    localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
+    localStorage.setItem("mapa_downloaded_pwa", "true");
     onConfirmDownloaded();
   };
 
