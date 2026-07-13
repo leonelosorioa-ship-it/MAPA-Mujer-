@@ -171,11 +171,11 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
           {/* White 'X' close button at the absolute top-left corner */}
           <button
             onClick={handleDismiss}
-            className="absolute top-3.5 left-3.5 z-[60] p-1.5 bg-white/10 hover:bg-white/20 border border-white/25 text-white hover:text-slate-200 rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
+            className="absolute top-3 left-3 z-[60] p-1.5 bg-white/20 hover:bg-white/35 border-2 border-white text-white rounded-full transition-all cursor-pointer shadow-lg shadow-white/5 flex items-center justify-center"
             title="Cerrar y no recordar de nuevo"
             id="pwa_banner_close_button"
           >
-            <X className="w-3.5 h-3.5 text-white" style={{ color: "#ffffff", strokeWidth: 3 }} />
+            <X className="w-4 h-4 text-white" style={{ color: "#ffffff", strokeWidth: 3 }} />
           </button>
 
           {!showInstructions ? (

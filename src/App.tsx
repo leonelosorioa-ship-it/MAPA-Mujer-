@@ -4884,7 +4884,7 @@ export default function App() {
               {/* FASE 8: MOMENTO WOW - PERFIL PRINCIPAL */}
               <motion.section 
                 id="results_hero" 
-                className="bg-white border border-[#6E488A]/12 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-md"
+                className="bg-white border border-[#6E488A]/12 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-2xl shadow-[#6E488A]/8 hover:shadow-[#6E488A]/12 transition-shadow duration-500 ease-in-out"
                 animate={{
                   scale: [1, 1.012, 1]
                 }}
@@ -4900,10 +4900,13 @@ export default function App() {
                 <div className="flex flex-col md:flex-row gap-8 items-center text-left">
                   
                   {/* Giant Avatar with dynamic visual style */}
-                  <div className="relative group shrink-0">
+                  <div className="relative group shrink-0 transition-all duration-500 ease-out hover:scale-[1.04]">
+                    {/* Soft background glow that expands on hover */}
+                    <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#E36DB4] to-[#36C4D8] opacity-20 blur-md group-hover:opacity-40 group-hover:blur-lg transition-all duration-500" />
+                    
                     <div 
                       onClick={() => setIsAvatarModalOpen(true)}
-                      className="relative w-36 h-36 rounded-2xl bg-gradient-to-tr from-[#EDE0F0] to-[#FAF7F9] border-2 border-[#E36DB4] flex items-center justify-center text-6xl shadow-md overflow-hidden cursor-pointer transition-transform hover:scale-105 active:scale-95 group"
+                      className="relative w-36 h-36 rounded-2xl bg-gradient-to-tr from-[#EDE0F0] to-[#FAF7F9] border-2 border-[#E36DB4] flex items-center justify-center text-6xl shadow-md overflow-hidden cursor-pointer transition-all duration-500 hover:border-[#36C4D8] hover:shadow-xl active:scale-95 group"
                       title="Personalizar tu foto o emoji de avatar"
                     >
                       {programProgress.customAvatar?.type === "image" ? (
