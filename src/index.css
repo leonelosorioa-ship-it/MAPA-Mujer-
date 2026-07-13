@@ -164,4 +164,44 @@ h1, h2, h3, h4, h5, h6 {
   color: #0f172a !important;
 }
 
+/* Garantizar contraste en la sección de Términos y Privacidad (overlay oscuro) */
+#terms_privacy_overlay p,
+#terms_privacy_overlay li,
+#terms_privacy_overlay label {
+  color: #E5E7EB !important; /* text-gray-200 equivalent */
+}
+
+#terms_privacy_overlay h1,
+#terms_privacy_overlay h2,
+#terms_privacy_overlay h3,
+#terms_privacy_overlay h4,
+#terms_privacy_overlay h5,
+#terms_privacy_overlay h6,
+#terms_privacy_overlay strong {
+  color: #FFFFFF !important; /* text-white equivalent */
+}
+
+#terms_privacy_overlay .text-amber-200,
+#terms_privacy_overlay .text-amber-200 * {
+  color: #FDE68A !important; /* Amber-200 */
+}
+
+#terms_privacy_overlay .text-gray-400,
+#terms_privacy_overlay .text-gray-400 * {
+  color: #9CA3AF !important; /* Gray-400 */
+}
+
+#terms_privacy_overlay .text-cyan-400,
+#terms_privacy_overlay .text-cyan-400 * {
+  color: #22D3EE !important; /* Cyan-400 */
+}
+
+#terms_privacy_overlay .text-[#7EF9FF] {
+  color: #7EF9FF !important;
+}
+
+#terms_privacy_overlay .text-slate-900 {
+  color: #0F172A !important;
+}
+
 
