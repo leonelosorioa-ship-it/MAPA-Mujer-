@@ -3342,119 +3342,6 @@ export default function App() {
                     </p>
                   </div>
                 </div>
-
-                {/* Dynamic buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                  {currentUserEmail ? (
-                    (() => {
-                      const chrono = getChronologicalState();
-                      if (chrono.isLocked) {
-                        return (
-                          <div className="flex flex-col items-center gap-2 w-full sm:w-auto">
-                            <button
-                              onClick={() => {
-                                setPhase("DASHBOARD");
-                                setTimeout(() => {
-                                  const elem = document.getElementById("emotional_timeline_section");
-                                  if (elem) {
-                                    elem.scrollIntoView({ behavior: "smooth", block: "center" });
-                                  }
-                                }, 100);
-                              }}
-                              className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-[#1C0630] bg-gray-100 hover:bg-gray-200 flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-gray-400 transition-all shadow-sm"
-                            >
-                              <span>Ir a mi Panel de Control</span>
-                              <Compass className="w-5 h-5 text-[#1C0630] shrink-0" />
-                            </button>
-                            <div className="flex items-center gap-1.5 text-xs text-amber-600 font-bold bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
-                              <Clock className="w-3.5 h-3.5 text-amber-500 animate-spin" style={{ animationDuration: "12s" }} />
-                              <span>Siguiente Test (Día {programProgress.currentDay}) disponible en: {String(chrono.hours).padStart(2, '0')}h {String(chrono.minutes).padStart(2, '0')}m {String(chrono.seconds).padStart(2, '0')}s</span>
-                            </div>
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <button
-                            onClick={() => {
-                              setPhase("DASHBOARD");
-                              setTimeout(() => {
-                                const elem = document.getElementById("emotional_timeline_section");
-                                  if (elem) {
-                                    elem.scrollIntoView({ behavior: "smooth", block: "center" });
-                                  }
-                              }, 100);
-                            }}
-                            className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-white bg-gradient-to-r from-[#E86FA3] via-[#411F66] to-[#36C4D8] btn-neon-pulse flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-[#262222] shadow-xl"
-                          >
-                            <Sparkles className="w-5 h-5 text-white animate-pulse" />
-                            <span>¡Haz tu test de hoy! (Día {programProgress.currentDay || 1})</span>
-                            <Compass className="w-5 h-5 text-white shrink-0" />
-                          </button>
-                        );
-                      }
-                    })()
-                  ) : (
-                    <button
-                      onClick={startFreeScanTest}
-                      className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-white bg-gradient-to-r from-[#411F66] to-[#E86FA3] btn-neon-pulse flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-[#262222]"
-                    >
-                      <span>Iniciar Ahora Escaneo de Alerta y Activación M.A.P.A™</span>
-                      <ArrowRight className="w-5 h-5 text-white" />
-                    </button>
-                  )}
-                  <a 
-                    href="#problem"
-                    className="w-full sm:w-auto px-6 py-4 rounded-xl border-2 border-[#1C0630]/30 text-[#1C0630] bg-[#EDE0F0]/30 hover:bg-[#EDE0F0]/60 text-sm font-black transition-all text-center"
-                  >
-                    Saber más primero
-                  </a>
-                </div>
-
-                {/* Micro disclaimers */}
-                <p className="text-xs text-[#1C0630] font-mono font-black">
-                  NO ES TEST CLÍNICO • NO EVALUACIÓN MÉDICA • TOTALMENTE ANÓNIMO Y SEGURO
-                </p>
-
-                <div className="text-sm font-black tracking-wider uppercase text-center mt-4">
-                  <span className="text-[#36C4D8]">FORTALECE TU MENTE</span>
-                  <span className="text-gray-500 mx-2">•</span>
-                  <span className="text-[#E86FA3]">TRANSFORMA TU VIDA</span>
-                </div>
-              </section>
-
-              {/* ECOSISTEMA BY TU PODER MENTAL MUJER */}
-              <section id="ecosistema_branding" className="max-w-3xl mx-auto py-6">
-                <div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl border-2 border-dashed border-[#E86FA3]/50 bg-gradient-to-br from-white via-[#EDE0F0]/35 to-white shadow-[0_10px_30px_rgba(110,72,138,0.04)] text-center space-y-4">
-                  <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-[#E86FA3]/5 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute -left-16 -top-16 w-32 h-32 bg-[#36C4D8]/5 rounded-full blur-2xl pointer-events-none" />
-                  
-                  <div className="inline-flex items-center space-x-2 bg-[#E86FA3]/15 border border-[#E86FA3]/40 py-1 px-4 rounded-full">
-                    <Sparkles className="w-4 h-4 text-[#E86FA3] animate-pulse" />
-                    <span className="text-xs font-mono font-black text-[#E86FA3] uppercase tracking-widest">
-                      ECOSISTEMA INTEGRAL FEMENINO
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="font-display font-black text-3xl sm:text-4xl text-[#1C0630]">
-                      M.A.P.A. Mujer
-                    </h3>
-                    <p className="text-xs sm:text-sm font-black text-[#1C0630]/90 uppercase tracking-widest">
-                      Mapa de Activación y Protección Emocional
-                    </p>
-                    <div className="h-0.5 w-16 bg-gradient-to-r from-[#E86FA3] to-[#36C4D8] mx-auto my-3" />
-                    <p className="font-display font-black text-xl sm:text-2xl text-[#E86FA3] tracking-wide">
-                      By Tu Poder Mental Mujer
-                    </p>
-                    <p className="text-base font-sans font-black text-[#1C0630] max-w-xl mx-auto italic leading-relaxed">
-                      "El Ecosistema Inteligente para el Bienestar Emocional Femenino"
-                    </p>
-                  </div>
-
-                  <p className="text-xs font-mono text-[#1C0630] leading-relaxed max-w-lg mx-auto uppercase font-black tracking-wider">
-                    Fortalece tu mente • Reconecta contigo • Transforma tu vida
-                  </p>
-                </div>
               </section>
 
               {/* FASE 2: IDENTIFICACIÓN - "M.A.P.A. es para ti si..." */}
@@ -3523,6 +3410,140 @@ export default function App() {
                   </motion.div>
                 )}
               </section>
+
+              {/* FASE DEL PRINCIPAL LLAMADO A LA ACCIÓN (CTA) */}
+              <section id="landing_cta_section" className="text-center space-y-6 max-w-4xl mx-auto py-4">
+                {/* Dynamic buttons */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                  {currentUserEmail ? (
+                    (() => {
+                      const chrono = getChronologicalState();
+                      if (chrono.isLocked) {
+                        return (
+                          <div className="flex flex-col items-center gap-2 w-full sm:w-auto">
+                            <button
+                              onClick={() => {
+                                setPhase("DASHBOARD");
+                                setTimeout(() => {
+                                  const elem = document.getElementById("emotional_timeline_section");
+                                  if (elem) {
+                                    elem.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  }
+                                }, 100);
+                              }}
+                              className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-[#1C0630] bg-gray-100 hover:bg-gray-200 flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-gray-400 transition-all shadow-sm"
+                            >
+                              <span>Ir a mi Panel de Control</span>
+                              <Compass className="w-5 h-5 text-[#1C0630] shrink-0" />
+                            </button>
+                            <div className="flex items-center gap-1.5 text-xs text-amber-600 font-bold bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
+                              <Clock className="w-3.5 h-3.5 text-amber-500 animate-spin" style={{ animationDuration: "12s" }} />
+                              <span>Siguiente Test (Día {programProgress.currentDay}) disponible en: {String(chrono.hours).padStart(2, '0')}h {String(chrono.minutes).padStart(2, '0')}m {String(chrono.seconds).padStart(2, '0')}s</span>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <button
+                            onClick={() => {
+                              setPhase("DASHBOARD");
+                              setTimeout(() => {
+                                const elem = document.getElementById("emotional_timeline_section");
+                                  if (elem) {
+                                    elem.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  }
+                              }, 100);
+                            }}
+                            className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-white bg-gradient-to-r from-[#E86FA3] via-[#411F66] to-[#36C4D8] btn-neon-pulse flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-[#262222] shadow-xl"
+                          >
+                            <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                            <span>¡Haz tu test de hoy! (Día {programProgress.currentDay || 1})</span>
+                            <Compass className="w-5 h-5 text-white shrink-0" />
+                          </button>
+                        );
+                      }
+                    })()
+                  ) : (
+                    <motion.button
+                      onClick={startFreeScanTest}
+                      animate={{ 
+                        scale: [1, 1.03, 1],
+                        boxShadow: [
+                          "0 0 15px rgba(232, 111, 163, 0.35)",
+                          "0 0 28px rgba(232, 111, 163, 0.65)",
+                          "0 0 15px rgba(232, 111, 163, 0.35)"
+                        ]
+                      }}
+                      transition={{ 
+                        repeat: Infinity, 
+                        duration: 2.2, 
+                        ease: "easeInOut" 
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="group w-full sm:w-auto px-8 py-5 rounded-2xl font-display font-black tracking-wider text-white bg-gradient-to-r from-[#411F66] via-[#B23B7C] to-[#E86FA3] flex items-center justify-center space-x-3 cursor-pointer text-base sm:text-lg border-2 border-white/30 shadow-2xl overflow-hidden relative"
+                    >
+                      {/* Premium sweep light highlight */}
+                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect" />
+                      <span className="relative z-10">Iniciar Ahora Escaneo de Alerta y Activación M.A.P.A™</span>
+                      <ArrowRight className="w-5 h-5 text-white relative z-10 transition-transform duration-300 group-hover:translate-x-1.5" />
+                    </motion.button>
+                  )}
+                  <a 
+                    href="#problem"
+                    className="w-full sm:w-auto px-6 py-4 rounded-xl border-2 border-[#1C0630]/30 text-[#1C0630] bg-[#EDE0F0]/30 hover:bg-[#EDE0F0]/60 text-sm font-black transition-all text-center self-stretch flex items-center justify-center"
+                  >
+                    Saber más primero
+                  </a>
+                </div>
+
+                {/* Micro disclaimers */}
+                <p className="text-xs text-[#1C0630] font-mono font-black">
+                  NO ES TEST CLÍNICO • NO EVALUACIÓN MÉDICA • TOTALMENTE ANÓNIMO Y SEGURO
+                </p>
+
+                <div className="text-sm font-black tracking-wider uppercase text-center mt-4">
+                  <span className="text-[#36C4D8]">FORTALECE TU MENTE</span>
+                  <span className="text-gray-500 mx-2">•</span>
+                  <span className="text-[#E86FA3]">TRANSFORMA TU VIDA</span>
+                </div>
+              </section>
+
+              {/* ECOSISTEMA BY TU PODER MENTAL MUJER */}
+              <section id="ecosistema_branding" className="max-w-3xl mx-auto py-6">
+                <div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl border-2 border-dashed border-[#E86FA3]/50 bg-gradient-to-br from-white via-[#EDE0F0]/35 to-white shadow-[0_10px_30px_rgba(110,72,138,0.04)] text-center space-y-4">
+                  <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-[#E86FA3]/5 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -left-16 -top-16 w-32 h-32 bg-[#36C4D8]/5 rounded-full blur-2xl pointer-events-none" />
+                  
+                  <div className="inline-flex items-center space-x-2 bg-[#E86FA3]/15 border border-[#E86FA3]/40 py-1 px-4 rounded-full">
+                    <Sparkles className="w-4 h-4 text-[#E86FA3] animate-pulse" />
+                    <span className="text-xs font-mono font-black text-[#E86FA3] uppercase tracking-widest">
+                      ECOSISTEMA INTEGRAL FEMENINO
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="font-display font-black text-3xl sm:text-4xl text-[#1C0630]">
+                      M.A.P.A. Mujer
+                    </h3>
+                    <p className="text-xs sm:text-sm font-black text-[#1C0630]/90 uppercase tracking-widest">
+                      Mapa de Activación y Protección Emocional
+                    </p>
+                    <div className="h-0.5 w-16 bg-gradient-to-r from-[#E86FA3] to-[#36C4D8] mx-auto my-3" />
+                    <p className="font-display font-black text-xl sm:text-2xl text-[#E86FA3] tracking-wide">
+                      By Tu Poder Mental Mujer
+                    </p>
+                    <p className="text-base font-sans font-black text-[#1C0630] max-w-xl mx-auto italic leading-relaxed">
+                      "El Ecosistema Inteligente para el Bienestar Emocional Femenino"
+                    </p>
+                  </div>
+
+                  <p className="text-xs font-mono text-[#1C0630] leading-relaxed max-w-lg mx-auto uppercase font-black tracking-wider">
+                    Fortalece tu mente • Reconecta contigo • Transforma tu vida
+                  </p>
+                </div>
+              </section>
+
 
               {/* FASE 3: EL PROBLEMA */}
               <section id="problem" className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-6 border-t border-[#6E488A]/12 pt-12">

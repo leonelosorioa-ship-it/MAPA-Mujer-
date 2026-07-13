@@ -204,4 +204,21 @@ h1, h2, h3, h4, h5, h6 {
   color: #0F172A !important;
 }
 
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  30% {
+    transform: translateX(100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(100%) skewX(-15deg);
+  }
+}
+
+.animate-shine-effect {
+  animation: shine 3.5s infinite ease-in-out;
+}
+
+
 
