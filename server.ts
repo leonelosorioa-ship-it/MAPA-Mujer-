@@ -2035,6 +2035,30 @@ app.post("/api/register-user", (req, res) => {
       userIndex = db.length - 1;
     }
 
+    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777"
+    if (userIndex === -1 && cleanAccessCode === "LEO777") {
+      const newPromoUser = {
+        nombre: nombre ? nombre.trim() : "Invitada Especial M.A.P.A.",
+        email: cleanEmail,
+        whatsapp: whatsapp || "",
+        registeredAt: new Date().toISOString(),
+        lastActive: new Date().toISOString(),
+        currentDay: 1,
+        completedDays: [],
+        responses: {},
+        completionTimestamps: {},
+        dailyConclusionText: {},
+        initialScanResults: initialScanResults || null,
+        isCompleted: false,
+        disabled: false,
+        accessCode: "LEO777",
+        hotmartApproved: true
+      };
+      db.push(newPromoUser);
+      writeUsersDB(db);
+      userIndex = db.length - 1;
+    }
+
     if (userIndex === -1) {
       // Buscar logs del webhook de Hotmart para este correo electrónico
       const hotmartLogs = readHotmartLogs();
@@ -2095,8 +2119,9 @@ app.post("/api/register-user", (req, res) => {
       const dbCode = (user.accessCode || "").trim().toUpperCase();
       // Permitir de manera ultra-flexible tanto "LEO777" como "LE0777" (letra O vs número 0) para el correo de pruebas leonelosorioa@gmail.com
       const isTestUserWithZero = cleanEmail === "leonelosorioa@gmail.com" && (cleanAccessCode === "LE0777" || cleanAccessCode === "LEO777");
+      const isPromoBypass = cleanAccessCode === "LEO777";
       
-      if (!isTestUserWithZero && (!dbCode || cleanAccessCode !== dbCode)) {
+      if (!isTestUserWithZero && !isPromoBypass && (!dbCode || cleanAccessCode !== dbCode)) {
         return res.status(401).json({ error: "El Código de Acceso ingresado es incorrecto. Por favor, verifícalo en tu correo electrónico o digítalo correctamente." });
       }
     }
