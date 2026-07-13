@@ -129,13 +129,13 @@ export const PWAInstallBanner: React.FC = () => {
                   <Download className="w-6 h-6 text-[#7EF9FF] animate-bounce" />
                 </div>
                 <div>
-                  <h4 className="font-display font-bold text-sm sm:text-base text-white flex items-center gap-1.5">
+                  <h4 className="font-display font-bold text-sm sm:text-base text-white flex items-center gap-1.5" style={{ color: "#ffffff" }}>
                     Instalar M.A.P.A.™ en tu Dispositivo
-                    <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider">
+                    <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider" style={{ color: "#34d399", borderColor: "rgba(16, 185, 129, 0.2)" }}>
                       Recomendado
                     </span>
                   </h4>
-                  <p className="text-gray-300 text-xs mt-0.5 leading-relaxed max-w-md">
+                  <p className="text-gray-200 text-xs mt-1 leading-relaxed max-w-md" style={{ color: "#e2e8f0" }}>
                     Descarga la aplicación oficial gratis para acceder sin límites, guardar tu progreso sin Internet y recibir notificaciones instantáneas de tus retos diarios.
                   </p>
                 </div>
@@ -145,23 +145,24 @@ export const PWAInstallBanner: React.FC = () => {
                 <button
                   onClick={handleInstallClick}
                   className="flex-1 md:flex-initial py-2.5 px-5 bg-gradient-to-r from-[#7EF9FF] to-[#00D4FF] hover:opacity-95 text-slate-900 font-display font-bold text-xs rounded-xl tracking-wider hover:scale-103 active:scale-97 transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg shadow-cyan-400/20"
+                  style={{ color: "#0f172a" }}
                 >
-                  {platformInfo.isMobile ? <Smartphone className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
-                  <span>INSTALAR AHORA</span>
+                  {platformInfo.isMobile ? <Smartphone className="w-4 h-4 text-slate-900" style={{ color: "#0f172a" }} /> : <Monitor className="w-4 h-4 text-slate-900" style={{ color: "#0f172a" }} />}
+                  <span style={{ color: "#0f172a" }}>INSTALAR AHORA</span>
                 </button>
                 <button
                   onClick={handleDismiss}
                   className="p-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl transition-all cursor-pointer"
                   title="Recordar en la siguiente visita"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
             </div>
           ) : (
             <div className="space-y-4 text-left">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h4 className="font-display font-bold text-sm sm:text-base text-white flex items-center gap-2">
+                <h4 className="font-display font-bold text-sm sm:text-base text-white flex items-center gap-2" style={{ color: "#ffffff" }}>
                   <Smartphone className="w-5 h-5 text-[#7EF9FF]" />
                   Instrucciones de Instalación
                 </h4>
@@ -169,7 +170,7 @@ export const PWAInstallBanner: React.FC = () => {
                   onClick={() => setShowInstructions(false)}
                   className="p-1 hover:bg-white/5 text-gray-400 hover:text-white rounded-lg transition-colors cursor-pointer"
                 >
-                  <X className="w-4.5 h-4.5" />
+                  <X className="w-4.5 h-4.5 text-gray-400" />
                 </button>
               </div>
 
@@ -178,9 +179,9 @@ export const PWAInstallBanner: React.FC = () => {
                   <div className="space-y-2">
                     <p className="font-semibold text-[#7EF9FF]" style={{ color: "#7EF9FF" }}>Para instalar en tu iPhone o iPad (Safari):</p>
                     <ol className="list-decimal pl-5 space-y-2 text-slate-100" style={{ color: "#F1F5F9" }}>
-                      <li style={{ color: "#F1F5F9" }}>Presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span> en la barra inferior del navegador.</li>
-                      <li style={{ color: "#F1F5F9" }}>Desplázate hacia abajo y selecciona <span className="font-bold text-[#7EF9FF] flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Agregar a la pantalla de inicio <Plus className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
-                      <li style={{ color: "#F1F5F9" }}>Presiona <span className="font-bold text-emerald-400">Agregar</span> en la esquina superior derecha y ¡listo!</li>
+                      <li style={{ color: "#F1F5F9" }}>Presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#ffffff" }}>Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span> en la barra inferior del navegador.</li>
+                      <li style={{ color: "#F1F5F9" }}>Desplázate hacia abajo y selecciona <span className="font-bold text-[#7EF9FF] flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#7EF9FF" }}>Agregar a la pantalla de inicio <Plus className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
+                      <li style={{ color: "#F1F5F9" }}>Presiona <span className="font-bold text-emerald-400" style={{ color: "#34d399" }}>Agregar</span> en la esquina superior derecha y ¡listo!</li>
                     </ol>
                   </div>
                 )}
@@ -189,9 +190,9 @@ export const PWAInstallBanner: React.FC = () => {
                   <div className="space-y-2">
                     <p className="font-semibold text-[#7EF9FF]" style={{ color: "#7EF9FF" }}>Para instalar en tu Mac (Safari):</p>
                     <ol className="list-decimal pl-5 space-y-2 text-slate-100" style={{ color: "#F1F5F9" }}>
-                      <li style={{ color: "#F1F5F9" }}>Haz clic en <span className="font-bold text-white">Archivo</span> en la barra superior o presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded">Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
-                      <li style={{ color: "#F1F5F9" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Agregar al Dock...</span> en la lista.</li>
-                      <li style={{ color: "#F1F5F9" }}>Confirma haciendo clic en <span className="font-bold text-emerald-400">Agregar</span> para anclar M.A.P.A.™ junto a tus aplicaciones de escritorio.</li>
+                      <li style={{ color: "#F1F5F9" }}>Haz clic en <span className="font-bold text-white" style={{ color: "#ffffff" }}>Archivo</span> en la barra superior o presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#ffffff" }}>Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
+                      <li style={{ color: "#F1F5F9" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#7EF9FF" }}>Agregar al Dock...</span> en la lista.</li>
+                      <li style={{ color: "#F1F5F9" }}>Confirma haciendo clic en <span className="font-bold text-emerald-400" style={{ color: "#34d399" }}>Agregar</span> para anclar M.A.P.A.™ junto a tus aplicaciones de escritorio.</li>
                     </ol>
                   </div>
                 )}
@@ -201,9 +202,9 @@ export const PWAInstallBanner: React.FC = () => {
                   <div className="space-y-2">
                     <p className="font-semibold text-[#7EF9FF]" style={{ color: "#7EF9FF" }}>Guía de descarga e instalación rápida:</p>
                     <ol className="list-decimal pl-5 space-y-2 text-slate-100" style={{ color: "#F1F5F9" }}>
-                      <li style={{ color: "#F1F5F9" }}>Busca el ícono de <span className="font-bold text-white">Instalar Aplicación</span> (una pantalla con una flecha hacia abajo o un signo <span className="font-bold">+</span>) en la barra de direcciones de tu navegador (Chrome, Edge, Firefox u Opera).</li>
-                      <li style={{ color: "#F1F5F9" }}>Alternativamente, haz clic en el menú secundario <span className="font-bold text-white">⋮</span> (tres puntos) en la esquina superior derecha de tu navegador.</li>
-                      <li style={{ color: "#F1F5F9" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Instalar M.A.P.A.™</span> o <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded">Guardar en Pantalla de Inicio</span>.</li>
+                      <li style={{ color: "#F1F5F9" }}>Busca el ícono de <span className="font-bold text-white" style={{ color: "#ffffff" }}>Instalar Aplicación</span> (una pantalla con una flecha hacia abajo o un signo <span className="font-bold">+</span>) en la barra de direcciones de tu navegador (Chrome, Edge, Firefox u Opera).</li>
+                      <li style={{ color: "#F1F5F9" }}>Alternativamente, haz clic en el menú secundario <span className="font-bold text-white" style={{ color: "#ffffff" }}>⋮</span> (tres puntos) en la esquina superior derecha de tu navegador.</li>
+                      <li style={{ color: "#F1F5F9" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#7EF9FF" }}>Instalar M.A.P.A.™</span> o <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#7EF9FF" }}>Guardar en Pantalla de Inicio</span>.</li>
                     </ol>
                   </div>
                 )}
@@ -220,6 +221,7 @@ export const PWAInstallBanner: React.FC = () => {
                 <button
                   onClick={() => setShowInstructions(false)}
                   className="py-2 px-4 bg-white/5 hover:bg-white/10 text-white font-mono text-xs rounded-xl transition-all cursor-pointer"
+                  style={{ color: "#ffffff" }}
                 >
                   Volver
                 </button>

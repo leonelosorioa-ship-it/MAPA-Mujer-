@@ -5652,43 +5652,45 @@ export default function App() {
 
       {/* FOOTER */}
       {!(focusMode && phase === "DASHBOARD") && (
-        <footer id="app_footer" className="bg-black px-6 py-8 border-t border-white/10 relative z-10 text-white">
-          <div className="max-w-5xl mx-auto space-y-4">
-            <div className="flex flex-col justify-center items-center gap-4 text-center border-b border-white/5 pb-4">
+        <footer id="app_footer" className="bg-[#0b0314] px-6 py-10 border-t border-white/10 relative z-10 text-white">
+          <div className="max-w-5xl mx-auto space-y-6">
+            <div className="flex flex-col justify-center items-center gap-4 text-center border-b border-white/10 pb-6">
               <div className="w-full text-center">
-                <p className="text-xs font-bold text-white tracking-wider uppercase font-display text-center">
+                <p className="text-sm font-extrabold text-white tracking-wider uppercase font-display text-center mb-1.5" style={{ color: "#ffffff" }}>
                   M.A.P.A.™ Mujer • By Tu Poder Mental Mujer
                 </p>
-                <p className="text-[10px] text-white text-center max-w-2xl mx-auto mt-1">
+                <p className="text-xs text-slate-300 text-center max-w-2xl mx-auto" style={{ color: "#cbd5e1" }}>
                   El Ecosistema Inteligente para el Bienestar Emocional Femenino. Fortalece tu mente - Reconecta contigo - Transforma tu vida.
                 </p>
               </div>
             </div>
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-              <div className="space-y-1">
-                <p className="text-xs font-mono text-white">© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
-                <p className="text-[10px] text-white font-sans leading-relaxed max-w-md">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left pt-2">
+              <div className="space-y-2">
+                <p className="text-xs font-mono text-slate-300" style={{ color: "#cbd5e1" }}>© 2026 M.A.P.A.™ - Todos los derechos reservados.</p>
+                <p className="text-[10px] text-slate-400 font-sans leading-relaxed max-w-2xl" style={{ color: "#94a3b8" }}>
                   Aviso legal: M.A.P.A.™ no sustituye el consejo clínico, diagnóstico ni tratamiento de profesionales sanitarios o de salud mental. Si experimentas síntomas agudos de emergencia psicológica, por favor consulta de inmediato con un psiquiatra o servicio oficial de urgencias.
                 </p>
               </div>
-              <div className="flex space-x-4 text-xs font-mono text-white">
-              <button 
-                onClick={() => setActiveDocumentModal("PRIVACY")}
-                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white font-mono text-xs outline-none"
-              >
-                Política de Privacidad
-              </button>
-              <span>•</span>
-              <button 
-                onClick={() => setActiveDocumentModal("TERMS")}
-                className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white font-mono text-xs outline-none"
-              >
-                Términos de la Experiencia
-              </button>
+              <div className="flex flex-wrap justify-center md:justify-end gap-3 text-xs font-mono text-slate-300 shrink-0">
+                <button 
+                  onClick={() => setActiveDocumentModal("PRIVACY")}
+                  className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white font-mono text-xs outline-none"
+                  style={{ color: "#ffffff" }}
+                >
+                  Política de Privacidad
+                </button>
+                <span style={{ color: "#64748b" }}>•</span>
+                <button 
+                  onClick={() => setActiveDocumentModal("TERMS")}
+                  className="hover:text-[#36C4D8] transition-colors cursor-pointer bg-transparent border-none p-0 text-white font-mono text-xs outline-none"
+                  style={{ color: "#ffffff" }}
+                >
+                  Términos de la Experiencia
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </footer>
+        </footer>
       )}
 
       {/* LEGAL AGREEMENTS MODALS */}
