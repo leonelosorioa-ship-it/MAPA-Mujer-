@@ -133,4 +133,34 @@ h1, h2, h3, h4, h5, h6 {
   color: #120220; /* Títulos aún más profundos para legibilidad jerárquica */
 }
 
+/* Garantizar contraste hermético en el Banner de Instalación PWA (Fuentes Blancas) */
+#pwa_install_banner h4,
+#pwa_install_banner p,
+#pwa_install_banner span,
+#pwa_install_banner li,
+#pwa_install_banner div,
+#pwa_install_banner ol {
+  color: #ffffff !important;
+}
+
+#pwa_install_banner .text-sky-accent,
+#pwa_install_banner .text-sky-accent * {
+  color: #7EF9FF !important;
+}
+
+#pwa_install_banner .text-emerald-accent,
+#pwa_install_banner .text-emerald-accent * {
+  color: #34d399 !important;
+}
+
+#pwa_install_banner .text-gray-accent,
+#pwa_install_banner .text-gray-accent * {
+  color: #e2e8f0 !important;
+}
+
+#pwa_install_banner .btn-install-text,
+#pwa_install_banner .btn-install-text * {
+  color: #0f172a !important;
+}
+
 
