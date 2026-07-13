@@ -40,6 +40,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
   const [isFinishing, setIsFinishing] = useState(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   // Intentar la reproducción automática segura al abrir
   useEffect(() => {
@@ -48,6 +49,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
       setCurrentTime(0);
       setHasInteracted(false);
       setIsClosing(false);
+      setIsDismissed(false);
 
       const timer = setTimeout(() => {
         if (audioRef.current) {
@@ -80,6 +82,8 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
       setIsPlaying(false);
       setCurrentTime(0);
       setHasInteracted(true); // Ya lo completó
+      setIsDismissed(true);
+      onComplete().catch((err) => console.error("Error onEnded complete:", err));
     };
 
     audio.addEventListener("timeupdate", onTimeUpdate);
@@ -93,7 +97,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || isDismissed) return null;
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -148,6 +152,8 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
     const shareText = `Querida, acabo de recibir el hermoso audio de bienvenida de Clara para el programa de 7 días de M.A.P.A.™ Mujer. Lo guardé aquí para escucharlo siempre que necesite recuperar mi centro y mi calma emocional. 🌸 Escúchalo tú también: ${audioUrl}`;
     const link = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
     window.open(link, "_blank", "noopener,noreferrer");
+    setIsDismissed(true);
+    onComplete().catch((err) => console.error("Error on share complete:", err));
   };
 
   const handleDirectDownload = () => {
@@ -160,11 +166,14 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setIsDismissed(true);
+    onComplete().catch((err) => console.error("Error on download complete:", err));
   };
 
   const handleEnterApp = async () => {
     setIsFinishing(true);
     try {
+      setIsDismissed(true);
       await onComplete();
     } catch (err) {
       console.error("Error confirmando onboarding:", err);

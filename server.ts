@@ -2168,7 +2168,8 @@ app.post("/api/register-user", (req, res) => {
       completionTimestamps: user.completionTimestamps || {},
       dailyConclusionText: user.dailyConclusionText || {},
       hasDownloadedApp: !!user.hasDownloadedApp,
-      unlockedAudios: user.unlockedAudios || []
+      unlockedAudios: user.unlockedAudios || [],
+      onboardingCompletado: !!user.onboardingCompletado
     };
 
     return res.json({
@@ -2283,7 +2284,8 @@ app.get("/api/get-user-progress", authenticateJWT, (req, res) => {
       completionTimestamps: user.completionTimestamps || {},
       dailyConclusionText: user.dailyConclusionText || {},
       hasDownloadedApp: !!user.hasDownloadedApp,
-      unlockedAudios: user.unlockedAudios || []
+      unlockedAudios: user.unlockedAudios || [],
+      onboardingCompletado: !!user.onboardingCompletado
     };
 
     return res.json({ success: true, userProgress });
