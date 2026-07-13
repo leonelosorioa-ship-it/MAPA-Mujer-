@@ -190,6 +190,94 @@ const MINI_EXERCISES: MiniExercise[] = [
 ];
 
 
+// Helper interface for precise chronological lock and countdown tracking
+export interface ChronoState {
+  maxAllowedDay: number;
+  msRemaining: number;
+  isLocked: boolean;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+// Unified pure calculation function shared between UI rendering and notification triggers
+export const calculateChronoState = (progress: {
+  activationDate?: string;
+  currentDay?: number;
+  completionTimestamps?: Record<number, string>;
+}): ChronoState => {
+  if (!progress || !progress.activationDate) {
+    return {
+      maxAllowedDay: 1,
+      msRemaining: 0,
+      isLocked: false,
+      hours: 0,
+      minutes: 0,
+      seconds: 0
+    };
+  }
+
+  const currentDay = Number(progress.currentDay || 1);
+  
+  // Day 1 is always unlocked immediately upon starting the program
+  if (currentDay === 1) {
+    return {
+      maxAllowedDay: 1,
+      msRemaining: 0,
+      isLocked: false,
+      hours: 0,
+      minutes: 0,
+      seconds: 0
+    };
+  }
+
+  const prevDay = currentDay - 1;
+  let prevCompletionMs = 0;
+
+  // Check if we have the completion timestamp of the previous day
+  if (progress.completionTimestamps && progress.completionTimestamps[prevDay]) {
+    prevCompletionMs = new Date(progress.completionTimestamps[prevDay]).getTime();
+  } else {
+    // Robust fallback calculation if timestamp is missing
+    const activatedDate = new Date(progress.activationDate);
+    prevCompletionMs = activatedDate.getTime() + (prevDay - 1) * 24 * 60 * 60 * 1000;
+  }
+
+  if (isNaN(prevCompletionMs)) {
+    return {
+      maxAllowedDay: 1,
+      msRemaining: 0,
+      isLocked: false,
+      hours: 0,
+      minutes: 0,
+      seconds: 0
+    };
+  }
+
+  const now = new Date().getTime();
+  const unlockTime = prevCompletionMs + 24 * 60 * 60 * 1000;
+  const msRemaining = Math.max(0, unlockTime - now);
+  const isLocked = msRemaining > 0;
+
+  const totalSeconds = Math.floor(msRemaining / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  // Maximum day chronologically allowed is currentDay if unlocked, otherwise currentDay - 1
+  const maxAllowedDay = isLocked ? currentDay - 1 : currentDay;
+
+  return {
+    maxAllowedDay,
+    msRemaining,
+    isLocked,
+    hours,
+    minutes,
+    seconds
+  };
+};
+
+
 export default function App() {
   const { getShareText, shareToWhatsApp, shareWithFallback } = useWhatsAppShare();
 
@@ -279,64 +367,7 @@ export default function App() {
 
   // Precise chronological calculations for 24h consecutive lock logic (based on previous day completion)
   const getChronologicalState = () => {
-    if (!programProgress.activationDate) {
-      return {
-        maxAllowedDay: 1,
-        msRemaining: 0,
-        isLocked: false,
-        hours: 0,
-        minutes: 0,
-        seconds: 0
-      };
-    }
-
-    const currentDay = programProgress.currentDay;
-    
-    // Day 1 is always unlocked immediately upon starting the program
-    if (currentDay === 1) {
-      return {
-        maxAllowedDay: 1,
-        msRemaining: 0,
-        isLocked: false,
-        hours: 0,
-        minutes: 0,
-        seconds: 0
-      };
-    }
-
-    const prevDay = currentDay - 1;
-    let prevCompletionMs = 0;
-
-    // Check if we have the completion timestamp of the previous day
-    if (programProgress.completionTimestamps && programProgress.completionTimestamps[prevDay]) {
-      prevCompletionMs = new Date(programProgress.completionTimestamps[prevDay]).getTime();
-    } else {
-      // Robust fallback calculation if timestamp is missing
-      const activatedDate = new Date(programProgress.activationDate);
-      prevCompletionMs = activatedDate.getTime() + (prevDay - 1) * 24 * 60 * 60 * 1000;
-    }
-
-    const now = new Date();
-    const unlockTime = prevCompletionMs + 24 * 60 * 60 * 1000;
-    const msRemaining = Math.max(0, unlockTime - now.getTime());
-    const isLocked = msRemaining > 0;
-
-    const totalSeconds = Math.floor(msRemaining / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    // Maximum day chronologically allowed is currentDay if unlocked, otherwise currentDay - 1
-    const maxAllowedDay = isLocked ? currentDay - 1 : currentDay;
-
-    return {
-      maxAllowedDay,
-      msRemaining,
-      isLocked,
-      hours,
-      minutes,
-      seconds
-    };
+    return calculateChronoState(programProgress);
   };
 
   const getUserShortName = (info: { nombre: string; alias?: string }) => {
@@ -703,15 +734,21 @@ export default function App() {
     const completedCount = programProgress.completedDays?.length || 0;
     if (completedCount >= 7 || !testReminderAlarmEnabled) return;
 
+    const emailKey = currentUserEmail || leadInfo.email || "guest";
+    const reminderKey = `MAPA_TEST_REMINDER_FIRED_${emailKey.toLowerCase().trim()}_DAY_${programProgress.currentDay}`;
+    const hasFired = localStorage.getItem(reminderKey) === "true";
+
     if (testReminderMode === "unlocked") {
       // If next day is unlocked (isLocked is false), total days completed is less than 7, reminder is enabled, and reminder hasn't fired yet
-      if (!chrono.isLocked && !testReminderFired) {
+      if (!chrono.isLocked && !hasFired) {
         triggerPushNotificationOnly(`¡Tu prueba diaria M.A.P.A. del Día ${programProgress.currentDay} ya está disponible!`);
+        localStorage.setItem(reminderKey, "true");
         setTestReminderFired(true);
       }
 
       // Reset reminder fired state if it gets locked again (e.g. they completed a day and next day is locked)
-      if (chrono.isLocked && testReminderFired) {
+      if (chrono.isLocked && hasFired) {
+        localStorage.removeItem(reminderKey);
         setTestReminderFired(false);
       }
     } else {
@@ -745,7 +782,9 @@ export default function App() {
     testReminderMode, 
     testReminderTime, 
     testReminderFired, 
-    lastReminderFiredDate
+    lastReminderFiredDate,
+    currentUserEmail,
+    leadInfo.email
   ]);
   
   // Interactive legend states for the 7-day activation chart
@@ -986,22 +1025,11 @@ export default function App() {
             try {
               const parsed = JSON.parse(savedProgress);
               setProgramProgress(parsed);
-              
-              // Verify chronological lock
               const currentDay = parsed.currentDay || 1;
-              let isLocked = false;
-              if (currentDay > 1) {
-                const prevDay = currentDay - 1;
-                let prevCompletionMs = 0;
-                if (parsed.completionTimestamps && parsed.completionTimestamps[prevDay]) {
-                  prevCompletionMs = new Date(parsed.completionTimestamps[prevDay]).getTime();
-                } else {
-                  const activatedDate = new Date(parsed.activationDate);
-                  prevCompletionMs = activatedDate.getTime() + (prevDay - 1) * 24 * 60 * 60 * 1000;
-                }
-                const now = new Date().getTime();
-                isLocked = (prevCompletionMs + 24 * 60 * 60 * 1000 - now) > 0;
-              }
+              
+              // Verify chronological lock using unified calculator
+              const chronoState = calculateChronoState(parsed);
+              const isLocked = chronoState.isLocked;
 
               if (!isLocked) {
                 // Launch questionnaire for the active day directly
