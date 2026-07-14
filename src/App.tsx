@@ -3114,10 +3114,17 @@ export default function App() {
         <header id="app_header" className="relative z-10 w-full border-b-2 border-[#6E488A]/15 bg-[#E86FA3] shadow-[0_4px_20px_rgba(232,111,163,0.15)] px-4 py-4 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
             <motion.div 
+              onClick={() => {
+                if (!currentUserEmail) {
+                  setLoginEmail("");
+                  setPhase("LOGIN");
+                }
+              }}
               className="relative w-14 h-14 rounded-full border-2 border-white/60 bg-gradient-to-b from-white to-[#EDE0F0] flex items-center justify-center shadow-lg shadow-white/10 cursor-pointer overflow-hidden group select-none shrink-0"
               whileHover={{ scale: 1.15, rotate: 10, boxShadow: "0 10px 25px rgba(255,255,255,0.4)" }}
               whileTap={{ scale: 0.92 }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              title={!currentUserEmail ? "Identificación M.A.P.A." : undefined}
             >
               {/* Compass outer dial ring (spinning slowly) */}
               <div className="absolute inset-1 rounded-full border border-dashed border-[#36C4D8]/40 animate-spin" style={{ animationDuration: '10s' }} />
@@ -3170,22 +3177,11 @@ export default function App() {
                   <button
                     onClick={() => setPhase("ADMIN")}
                     className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
+                    title="Panel de Control de Administrador"
                   >
                     ⚙️ Admin
                   </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      handleUserLogout();
-                      setLoginEmail("contacto@tupodermental.club");
-                      setPhase("LOGIN");
-                    }}
-                    className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
-                    title="Cerrar sesión e ingresar como Administrador"
-                  >
-                    🔑 Admin
-                  </button>
-                )}
+                ) : null}
                 <button
                   onClick={handleUserLogout}
                   className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
@@ -3195,25 +3191,21 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setPhase("LOGIN")}
-                  className="bg-white/10 hover:bg-white/20 border-2 border-white/30 text-white text-xs sm:text-sm font-extrabold py-2 px-4 rounded-xl transition-all cursor-pointer shadow-md hover:scale-102 flex items-center gap-1.5"
-                >
-                  <Lock className="w-3.5 h-3.5 text-white/90" />
-                  <span>Iniciar Sesión</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setLoginEmail("contacto@tupodermental.club");
-                    setPhase("LOGIN");
-                  }}
-                  className="bg-[#411F66] hover:bg-[#56346F] border-2 border-transparent text-white text-xs sm:text-sm font-extrabold py-2 px-4 rounded-xl transition-all cursor-pointer shadow-md hover:scale-102 flex items-center gap-1.5"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#36C4D8]" />
-                  <span>Acceso Admin</span>
-                </button>
-              </div>
+              // Solo mostramos el botón de Iniciar Sesión si la persona ya está activa en su proceso de 7 días
+              programProgress && programProgress.activationDate ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setLoginEmail("");
+                      setPhase("LOGIN");
+                    }}
+                    className="bg-white/10 hover:bg-white/20 border-2 border-white/30 text-white text-xs sm:text-sm font-extrabold py-2 px-4 rounded-xl transition-all cursor-pointer shadow-md hover:scale-102 flex items-center gap-1.5"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-white/90" />
+                    <span>Iniciar Sesión</span>
+                  </button>
+                </div>
+              ) : null
             )}
 
             <motion.span 
