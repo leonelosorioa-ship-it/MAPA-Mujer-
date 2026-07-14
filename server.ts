@@ -2262,7 +2262,7 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
     // Prevent modification of other user's data
-    if ((req as any).user.email !== cleanEmail) {
+    if (((req as any).user.email || "").toLowerCase().trim() !== cleanEmail) {
       return res.status(403).json({ error: "No autorizado para modificar el perfil de otro usuario." });
     }
 
@@ -2621,7 +2621,7 @@ app.get("/api/premium/user-data", authenticateJWT, (req, res) => {
       return res.status(400).json({ error: "Email es requerido para recuperar datos premium." });
     }
     const cleanEmail = String(email).toLowerCase().trim();
-    if ((req as any).user.email !== cleanEmail) {
+    if (((req as any).user.email || "").toLowerCase().trim() !== cleanEmail) {
       return res.status(403).json({ error: "No autorizado para acceder a este perfil premium." });
     }
     const { user } = getOrCreateUser(cleanEmail, name ? String(name) : undefined);
@@ -2641,7 +2641,7 @@ app.post("/api/premium/save-data", authenticateJWT, (req, res) => {
       return res.status(400).json({ error: "Email y premiumData requeridos." });
     }
     const cleanEmail = String(email).toLowerCase().trim();
-    if ((req as any).user.email !== cleanEmail) {
+    if (((req as any).user.email || "").toLowerCase().trim() !== cleanEmail) {
       return res.status(403).json({ error: "No autorizado para modificar este perfil premium." });
     }
     const { db, userIndex } = getOrCreateUser(cleanEmail);
@@ -2663,7 +2663,7 @@ app.post("/api/premium/diary-analyze", authenticateJWT, async (req, res) => {
     }
 
     const cleanEmail = String(email).toLowerCase().trim();
-    if ((req as any).user.email !== cleanEmail) {
+    if (((req as any).user.email || "").toLowerCase().trim() !== cleanEmail) {
       return res.status(403).json({ error: "No autorizado para analizar este diario." });
     }
 
@@ -2913,7 +2913,7 @@ app.post("/api/premium/coach-chat", authenticateJWT, async (req, res) => {
     }
 
     const cleanEmail = String(email).toLowerCase().trim();
-    if ((req as any).user.email !== cleanEmail) {
+    if (((req as any).user.email || "").toLowerCase().trim() !== cleanEmail) {
       return res.status(403).json({ error: "No autorizado para usar este chat premium." });
     }
 
@@ -3185,7 +3185,7 @@ app.post("/api/premium/submit-lead-report", authenticateJWT, (req, res) => {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    if ((req as any).user.email !== cleanEmail) {
+    if (((req as any).user.email || "").toLowerCase().trim() !== cleanEmail) {
       return res.status(403).json({ error: "No autorizado para enviar este reporte de contacto." });
     }
 

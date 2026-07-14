@@ -305,7 +305,7 @@ export default function App() {
         try {
           const parsed = JSON.parse(savedUserProgress);
           if (parsed && parsed.activationDate) {
-            return "DASHBOARD";
+            return "LANDING";
           }
         } catch (e) {
           console.error(e);
@@ -319,7 +319,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(savedLegacy);
         if (parsed && parsed.activationDate) {
-          return "DASHBOARD";
+          return "LANDING";
         }
       } catch (e) {
         console.error(e);
@@ -420,11 +420,8 @@ export default function App() {
           return;
         }
       }
-      if (programProgress.activationDate) {
-        setPhase("DASHBOARD");
-      }
     }
-  }, [currentUserEmail, programProgress.activationDate, phase]);
+  }, [currentUserEmail, phase]);
 
   // Precise chronological calculations for 24h consecutive lock logic (based on previous day completion)
   const getChronologicalState = () => {
@@ -3176,7 +3173,19 @@ export default function App() {
                   >
                     ⚙️ Admin
                   </button>
-                ) : null}
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleUserLogout();
+                      setLoginEmail("contacto@tupodermental.club");
+                      setPhase("LOGIN");
+                    }}
+                    className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
+                    title="Cerrar sesión e ingresar como Administrador"
+                  >
+                    🔑 Admin
+                  </button>
+                )}
                 <button
                   onClick={handleUserLogout}
                   className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
@@ -3185,7 +3194,27 @@ export default function App() {
                   Salir
                 </button>
               </div>
-            ) : null}
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPhase("LOGIN")}
+                  className="bg-white/10 hover:bg-white/20 border-2 border-white/30 text-white text-xs sm:text-sm font-extrabold py-2 px-4 rounded-xl transition-all cursor-pointer shadow-md hover:scale-102 flex items-center gap-1.5"
+                >
+                  <Lock className="w-3.5 h-3.5 text-white/90" />
+                  <span>Iniciar Sesión</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setLoginEmail("contacto@tupodermental.club");
+                    setPhase("LOGIN");
+                  }}
+                  className="bg-[#411F66] hover:bg-[#56346F] border-2 border-transparent text-white text-xs sm:text-sm font-extrabold py-2 px-4 rounded-xl transition-all cursor-pointer shadow-md hover:scale-102 flex items-center gap-1.5"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#36C4D8]" />
+                  <span>Acceso Admin</span>
+                </button>
+              </div>
+            )}
 
             <motion.span 
               animate={{ 
@@ -3240,7 +3269,70 @@ export default function App() {
               exit={{ opacity: 0, y: -15 }}
               className="space-y-16"
             >
-              {/* Returning User Continuation Card Alert */}
+              {/* FASE 1: HERO (Encima y Conservar) */}
+              <section id="landing_hero" className="text-center space-y-8 max-w-4xl mx-auto py-4">
+                <div className="inline-flex items-center space-x-2 bg-[#EDE0F0] border-2 border-[#6E488A]/30 py-2 px-5 rounded-full select-none shadow-[0_4px_15px_rgba(110,72,138,0.05)]">
+                  <span className="text-base font-black tracking-wide text-[#1C0630] uppercase flex items-center gap-1.5 font-bold">
+                    By <span className="text-[#E86FA3] font-black">TU PODER MENTAL MUJER</span>
+                  </span>
+                </div>
+                
+                <div className="space-y-4">
+                  <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl text-[#1C0630] tracking-tight leading-none">
+                    M.A.P.A. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E86FA3] to-[#1C0630]">Mujer</span>
+                  </h1>
+                  <p className="text-[#E86FA3] text-2xl sm:text-3xl font-black tracking-wide uppercase max-w-3xl mx-auto leading-relaxed">
+                    Mapa de Activación y Protección Emocional
+                  </p>
+                </div>
+                
+                <p className="text-lg sm:text-xl md:text-2xl text-[#0B152B] font-sans tracking-wide leading-relaxed max-w-3xl mx-auto px-4 font-black">
+                  Descubre qué factores podrían estar manteniendo activo tu sistema de alerta emocional. Un espacio diseñado única y exclusivamente para guiar a la mujer hacia su bienestar, autorregulación y calma mental.
+                </p>
+
+                {/* Animated Custom Gold & Teal Brain-Compass Core (Matches uploaded logo accurately) */}
+                <div className="py-8 flex justify-center">
+                  <div className="relative w-48 h-48 rounded-full border-4 border-[#411F66]/30 p-2 bg-gradient-to-b from-white to-[#FFF7FC] shadow-[0_0_30px_rgba(232,111,163,0.12)] flex items-center justify-center">
+                    {/* Compass outer dial ring */}
+                    <div className="absolute inset-2 rounded-full border border-dashed border-[#36C4D8]/30 animate-spin" style={{ animationDuration: '30s' }} />
+                    <div className="absolute inset-5 rounded-full border border-[#E86FA3]/20 animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }} />
+                    <div className="absolute inset-6 rounded-full bg-white/40 backdrop-blur-md flex items-center justify-center overflow-hidden">
+                      {/* Brain division background (teal/left, green/right matches logo) */}
+                      <div className="absolute inset-0 flex">
+                        <div className="w-1/2 h-full bg-[#36C4D8]/10 border-r border-[#36C4D8]/20" />
+                        <div className="w-1/2 h-full bg-[#F58BC8]/10" />
+                      </div>
+                      {/* Brain Icon / Compass needle with gold sun terminal */}
+                      <div className="relative z-10 w-full h-full flex items-center justify-center">
+                        <Compass className="w-20 h-20 text-[#36C4D8] opacity-35 animate-pulse absolute" />
+                        {/* Custom shiny compass needle rotater */}
+                        <div className="absolute inset-0 flex items-center justify-center animate-spin" style={{ animationDuration: '8s' }}>
+                          <div className="relative h-28 w-1 flex items-center justify-center">
+                            {/* Needle point */}
+                            <div className="absolute -top-1 w-2.5 h-2.5 bg-[#36C4D8] rotate-45 rounded animate-pulse" />
+                            {/* Needle shine */}
+                            <div className="w-[2px] h-full bg-gradient-to-b from-[#36C4D8] via-[#EDE0F0] to-[#E86FA3]" />
+                            {/* Needle gold sun pointer at bottom/top */}
+                            <div className="absolute -bottom-1 w-3 h-3 bg-[#E86FA3] rounded-full border border-pink-200 shadow-[0_0_10px_rgba(232,111,163,0.5)] animate-pulse" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Highlighted Quote Board from attached files (COMPRENDER ES...) */}
+                <div className="max-w-2xl mx-auto px-4 pb-4">
+                  <div className="p-6 rounded-2xl bg-gradient-to-r from-white via-[#EDE0F0]/50 to-white border-2 border-[#1C0630]/25 shadow-[0_4px_20px_rgba(110,72,138,0.06)] space-y-2">
+                    <span className="text-sm font-mono tracking-widest text-[#E86FA3] uppercase block font-black">FILOSOFÍA DE CONTENCIÓN</span>
+                    <p className="font-display font-black text-xl sm:text-2xl text-[#1C0630] leading-relaxed">
+                      COMPRENDER ES EL PRIMER PASO PARA <span className="text-[#36C4D8] block sm:inline font-black">TRANSFORMAR TU VIDA</span>.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Returning User Continuation Card Alert (Now placed below Hero) */}
               {programProgress.activationDate && (() => {
                 const chrono = getChronologicalState();
                 const currentExercise = MINI_EXERCISES[currentExerciseIndex];
@@ -3420,71 +3512,10 @@ export default function App() {
                 );
               })()}
 
-              {/* FASE 1: HERO */}
-              <section id="landing_hero" className="text-center space-y-8 max-w-4xl mx-auto py-4">
-                <div className="inline-flex items-center space-x-2 bg-[#EDE0F0] border-2 border-[#6E488A]/30 py-2 px-5 rounded-full select-none shadow-[0_4px_15px_rgba(110,72,138,0.05)]">
-                  <span className="text-base font-black tracking-wide text-[#1C0630] uppercase flex items-center gap-1.5 font-bold">
-                    By <span className="text-[#E86FA3] font-black">TU PODER MENTAL MUJER</span>
-                  </span>
-                </div>
-                
-                <div className="space-y-4">
-                  <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl text-[#1C0630] tracking-tight leading-none">
-                    M.A.P.A. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E86FA3] to-[#1C0630]">Mujer</span>
-                  </h1>
-                  <p className="text-[#E86FA3] text-2xl sm:text-3xl font-black tracking-wide uppercase max-w-3xl mx-auto leading-relaxed">
-                    Mapa de Activación y Protección Emocional
-                  </p>
-                </div>
-                
-                <p className="text-lg sm:text-xl md:text-2xl text-[#0B152B] font-sans tracking-wide leading-relaxed max-w-3xl mx-auto px-4 font-black">
-                  Descubre qué factores podrían estar manteniendo activo tu sistema de alerta emocional. Un espacio diseñado única y exclusivamente para guiar a la mujer hacia su bienestar, autorregulación y calma mental.
-                </p>
-
-                {/* Animated Custom Gold & Teal Brain-Compass Core (Matches uploaded logo accurately) */}
-                <div className="py-8 flex justify-center">
-                  <div className="relative w-48 h-48 rounded-full border-4 border-[#411F66]/30 p-2 bg-gradient-to-b from-white to-[#FFF7FC] shadow-[0_0_30px_rgba(232,111,163,0.12)] flex items-center justify-center">
-                    {/* Compass outer dial ring */}
-                    <div className="absolute inset-2 rounded-full border border-dashed border-[#36C4D8]/30 animate-spin" style={{ animationDuration: '30s' }} />
-                    <div className="absolute inset-5 rounded-full border border-[#E86FA3]/20 animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }} />
-                    <div className="absolute inset-6 rounded-full bg-white/40 backdrop-blur-md flex items-center justify-center overflow-hidden">
-                      {/* Brain division background (teal/left, green/right matches logo) */}
-                      <div className="absolute inset-0 flex">
-                        <div className="w-1/2 h-full bg-[#36C4D8]/10 border-r border-[#36C4D8]/20" />
-                        <div className="w-1/2 h-full bg-[#F58BC8]/10" />
-                      </div>
-                      {/* Brain Icon / Compass needle with gold sun terminal */}
-                      <div className="relative z-10 w-full h-full flex items-center justify-center">
-                        <Compass className="w-20 h-20 text-[#36C4D8] opacity-35 animate-pulse absolute" />
-                        {/* Custom shiny compass needle rotater */}
-                        <div className="absolute inset-0 flex items-center justify-center animate-spin" style={{ animationDuration: '8s' }}>
-                          <div className="relative h-28 w-1 flex items-center justify-center">
-                            {/* Needle point */}
-                            <div className="absolute -top-1 w-2.5 h-2.5 bg-[#36C4D8] rotate-45 rounded animate-pulse" />
-                            {/* Needle shine */}
-                            <div className="w-[2px] h-full bg-gradient-to-b from-[#36C4D8] via-[#EDE0F0] to-[#E86FA3]" />
-                            {/* Needle gold sun pointer at bottom/top */}
-                            <div className="absolute -bottom-1 w-3 h-3 bg-[#E86FA3] rounded-full border border-pink-200 shadow-[0_0_10px_rgba(232,111,163,0.5)] animate-pulse" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Highlighted Quote Board from attached files (COMPRENDER ES...) */}
-                <div className="max-w-2xl mx-auto px-4 pb-4">
-                  <div className="p-6 rounded-2xl bg-gradient-to-r from-white via-[#EDE0F0]/50 to-white border-2 border-[#1C0630]/25 shadow-[0_4px_20px_rgba(110,72,138,0.06)] space-y-2">
-                    <span className="text-sm font-mono tracking-widest text-[#E86FA3] uppercase block font-black">FILOSOFÍA DE CONTENCIÓN</span>
-                    <p className="font-display font-black text-xl sm:text-2xl text-[#1C0630] leading-relaxed">
-                      COMPRENDER ES EL PRIMER PASO PARA <span className="text-[#36C4D8] block sm:inline font-black">TRANSFORMAR TU VIDA</span>.
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              {/* FASE 2: IDENTIFICACIÓN - "M.A.P.A. es para ti si..." */}
-              <section id="landing_identification" className="space-y-8 bg-[#EDE0F0]/50 rounded-3xl p-8 border-2 border-[#1C0630]/20">
+              {!programProgress.activationDate && (
+                <>
+                  {/* FASE 2: IDENTIFICACIÓN - "M.A.P.A. es para ti si..." */}
+                  <section id="landing_identification" className="space-y-8 bg-[#EDE0F0]/50 rounded-3xl p-8 border-2 border-[#1C0630]/20">
                 <div className="text-center space-y-2">
                   <h2 className="font-display font-black text-3xl text-[#1C0630]">Este M.A.P.A. es para ti si...</h2>
                   <p className="text-sm sm:text-base text-[#1C0630] max-w-lg mx-auto font-black">Selecciona las tarjetas con las que te sientas identificada hoy para ver la calibración del radar.</p>
@@ -3758,6 +3789,7 @@ export default function App() {
                   </span>
                 </div>
               </section>
+              </>)}
             </motion.div>
           )}
 
