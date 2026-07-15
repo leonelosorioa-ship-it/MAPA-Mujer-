@@ -1990,10 +1990,33 @@ function authenticateJWT(req: any, res: any, next: any) {
 
       const email = decoded.email;
       const db = readUsersDB();
-      const user = db.find((u: any) => (u.email || "").toLowerCase().trim() === (email || "").toLowerCase().trim());
+      let user = db.find((u: any) => (u.email || "").toLowerCase().trim() === (email || "").toLowerCase().trim());
 
       if (!user) {
-        return res.status(403).json({ error: "El usuario ya no existe en el sistema." });
+        console.log(`🔧 [Resilience] User ${email} has a valid JWT but is not in database (likely reset). Auto-recreating user profile.`);
+        const cleanEmail = (email || "").toLowerCase().trim();
+        const newUser = {
+          nombre: "Usuaria M.A.P.A.",
+          email: cleanEmail,
+          whatsapp: "",
+          registeredAt: new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          currentDay: 1,
+          completedDays: [],
+          responses: {},
+          completionTimestamps: {},
+          dailyConclusionText: {},
+          unlockedAudios: [],
+          initialScanResults: null,
+          isCompleted: false,
+          hasDownloadedApp: false,
+          hotmartApproved: true,
+          disabled: false,
+          origin: "Resiliencia Auto-Recreación Post-Reinicio"
+        };
+        db.push(newUser);
+        writeUsersDB(db);
+        user = newUser;
       }
 
       if (user.disabled) {
@@ -2334,9 +2357,7 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
 // ==========================================
 app.get("/api/get-user-progress", authenticateJWT, (req, res) => {
   try {
-    const email = (req as any).user.email;
-    const db = readUsersDB();
-    const user = db.find((u: any) => (u.email || "").toLowerCase().trim() === (email || "").toLowerCase().trim());
+    const user = (req as any).user;
 
     if (!user) {
       return res.status(404).json({ error: "Usuario no encontrado." });

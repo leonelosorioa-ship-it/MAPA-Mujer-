@@ -130,8 +130,31 @@ export function useAuthSynchronizer({
 
         const serialized = JSON.stringify(serverProgress);
         
-        // Only update states if server actually has different, updated values
-        if (serialized !== lastFetchedDataRef.current && !isProgressEqual(programProgress, serverProgress)) {
+        // Conflict resolution: Check if local progress is newer/more complete than the server-side progress
+        const localCompletedCount = programProgress.completedDays ? programProgress.completedDays.length : 0;
+        const serverCompletedCount = serverProgress.completedDays ? serverProgress.completedDays.length : 0;
+        
+        const localResponsesCount = Object.keys(programProgress.responses || {}).length;
+        const serverResponsesCount = Object.keys(serverProgress.responses || {}).length;
+        
+        const localHasOnboarding = !!programProgress.onboardingCompletado;
+        const serverHasOnboarding = !!serverProgress.onboardingCompletado;
+        
+        const isLocalNewer = (localCompletedCount > serverCompletedCount) ||
+                             (localCompletedCount === serverCompletedCount && localResponsesCount > serverResponsesCount) ||
+                             (localCompletedCount === serverCompletedCount && localResponsesCount === serverResponsesCount && programProgress.currentDay > serverProgress.currentDay) ||
+                             (localCompletedCount === serverCompletedCount && localResponsesCount === serverResponsesCount && localHasOnboarding && !serverHasOnboarding);
+
+        if (isLocalNewer && programProgress.activationDate) {
+          console.log("⚡ [M.A.P.A. Conflict Resolution] Local progress is newer/more complete than server state (likely after a container/server restart). Pushing local state to server immediately.");
+          lastFetchedDataRef.current = JSON.stringify(programProgress);
+          syncProgressToCloud(programProgress, userEmail);
+          
+          if (setDashboardNotice) {
+            setDashboardNotice("🔄 ¡Tu avance local ha sido resguardado y sincronizado con éxito en el servidor!");
+            setTimeout(() => setDashboardNotice(null), 4000);
+          }
+        } else if (serialized !== lastFetchedDataRef.current && !isProgressEqual(programProgress, serverProgress)) {
           console.log("[M.A.P.A. Sync] Server state has changed or newer progress found. Hydrating state seamlessly.");
           lastFetchedDataRef.current = serialized;
           isSyncingFromServerRef.current = true;
