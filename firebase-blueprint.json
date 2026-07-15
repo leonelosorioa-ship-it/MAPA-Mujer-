@@ -1,0 +1,96 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and progress data for the 7-day M.A.P.A. challenge",
+      "type": "object",
+      "properties": {
+        "nombre": {
+          "type": "string",
+          "description": "User's full name"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address"
+        },
+        "whatsapp": {
+          "type": "string",
+          "description": "User's phone number/whatsapp"
+        },
+        "registeredAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Registration date-time string"
+        },
+        "lastActive": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last active date-time string"
+        },
+        "currentDay": {
+          "type": "integer",
+          "description": "The current active day (1-7)"
+        },
+        "completedDays": {
+          "type": "array",
+          "description": "Array of day numbers completed"
+        },
+        "responses": {
+          "type": "object",
+          "description": "Map of day numbers to answer values"
+        },
+        "completionTimestamps": {
+          "type": "object",
+          "description": "Map of day numbers to completion timestamps"
+        },
+        "dailyConclusionText": {
+          "type": "object",
+          "description": "Map of day numbers to daily conclusion analysis text"
+        },
+        "unlockedAudios": {
+          "type": "array",
+          "description": "Array of unlocked audio IDs"
+        },
+        "initialScanResults": {
+          "type": "object",
+          "description": "Results of the initial diagnostics/scans"
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Whether the full program is completed"
+        },
+        "hasDownloadedApp": {
+          "type": "boolean",
+          "description": "Whether the user has downloaded the application wrapper"
+        },
+        "hotmartApproved": {
+          "type": "boolean",
+          "description": "Whether the user purchase is approved in Hotmart"
+        },
+        "accessCode": {
+          "type": "string",
+          "description": "Login/magic access code"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Whether this user has been suspended"
+        },
+        "origin": {
+          "type": "string",
+          "description": "Creation origin channel"
+        },
+        "onboardingCompletado": {
+          "type": "boolean",
+          "description": "Whether the onboarding survey has been finished"
+        }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "users/{email}": {
+      "schema": "User",
+      "description": "The main users collection keyed by email"
+    }
+  }
+}

@@ -8,6 +8,9 @@ import webPush from "web-push";
 import jwt from "jsonwebtoken";
 import { QUESTIONS } from "./src/questions.js";
 import { EmotionalProfile, QuizResponse } from "./src/types.js";
+import admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
+import { getApp } from "firebase-admin/app";
 
 dotenv.config();
 
@@ -40,6 +43,141 @@ app.use(express.json());
 
 const PORT = 3000;
 const USERS_DB_PATH = path.join(process.cwd(), "data_users.json");
+const HOTMART_LOGS_PATH = path.join(process.cwd(), "data_hotmart_logs.json");
+const INVITE_CODES_PATH = path.join(process.cwd(), "data_invite_codes.json");
+
+// Safe Firestore initialization
+let dbFirestore: any = null;
+
+try {
+  const firebaseConfigPath = path.join(process.cwd(), "firebase-applet-config.json");
+  if (fs.existsSync(firebaseConfigPath)) {
+    const config = JSON.parse(fs.readFileSync(firebaseConfigPath, "utf-8"));
+    if (config.projectId) {
+      admin.initializeApp({
+        projectId: config.projectId
+      });
+      // Handle custom firestore database ID if defined
+      const dbId = config.firestoreDatabaseId || "(default)";
+      if (dbId && dbId !== "(default)") {
+        dbFirestore = getFirestore(getApp(), dbId);
+      } else {
+        dbFirestore = getFirestore();
+      }
+      console.log(`🔥 [Firebase Admin] Initialized successfully. Project: ${config.projectId}, Database ID: ${dbId}`);
+    }
+  }
+} catch (err: any) {
+  console.warn("⚠️ [Firebase Admin] Initialization warning:", err.message);
+}
+
+// Memory caches to prevent duplicate redundant Firestore writes
+const lastSyncedUsersMap = new Map<string, string>();
+const lastSyncedCodesMap = new Map<string, string>();
+const lastSyncedLogsMap = new Map<string, string>();
+
+// Preload cache files from Firestore
+async function hydrateLocalDBFromFirestore() {
+  if (!dbFirestore) {
+    console.log("⚠️ [Hydration] Firestore not initialized, skipping hydration.");
+    return;
+  }
+  try {
+    console.log("🔄 [Hydration] Loading user profiles from Firestore...");
+    const userSnap = await dbFirestore.collection("users").get();
+    const cloudUsers: any[] = [];
+    userSnap.forEach((doc) => {
+      cloudUsers.push(doc.data());
+    });
+    
+    if (cloudUsers.length > 0) {
+      console.log(`📦 [Hydration] Merging ${cloudUsers.length} users from Firestore into local cache...`);
+      let localUsers: any[] = [];
+      if (fs.existsSync(USERS_DB_PATH)) {
+        try {
+          localUsers = JSON.parse(fs.readFileSync(USERS_DB_PATH, "utf-8")) || [];
+        } catch (_) {}
+      }
+      if (!Array.isArray(localUsers)) localUsers = [];
+      
+      cloudUsers.forEach((cu) => {
+        const cleanEmail = (cu.email || "").toLowerCase().trim();
+        if (!cleanEmail) return;
+        const index = localUsers.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
+        if (index > -1) {
+          localUsers[index] = cu;
+        } else {
+          localUsers.push(cu);
+        }
+        // Warm up our in-memory cache to prevent writing this doc immediately on first write
+        lastSyncedUsersMap.set(cleanEmail, JSON.stringify(cu));
+      });
+      fs.writeFileSync(USERS_DB_PATH, JSON.stringify(localUsers, null, 2));
+    }
+    
+    // Also hydrate invite codes
+    console.log("🔄 [Hydration] Loading invite codes from Firestore...");
+    const inviteSnap = await dbFirestore.collection("invite_codes").get();
+    const cloudCodes: any[] = [];
+    inviteSnap.forEach((doc) => {
+      cloudCodes.push(doc.data());
+    });
+    if (cloudCodes.length > 0) {
+      let localCodes: any[] = [];
+      if (fs.existsSync(INVITE_CODES_PATH)) {
+        try {
+          localCodes = JSON.parse(fs.readFileSync(INVITE_CODES_PATH, "utf-8")) || [];
+        } catch (_) {}
+      }
+      if (!Array.isArray(localCodes)) localCodes = [];
+      
+      cloudCodes.forEach((cc) => {
+        const index = localCodes.findIndex((c: any) => c.code === cc.code);
+        if (index > -1) {
+          localCodes[index] = cc;
+        } else {
+          localCodes.push(cc);
+        }
+        lastSyncedCodesMap.set((cc.code || "").toUpperCase().trim(), JSON.stringify(cc));
+      });
+      fs.writeFileSync(INVITE_CODES_PATH, JSON.stringify(localCodes, null, 2));
+    }
+
+    // Also hydrate Hotmart logs
+    console.log("🔄 [Hydration] Loading Hotmart logs from Firestore...");
+    const logSnap = await dbFirestore.collection("hotmart_logs").get();
+    const cloudLogs: any[] = [];
+    logSnap.forEach((doc) => {
+      cloudLogs.push(doc.data());
+    });
+    if (cloudLogs.length > 0) {
+      let localLogs: any[] = [];
+      if (fs.existsSync(HOTMART_LOGS_PATH)) {
+        try {
+          localLogs = JSON.parse(fs.readFileSync(HOTMART_LOGS_PATH, "utf-8")) || [];
+        } catch (_) {}
+      }
+      if (!Array.isArray(localLogs)) localLogs = [];
+      
+      cloudLogs.forEach((cl) => {
+        const index = localLogs.findIndex((l: any) => l.uuid === cl.uuid || (l.date === cl.date && l.email === cl.email));
+        if (index > -1) {
+          localLogs[index] = cl;
+        } else {
+          localLogs.push(cl);
+        }
+        const logKey = cl.uuid || `${cl.date || Date.now()}_${(cl.email || "unknown").toLowerCase().trim()}`;
+        lastSyncedLogsMap.set(logKey, JSON.stringify(cl));
+      });
+      const truncated = localLogs.slice(-100);
+      fs.writeFileSync(HOTMART_LOGS_PATH, JSON.stringify(truncated, null, 2));
+    }
+    
+    console.log("✅ [Hydration] All data hydrated successfully from cloud Firestore!");
+  } catch (err: any) {
+    console.error("❌ [Hydration] Error loading from Firestore:", err.message);
+  }
+}
 
 // Safe file database initialization
 function readUsersDB() {
@@ -110,12 +248,27 @@ function readUsersDB() {
 function writeUsersDB(data: any) {
   try {
     fs.writeFileSync(USERS_DB_PATH, JSON.stringify(data, null, 2));
+    
+    // Save to Firestore with smart change detection
+    if (dbFirestore && Array.isArray(data)) {
+      data.forEach((user: any) => {
+        const cleanEmail = (user.email || "").toLowerCase().trim();
+        if (!cleanEmail) return;
+        
+        const serialized = JSON.stringify(user);
+        if (lastSyncedUsersMap.get(cleanEmail) !== serialized) {
+          lastSyncedUsersMap.set(cleanEmail, serialized);
+          dbFirestore!.collection("users").doc(cleanEmail).set(user, { merge: true })
+            .catch((err: any) => {
+              console.error(`❌ [Firestore Sync] Error saving user ${cleanEmail}:`, err.message);
+            });
+        }
+      });
+    }
   } catch (err) {
     console.error("Error writing users db:", err);
   }
 }
-
-const HOTMART_LOGS_PATH = path.join(process.cwd(), "data_hotmart_logs.json");
 
 function readHotmartLogs() {
   try {
@@ -137,12 +290,24 @@ function writeHotmartLogs(logs: any[]) {
     // Keep only the last 100 entries to prevent infinite growth
     const truncated = logs.slice(-100);
     fs.writeFileSync(HOTMART_LOGS_PATH, JSON.stringify(truncated, null, 2));
+    
+    if (dbFirestore && Array.isArray(truncated)) {
+      truncated.forEach((log: any) => {
+        const logKey = log.uuid || `${log.date || Date.now()}_${(log.email || "unknown").toLowerCase().trim()}`;
+        const serialized = JSON.stringify(log);
+        if (lastSyncedLogsMap.get(logKey) !== serialized) {
+          lastSyncedLogsMap.set(logKey, serialized);
+          dbFirestore!.collection("hotmart_logs").doc(logKey).set(log, { merge: true })
+            .catch((err: any) => {
+              console.error(`❌ [Firestore Sync] Error saving Hotmart log ${logKey}:`, err.message);
+            });
+        }
+      });
+    }
   } catch (err) {
     console.error("Error writing Hotmart logs:", err);
   }
 }
-
-const INVITE_CODES_PATH = path.join(process.cwd(), "data_invite_codes.json");
 
 function readInviteCodes() {
   try {
@@ -179,6 +344,22 @@ function readInviteCodes() {
 function writeInviteCodes(codes: any[]) {
   try {
     fs.writeFileSync(INVITE_CODES_PATH, JSON.stringify(codes, null, 2));
+    
+    if (dbFirestore && Array.isArray(codes)) {
+      codes.forEach((codeObj: any) => {
+        const codeKey = (codeObj.code || "").toUpperCase().trim();
+        if (!codeKey) return;
+        
+        const serialized = JSON.stringify(codeObj);
+        if (lastSyncedCodesMap.get(codeKey) !== serialized) {
+          lastSyncedCodesMap.set(codeKey, serialized);
+          dbFirestore!.collection("invite_codes").doc(codeKey).set(codeObj, { merge: true })
+            .catch((err: any) => {
+              console.error(`❌ [Firestore Sync] Error saving code ${codeKey}:`, err.message);
+            });
+        }
+      });
+    }
   } catch (err) {
     console.error("Error writing invite codes:", err);
   }
@@ -3842,6 +4023,8 @@ setInterval(() => {
 
 // Configure Vite middleware in development or static serving inside production
 async function startServer() {
+  // Pre-load and sync database with Cloud Firestore to avoid ephemeral data wipes
+  await hydrateLocalDBFromFirestore();
 
   if (process.env.NODE_ENV !== "production") {
     // Development Mode
