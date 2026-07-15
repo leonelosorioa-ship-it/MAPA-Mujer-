@@ -2277,6 +2277,12 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
       db[userIndex].completedDays = programProgress.completedDays;
       db[userIndex].responses = programProgress.responses;
       db[userIndex].completionTimestamps = programProgress.completionTimestamps;
+      if (programProgress.leadInfo && programProgress.leadInfo.nombre) {
+        db[userIndex].nombre = programProgress.leadInfo.nombre.trim();
+      }
+      if (programProgress.leadInfo && programProgress.leadInfo.whatsapp) {
+        db[userIndex].whatsapp = programProgress.leadInfo.whatsapp.trim();
+      }
       if (programProgress.dailyConclusionText) {
         db[userIndex].dailyConclusionText = programProgress.dailyConclusionText;
       }

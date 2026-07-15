@@ -492,6 +492,8 @@ export default function App() {
   const [adminFormPass, setAdminFormPass] = useState<string>("");
   const [adminLoginError, setAdminLoginError] = useState<string | null>(null);
   const [isAdminLoggingIn, setIsAdminLoggingIn] = useState<boolean>(false);
+  const [isEditingName, setIsEditingName] = useState<boolean>(false);
+  const [tempName, setTempName] = useState<string>("");
 
   // Email sending states for the final report
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
@@ -3166,9 +3168,62 @@ export default function App() {
             {currentUserEmail ? (
               <div className="flex items-center gap-2 sm:gap-3 bg-white border border-[#6E488A]/12 py-1.5 px-3 rounded-xl text-xs sm:text-sm shadow-md">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                <span className="text-[#6E488A] font-sans font-black text-xs sm:text-sm max-w-[110px] xs:max-w-[155px] sm:max-w-none truncate whitespace-nowrap" title={leadInfo.nombre || "Usuaria"}>
-                  {leadInfo.nombre || "Usuaria"}
-                </span>
+                
+                {isEditingName ? (
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const cleanName = tempName.trim();
+                      if (cleanName) {
+                        const updatedLead = { ...leadInfo, nombre: cleanName };
+                        setLeadInfo(updatedLead);
+                        setProgramProgress((prev: any) => ({
+                          ...prev,
+                          leadInfo: updatedLead
+                        }));
+                      }
+                      setIsEditingName(false);
+                    }}
+                    className="flex items-center gap-1"
+                  >
+                    <input
+                      type="text"
+                      value={tempName}
+                      onChange={(e) => setTempName(e.target.value)}
+                      className="border-b border-[#6E488A] text-[#6E488A] bg-transparent font-sans font-black text-xs sm:text-sm focus:outline-none max-w-[100px] xs:max-w-[120px] px-1 py-0"
+                      autoFocus
+                      maxLength={30}
+                    />
+                    <button 
+                      type="submit" 
+                      className="text-emerald-600 hover:text-emerald-700 font-bold text-xs p-0.5 bg-transparent border-none cursor-pointer"
+                      title="Guardar"
+                    >
+                      ✓
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => setIsEditingName(false)} 
+                      className="text-red-500 hover:text-red-600 font-bold text-xs p-0.5 bg-transparent border-none cursor-pointer"
+                      title="Cancelar"
+                    >
+                      ✗
+                    </button>
+                  </form>
+                ) : (
+                  <span 
+                    onClick={() => {
+                      setTempName(leadInfo.nombre || "");
+                      setIsEditingName(true);
+                    }}
+                    className="text-[#6E488A] font-sans font-black text-xs sm:text-sm max-w-[110px] xs:max-w-[155px] sm:max-w-none truncate whitespace-nowrap cursor-pointer hover:underline flex items-center gap-1"
+                    title="Haz clic para cambiar tu nombre"
+                  >
+                    <span>{leadInfo.nombre || "Usuaria"}</span>
+                    <span className="text-[10px] text-[#6E488A]/60 opacity-75 hover:opacity-100 shrink-0">✏️</span>
+                  </span>
+                )}
+
                 <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-1.5 py-0.5 rounded-lg font-mono text-[9px] font-black flex items-center space-x-0.5 shrink-0" title="Sesiones de regulación completadas">
                   <span>{programProgress.completedDays?.length || 0}</span>
                   <span className="text-[8px]">✓</span>
@@ -3177,39 +3232,25 @@ export default function App() {
                   ({currentUserEmail})
                 </span>
                 {currentUserEmail.toLowerCase() === "contacto@tupodermental.club" ? (
-                  <button
-                    onClick={() => setPhase("ADMIN")}
-                    className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
-                    title="Panel de Control de Administrador"
-                  >
-                    ⚙️ Admin
-                  </button>
+                  <>
+                    <button
+                      onClick={() => setPhase("ADMIN")}
+                      className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
+                      title="Panel de Control de Administrador"
+                    >
+                      ⚙️ Admin
+                    </button>
+                    <button
+                      onClick={handleUserLogout}
+                      className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
+                      title="Cerrar sesión"
+                    >
+                      Salir
+                    </button>
+                  </>
                 ) : null}
-                <button
-                  onClick={handleUserLogout}
-                  className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
-                  title="Cerrar sesión"
-                >
-                  Salir
-                </button>
               </div>
-            ) : (
-              // Solo mostramos el botón de Iniciar Sesión si la persona ya está activa en su proceso de 7 días
-              programProgress && programProgress.activationDate ? (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setLoginEmail("");
-                      setPhase("LOGIN");
-                    }}
-                    className="bg-white/10 hover:bg-white/20 border-2 border-white/30 text-white text-xs sm:text-sm font-extrabold py-2 px-4 rounded-xl transition-all cursor-pointer shadow-md hover:scale-102 flex items-center gap-1.5"
-                  >
-                    <Lock className="w-3.5 h-3.5 text-white/90" />
-                    <span>Iniciar Sesión</span>
-                  </button>
-                </div>
-              ) : null
-            )}
+            ) : null}
 
             <motion.span 
               animate={{ 
