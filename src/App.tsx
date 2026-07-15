@@ -614,10 +614,7 @@ export default function App() {
   });
   const [isAlarmPlaying, setIsAlarmPlaying] = useState<boolean>(false);
   const [alarmReason, setAlarmReason] = useState<string>("");
-  const [testReminderAlarmEnabled, setTestReminderAlarmEnabled] = useState<boolean>(() => {
-    const saved = localStorage.getItem("MAPA_TEST_REMINDER_ENABLED");
-    return saved !== null ? saved === "true" : true;
-  });
+  const [testReminderAlarmEnabled, setTestReminderAlarmEnabled] = useState<boolean>(false);
   const [testReminderMode, setTestReminderMode] = useState<"unlocked" | "scheduled">(() => {
     return (localStorage.getItem("MAPA_TEST_REMINDER_MODE") as "unlocked" | "scheduled") || "scheduled";
   });
@@ -6446,15 +6443,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Server Background Synchronization Status Badge */}
-              <div className="bg-emerald-50/70 border border-emerald-100/80 rounded-xl p-2.5 flex items-start gap-2.5 text-emerald-800 text-[11px] leading-snug">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5 animate-pulse" />
-                <div className="text-left">
-                  <span className="font-bold block text-emerald-900">Sintonización en Segundo Plano Activa</span>
-                  <span>Tus alarmas se sincronizan con el servidor para sonar y notificarte puntualmente aunque cierres la app o apagues la pantalla de tu celular.</span>
-                </div>
-              </div>
-
               {/* Quick Test Audio Button */}
               <div className="bg-gray-50 rounded-xl p-3 border border-gray-100 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 text-gray-700">
@@ -6525,165 +6513,6 @@ export default function App() {
                       <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#E86FA3]" />
                     </button>
                   ))}
-                </div>
-              </div>
-
-              {/* Custom Time Selection Sliders */}
-              <div className="border-t border-gray-100 pt-3 space-y-2">
-                <h5 className="text-[11px] font-mono uppercase tracking-wider text-[#411F66] font-extrabold">
-                  ⏱️ TEMPORIZADOR PERSONALIZADO
-                </h5>
-                <div className="flex gap-2">
-                  {[
-                    { label: "30s", seconds: 30 },
-                    { label: "1 min", seconds: 60 },
-                    { label: "5 min", seconds: 300 },
-                    { label: "15 min", seconds: 900 },
-                    { label: "30 min", seconds: 1800 }
-                  ].map((opt) => (
-                    <button
-                      key={opt.label}
-                      onClick={() => {
-                        setActiveTaskAlarm({
-                          taskName: "Alarma Personalizada",
-                          secondsLeft: opt.seconds,
-                          isRunning: true
-                        });
-                        setAlarmPanelOpen(false);
-                        setDashboardNotice(`⏰ Alarma personalizada establecida en ${opt.label}.`);
-                        setTimeout(() => setDashboardNotice(null), 4000);
-                      }}
-                      className="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-gray-700 bg-gray-50 hover:bg-[#E86FA3]/10 hover:text-[#E86FA3] border border-gray-200 transition-all cursor-pointer text-center"
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Daily test lock countdown sound notification configuration */}
-              <div className="border-t border-gray-100 pt-3 space-y-3">
-                <h5 className="text-[11px] font-mono uppercase tracking-wider text-[#411F66] font-extrabold">
-                  🔔 RECORDATORIO DE TEST DIARIO
-                </h5>
-                
-                <div className="space-y-3">
-                  {/* Enable/Disable Toggle */}
-                  <label className="flex items-start gap-2.5 p-2.5 bg-pink-50/50 hover:bg-pink-50 rounded-xl border border-pink-100/50 cursor-pointer transition-all">
-                    <input
-                      type="checkbox"
-                      checked={testReminderAlarmEnabled}
-                      onChange={(e) => {
-                        setTestReminderAlarmEnabled(e.target.checked);
-                        if (!e.target.checked && isAlarmPlaying) {
-                          stopAlarm();
-                        }
-                      }}
-                      className="mt-0.5 rounded border-[#E86FA3] text-[#E86FA3] focus:ring-[#E86FA3]"
-                    />
-                    <div className="space-y-0.5 text-left">
-                      <span className="text-xs font-bold text-[#411F66] block">Habilitar Recordatorios Diarios</span>
-                      <span className="text-[10px] text-gray-500 block leading-tight">
-                        Mantén activos los avisos de paz mental para no perder el hilo de tu asimilación de 7 días.
-                      </span>
-                    </div>
-                  </label>
-
-                  {/* Settings expanded when enabled */}
-                  {testReminderAlarmEnabled && (
-                    <div className="p-3 bg-gray-50/70 border border-gray-100 rounded-xl space-y-3 animate-fadeIn">
-                      <div className="space-y-1.5 text-left">
-                        <span className="text-[10px] font-mono font-black uppercase text-[#E86FA3] block">
-                          TIPO DE PLANIFICACIÓN
-                        </span>
-                        
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setTestReminderMode("unlocked")}
-                            className={`py-2 px-2.5 rounded-lg text-center text-xs font-bold border transition-all cursor-pointer ${
-                              testReminderMode === "unlocked"
-                                ? "bg-[#411F66] text-white border-[#411F66] shadow-sm"
-                                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-100"
-                            }`}
-                          >
-                            ⚡ Al estar disponible
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setTestReminderMode("scheduled")}
-                            className={`py-2 px-2.5 rounded-lg text-center text-xs font-bold border transition-all cursor-pointer ${
-                              testReminderMode === "scheduled"
-                                ? "bg-[#411F66] text-white border-[#411F66] shadow-sm"
-                                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-100"
-                            }`}
-                          >
-                            ⏰ Elegir horario
-                          </button>
-                        </div>
-                        <p className="text-[10px] text-gray-500 leading-tight">
-                          {testReminderMode === "unlocked"
-                            ? "Te notificaremos inmediatamente en cuanto pasen las 24h de asimilación del test anterior."
-                            : "Recibe el aviso de calma diario de forma regular en el horario de tu preferencia."}
-                        </p>
-                      </div>
-
-                      {testReminderMode === "scheduled" && (
-                        <div className="space-y-3 pt-2 border-t border-gray-200/60 animate-fadeIn">
-                          {/* Hour select input */}
-                          <div className="flex items-center justify-between gap-3 text-left">
-                            <span className="text-[10px] font-mono font-black text-[#411F66] uppercase">
-                              HORA PERSONALIZADA
-                            </span>
-                            <input
-                              type="time"
-                              value={testReminderTime}
-                              onChange={(e) => {
-                                if (e.target.value) {
-                                  setTestReminderTime(e.target.value);
-                                  setDashboardNotice(`⏰ Horario de recordatorio establecido a las ${e.target.value}`);
-                                  setTimeout(() => setDashboardNotice(null), 3000);
-                                }
-                              }}
-                              className="px-2.5 py-1 text-xs font-bold font-mono rounded-lg border border-gray-300 text-gray-800 bg-white focus:outline-none focus:border-[#E86FA3] focus:ring-1 focus:ring-[#E86FA3]"
-                            />
-                          </div>
-
-                          {/* Common time presets */}
-                          <div className="space-y-1.5 text-left">
-                            <span className="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-wider block">
-                              ACCESOS RÁPIDOS DE HORARIO
-                            </span>
-                            <div className="grid grid-cols-2 gap-1.5">
-                              {[
-                                { label: "🌅 Mañana (09:00)", time: "09:00" },
-                                { label: "☀️ Almuerzo (14:00)", time: "14:00" },
-                                { label: "🌆 Tarde (18:30)", time: "18:30" },
-                                { label: "🌌 Noche (21:30)", time: "21:30" }
-                              ].map((preset) => (
-                                <button
-                                  key={preset.time}
-                                  type="button"
-                                  onClick={() => {
-                                    setTestReminderTime(preset.time);
-                                    setDashboardNotice(`⏰ Recordatorio programado a las ${preset.time}`);
-                                    setTimeout(() => setDashboardNotice(null), 3000);
-                                  }}
-                                  className={`py-1.5 px-2 text-[10px] rounded-md font-medium text-center border transition-all cursor-pointer ${
-                                    testReminderTime === preset.time
-                                      ? "bg-[#E86FA3]/15 text-[#E86FA3] border-[#E86FA3] font-bold"
-                                      : "bg-white text-gray-600 border-gray-200 hover:bg-gray-100"
-                                  }`}
-                                >
-                                  {preset.label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               </div>
 
