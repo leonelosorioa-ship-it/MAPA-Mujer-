@@ -274,8 +274,8 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
     // Poll immediately on mount
     fetchRealPushNotifications();
 
-    // Poll every 5 seconds for ultra-responsive live community alerts!
-    const interval = setInterval(fetchRealPushNotifications, 5000);
+    // Poll every 25 seconds for responsive live community alerts (gentler on server and battery)!
+    const interval = setInterval(fetchRealPushNotifications, 25000);
     return () => clearInterval(interval);
   }, [userEmail]);
 
@@ -478,20 +478,10 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
     return () => clearInterval(timer);
   }, []);
 
-  // Trigger simulated in-app push notifications dynamically (for visual validation)
+  // We no longer trigger automatic simulated push notifications in the background 
+  // to avoid annoying users with constant popups. They can still test manually using the demo button.
   useEffect(() => {
-    const startDelay = setTimeout(() => {
-      triggerSimulatedPush();
-    }, 15000); // 15s after startup
-
-    const interval = setInterval(() => {
-      triggerSimulatedPush();
-    }, 95000); // every 95s
-
-    return () => {
-      clearTimeout(startDelay);
-      clearInterval(interval);
-    };
+    // No automatic popups for a peaceful user experience
   }, []);
 
   const triggerSimulatedPush = () => {
