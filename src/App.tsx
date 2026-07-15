@@ -4878,25 +4878,46 @@ export default function App() {
                       </div>
 
                       {/* Option Rendering by Type */}
-                      <div className="space-y-3 py-4 flex-1 flex flex-col justify-center">
+                      <div className="space-y-4 py-4 flex-1 flex flex-col justify-center">
                         
                         {/* TYPE: EMOJI */}
                         {currentQ.type === "emoji" && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            {currentQ.options?.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="p-4 sm:p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/30 transition-all text-left flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
-                              >
-                                <span className="text-3xl sm:text-4xl group-hover:scale-125 transition-all outline-none animate-fadeIn" role="img">
-                                  {opt.emoji}
-                                </span>
-                                <span className="text-xs sm:text-sm text-[#3A185C] font-black group-hover:text-[#3A185C]">
-                                  {opt.label}
-                                </span>
-                              </button>
-                            ))}
+                            {currentQ.options?.map((opt) => {
+                              const selectedResponse = userResponses.find(r => r.questionId === currentQ.id);
+                              const isSelected = selectedResponse?.value === opt.value;
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => handleOptionSelect(opt.value, currentQ.category)}
+                                  className={`p-4 sm:p-5 rounded-2xl transition-all text-left flex items-center justify-between cursor-pointer group shadow-sm hover:shadow-md border-2 ${
+                                    isSelected 
+                                      ? "border-[#36C4D8] bg-gradient-to-r from-[#36C4D8]/10 to-[#EDE0F0]/40 ring-2 ring-[#36C4D8]/40" 
+                                      : "border-[#6E488A]/12 bg-[#FAF7F9] hover:border-[#36C4D8]/60 hover:bg-[#EDE0F0]/20"
+                                  }`}
+                                >
+                                  <div className="flex items-center space-x-4">
+                                    <span className="text-3xl sm:text-4xl group-hover:scale-110 transition-all outline-none animate-fadeIn" role="img">
+                                      {opt.emoji}
+                                    </span>
+                                    <span className="text-xs sm:text-sm text-[#3A185C] font-black">
+                                      {opt.label}
+                                    </span>
+                                  </div>
+                                  
+                                  {/* High-visibility Selection Radio circle */}
+                                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ml-2 ${
+                                    isSelected 
+                                      ? "border-[#36C4D8] bg-[#36C4D8]" 
+                                      : "border-[#6E488A]/40 bg-white group-hover:border-[#36C4D8]"
+                                  }`}>
+                                    <div className={`w-2.5 h-2.5 rounded-full bg-white transition-all ${
+                                      isSelected ? "scale-100" : "scale-0"
+                                    }`} />
+                                  </div>
+                                </button>
+                              );
+                            })}
                           </div>
                         )}
 
@@ -4904,15 +4925,23 @@ export default function App() {
                         {currentQ.type === "scale" && (
                           <div className="space-y-6">
                             <div className="grid grid-cols-5 sm:grid-cols-10 gap-2.5">
-                              {currentQ.options?.map((opt) => (
-                                <button
-                                  key={opt.value}
-                                  onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                  className="h-12 w-full rounded-xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#36C4D8] hover:text-white transition-all text-sm sm:text-base font-mono flex items-center justify-center text-[#3A185C] font-black cursor-pointer shadow-sm hover:shadow-md"
-                                >
-                                  {opt.label}
-                                </button>
-                              ))}
+                              {currentQ.options?.map((opt) => {
+                                const selectedResponse = userResponses.find(r => r.questionId === currentQ.id);
+                                const isSelected = selectedResponse?.value === opt.value;
+                                return (
+                                  <button
+                                    key={opt.value}
+                                    onClick={() => handleOptionSelect(opt.value, currentQ.category)}
+                                    className={`h-12 w-full rounded-xl transition-all text-sm sm:text-base font-mono flex items-center justify-center font-black cursor-pointer shadow-sm hover:shadow-md border-2 ${
+                                      isSelected 
+                                        ? "border-[#36C4D8] bg-[#36C4D8] text-white ring-2 ring-[#36C4D8]/40" 
+                                        : "border-[#6E488A]/12 bg-[#FAF7F9] text-[#3A185C] hover:border-[#36C4D8]/60 hover:bg-[#EDE0F0]/30"
+                                    }`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                );
+                              })}
                             </div>
                             <div className="flex justify-between items-center text-xs sm:text-sm font-mono text-[#3A185C] font-black">
                               <span className="flex items-center space-x-1.5 bg-[#FAF7F9] px-2.5 py-1 rounded-lg border border-[#6E488A]/12">
@@ -4930,57 +4959,116 @@ export default function App() {
                         {/* TYPE: CARDS */}
                         {currentQ.type === "card" && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {currentQ.options?.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex flex-col justify-between h-36 cursor-pointer group shadow-sm hover:shadow-md"
-                              >
-                                <div className="flex items-center justify-between w-full">
-                                  <span className="text-2xl sm:text-3xl group-hover:rotate-12 transition-all">{opt.emoji}</span>
-                                  <div className="w-5 h-5 rounded-full border border-[#36C4D8]/30 group-hover:bg-[#36C4D8]/10" />
-                                </div>
-                                <span className="text-xs sm:text-sm text-[#3A185C] mt-2 font-black leading-relaxed group-hover:text-[#3A185C]">
-                                  {opt.label}
-                                </span>
-                              </button>
-                            ))}
+                            {currentQ.options?.map((opt) => {
+                              const selectedResponse = userResponses.find(r => r.questionId === currentQ.id);
+                              const isSelected = selectedResponse?.value === opt.value;
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => handleOptionSelect(opt.value, currentQ.category)}
+                                  className={`p-5 rounded-2xl transition-all text-left flex flex-col justify-between h-40 cursor-pointer group shadow-sm hover:shadow-md border-2 ${
+                                    isSelected 
+                                      ? "border-[#36C4D8] bg-gradient-to-br from-[#36C4D8]/10 via-[#FAF7F9] to-[#EDE0F0]/40 ring-2 ring-[#36C4D8]/40" 
+                                      : "border-[#6E488A]/12 bg-[#FAF7F9] hover:border-[#36C4D8]/60 hover:bg-[#EDE0F0]/20"
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between w-full">
+                                    <span className="text-3xl sm:text-4xl group-hover:rotate-6 transition-all">{opt.emoji}</span>
+                                    
+                                    {/* High-visibility Selection Radio circle */}
+                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
+                                      isSelected 
+                                        ? "border-[#36C4D8] bg-[#36C4D8]" 
+                                        : "border-[#6E488A]/40 bg-white group-hover:border-[#36C4D8]"
+                                    }`}>
+                                      <div className={`w-2.5 h-2.5 rounded-full bg-white transition-all ${
+                                        isSelected ? "scale-100" : "scale-0"
+                                      }`} />
+                                    </div>
+                                  </div>
+                                  <span className="text-xs sm:text-sm text-[#3A185C] mt-3 font-black leading-relaxed">
+                                    {opt.label}
+                                  </span>
+                                </button>
+                              );
+                            })}
                           </div>
                         )}
 
                         {/* TYPE: SCENARIOS (SITUACIONES REALES) */}
                         {currentQ.type === "scenario" && (
                           <div className="space-y-3">
-                            {currentQ.options?.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="w-full p-4 sm:p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex items-center space-x-3 cursor-pointer group shadow-sm hover:shadow-md"
-                              >
-                                <span className="text-xl sm:text-2xl bg-[#EDE0F0] p-2 rounded-xl text-[#3A185C] font-black group-hover:bg-[#36C4D8] group-hover:text-white transition-all">{opt.emoji}</span>
-                                <span className="text-xs sm:text-sm text-[#3A185C] leading-relaxed font-black group-hover:text-[#3A185C]">
-                                  {opt.label}
-                                </span>
-                              </button>
-                            ))}
+                            {currentQ.options?.map((opt) => {
+                              const selectedResponse = userResponses.find(r => r.questionId === currentQ.id);
+                              const isSelected = selectedResponse?.value === opt.value;
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => handleOptionSelect(opt.value, currentQ.category)}
+                                  className={`w-full p-4 sm:p-5 rounded-2xl transition-all text-left flex items-center justify-between cursor-pointer group shadow-sm hover:shadow-md border-2 ${
+                                    isSelected 
+                                      ? "border-[#36C4D8] bg-gradient-to-r from-[#36C4D8]/10 to-[#EDE0F0]/40 ring-2 ring-[#36C4D8]/40" 
+                                      : "border-[#6E488A]/12 bg-[#FAF7F9] hover:border-[#36C4D8]/60 hover:bg-[#EDE0F0]/20"
+                                  }`}
+                                >
+                                  <div className="flex items-center space-x-4">
+                                    <span className={`text-xl sm:text-2xl p-2.5 rounded-xl transition-all ${
+                                      isSelected ? "bg-[#36C4D8] text-white" : "bg-[#EDE0F0] text-[#3A185C] group-hover:bg-[#36C4D8]/20"
+                                    }`}>{opt.emoji}</span>
+                                    <span className="text-xs sm:text-sm text-[#3A185C] leading-relaxed font-black">
+                                      {opt.label}
+                                    </span>
+                                  </div>
+
+                                  {/* High-visibility Selection Radio circle */}
+                                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ml-2 ${
+                                    isSelected 
+                                      ? "border-[#36C4D8] bg-[#36C4D8]" 
+                                      : "border-[#6E488A]/40 bg-white group-hover:border-[#36C4D8]"
+                                  }`}>
+                                    <div className={`w-2.5 h-2.5 rounded-full bg-white transition-all ${
+                                      isSelected ? "scale-100" : "scale-0"
+                                    }`} />
+                                  </div>
+                                </button>
+                              );
+                            })}
                           </div>
                         )}
 
                         {/* TYPE: MULTIPLE CHOICE */}
                         {currentQ.type === "multiple" && (
                           <div className="space-y-3">
-                            {currentQ.options?.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => handleOptionSelect(opt.value, currentQ.category)}
-                                className="w-full p-4 sm:p-5 rounded-2xl bg-[#FAF7F9] border-2 border-[#6E488A]/12 hover:border-[#36C4D8] hover:bg-[#EDE0F0]/15 transition-all text-left flex items-center justify-between cursor-pointer group shadow-sm hover:shadow-md"
-                              >
-                                <span className="text-xs sm:text-sm text-[#3A185C] group-hover:text-[#3A185C] font-black">
-                                  {opt.label}
-                                </span>
-                                <ChevronRight className="w-5 h-5 text-[#3A185C] group-hover:text-[#36C4D8] transition-all" />
-                              </button>
-                            ))}
+                            {currentQ.options?.map((opt) => {
+                              const selectedResponse = userResponses.find(r => r.questionId === currentQ.id);
+                              const isSelected = selectedResponse?.value === opt.value;
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => handleOptionSelect(opt.value, currentQ.category)}
+                                  className={`w-full p-4 sm:p-5 rounded-2xl transition-all text-left flex items-center justify-between cursor-pointer group shadow-sm hover:shadow-md border-2 ${
+                                    isSelected 
+                                      ? "border-[#36C4D8] bg-gradient-to-r from-[#36C4D8]/10 to-[#EDE0F0]/40 ring-2 ring-[#36C4D8]/40" 
+                                      : "border-[#6E488A]/12 bg-[#FAF7F9] hover:border-[#36C4D8]/60 hover:bg-[#EDE0F0]/20"
+                                  }`}
+                                >
+                                  <span className="text-xs sm:text-sm text-[#3A185C] font-black">
+                                    {opt.label}
+                                  </span>
+
+                                  {/* High-visibility Selection Radio circle */}
+                                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ml-2 ${
+                                    isSelected 
+                                      ? "border-[#36C4D8] bg-[#36C4D8]" 
+                                      : "border-[#6E488A]/40 bg-white group-hover:border-[#36C4D8]"
+                                  }`}>
+                                    <div className={`w-2.5 h-2.5 rounded-full bg-white transition-all ${
+                                      isSelected ? "scale-100" : "scale-0"
+                                    }`} />
+                                  </div>
+                                </button>
+                              );
+                            })}
                           </div>
                         )}
 

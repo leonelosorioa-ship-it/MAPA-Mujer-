@@ -218,14 +218,14 @@ export const ScanWizard: React.FC<ScanWizardProps> = ({ onScanComplete, onBackTo
                 <button
                   key={opt.value}
                   onClick={() => handleSelectOption(opt.value, opt.label)}
-                  className={`w-full p-4 rounded-2xl border-2 text-left flex items-center justify-between transition-all duration-250 cursor-pointer ${
+                  className={`w-full p-4 rounded-2xl border-2 text-left flex items-center justify-between transition-all duration-250 cursor-pointer group shadow-sm hover:shadow-md ${
                     isSelected
-                      ? "bg-[#36C4D8]/10 border-[#36C4D8] shadow-[0_4px_15px_rgba(54,196,216,0.15)] scale-[1.01]"
-                      : "bg-white/80 border-[#6E488A]/15 hover:border-[#36C4D8] hover:bg-white"
+                      ? "bg-gradient-to-r from-[#36C4D8]/10 to-[#EDE0F0]/40 border-[#36C4D8] ring-2 ring-[#36C4D8]/40 shadow-[0_4px_15px_rgba(54,196,216,0.15)] scale-[1.01]"
+                      : "bg-white/80 border-[#6E488A]/15 hover:border-[#36C4D8]/60 hover:bg-[#EDE0F0]/20"
                   }`}
                 >
-                  <div className="flex items-center space-x-3 w-[90%]">
-                    <span className="text-xl sm:text-2xl bg-[#EDE0F0]/70 p-2 rounded-xl shrink-0 border border-[#6E488A]/15">
+                  <div className="flex items-center space-x-3 w-[85%]">
+                    <span className="text-xl sm:text-2xl bg-[#EDE0F0]/70 p-2 rounded-xl shrink-0 border border-[#6E488A]/15 group-hover:scale-105 transition-all">
                       {opt.emoji}
                     </span>
                     <span className={`text-xs sm:text-sm leading-snug font-black font-sans ${
@@ -234,9 +234,17 @@ export const ScanWizard: React.FC<ScanWizardProps> = ({ onScanComplete, onBackTo
                       {opt.label}
                     </span>
                   </div>
-                  <ChevronRight className={`w-5 h-5 shrink-0 transition-transform ${
-                    isSelected ? "translate-x-1 text-[#36C4D8]" : "text-[#3A185C]"
-                  }`} />
+
+                  {/* High-visibility Selection Radio circle */}
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ml-2 ${
+                    isSelected 
+                      ? "border-[#36C4D8] bg-[#36C4D8]" 
+                      : "border-[#6E488A]/40 bg-white group-hover:border-[#36C4D8]"
+                  }`}>
+                    <div className={`w-2.5 h-2.5 rounded-full bg-white transition-all ${
+                      isSelected ? "scale-100" : "scale-0"
+                    }`} />
+                  </div>
                 </button>
               );
             })}
