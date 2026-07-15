@@ -3462,6 +3462,69 @@ app.post("/api/push-subscribe", (req, res) => {
   }
 });
 
+// Endpoint to synchronize user alarm preferences and countdown timers for background execution
+app.post("/api/sync-alarms", (req, res) => {
+  try {
+    const {
+      email,
+      testReminderAlarmEnabled,
+      testReminderMode,
+      testReminderTime,
+      timezoneOffset,
+      activeTaskAlarm
+    } = req.body;
+
+    const cleanEmail = email ? String(email).toLowerCase().trim() : "anonymous";
+    const db = readUsersDB();
+
+    let userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
+    if (userIndex > -1) {
+      const user = db[userIndex];
+      user.testReminderAlarmEnabled = testReminderAlarmEnabled;
+      user.testReminderMode = testReminderMode;
+      user.testReminderTime = testReminderTime;
+      user.timezoneOffset = timezoneOffset;
+      
+      // If we receive activeTaskAlarm, set it on user (unless it's null, in which case clear it)
+      if (activeTaskAlarm) {
+        user.activeTaskAlarm = {
+          taskName: activeTaskAlarm.taskName,
+          expiresAt: activeTaskAlarm.expiresAt,
+          triggered: false
+        };
+      } else {
+        user.activeTaskAlarm = null;
+      }
+      
+      db[userIndex] = user;
+    } else {
+      // Create a temporary/anonymous profile with alarms
+      const newUser = {
+        email: cleanEmail,
+        nombre: cleanEmail === "anonymous" ? "Usuaria Anónima" : "Usuaria M.A.P.A.",
+        pushSubscriptions: [],
+        registeredAt: new Date().toISOString(),
+        testReminderAlarmEnabled,
+        testReminderMode,
+        testReminderTime,
+        timezoneOffset,
+        activeTaskAlarm: activeTaskAlarm ? {
+          taskName: activeTaskAlarm.taskName,
+          expiresAt: activeTaskAlarm.expiresAt,
+          triggered: false
+        } : null
+      };
+      db.push(newUser);
+    }
+
+    writeUsersDB(db);
+    return res.json({ success: true, message: "Alarmas sincronizadas con éxito en el servidor." });
+  } catch (err) {
+    console.error("Error in sync-alarms:", err);
+    return res.status(500).json({ error: "Fallo al sincronizar alarmas en el servidor." });
+  }
+});
+
 app.post("/api/admin/dispatch-push", authenticateAdminJWT, async (req, res) => {
   try {
     const { title, body, userEmail, category } = req.body;
@@ -3640,6 +3703,121 @@ app.get("/api/notifications", (req, res) => {
     return res.status(500).json({ success: false, error: "Error retrieving notifications." });
   }
 });
+
+// Helper to send Web Push notifications from the server background task
+async function dispatchServerPushNotification(user: any, title: string, body: string, category: string) {
+  if (!user.pushSubscriptions || user.pushSubscriptions.length === 0) {
+    console.log(`📡 [Server Alarm Trigger] No push subscriptions registered for ${user.email}`);
+    return;
+  }
+
+  const pushMsg = {
+    id: "push_" + Math.random().toString(36).substring(2, 9),
+    title: title.slice(0, 50),
+    body: body.slice(0, 160),
+    category: category || "Alerta Motivacional",
+    userEmail: user.email,
+    dispatchedAt: new Date().toISOString()
+  };
+
+  // Add to global notification history so the app can also see it in its feeds
+  pendingPushes.push(pushMsg);
+
+  const payload = JSON.stringify({
+    title: pushMsg.title,
+    body: pushMsg.body,
+    category: pushMsg.category,
+    id: pushMsg.id,
+    icon: "/icon-512.png",
+    badge: "/icon-512.png"
+  });
+
+  console.log(`📡 Sending background push notifications to ${user.pushSubscriptions.length} devices of user: ${user.email}...`);
+
+  user.pushSubscriptions.forEach(async (sub: any) => {
+    try {
+      await webPush.sendNotification(sub, payload);
+    } catch (err: any) {
+      console.warn(`⚠️ Failed to send background push to ${sub.endpoint}:`, err.message);
+    }
+  });
+}
+
+// Background alarm dispatcher running on the server every 10 seconds for ultra-responsive checks
+setInterval(() => {
+  try {
+    const db = readUsersDB();
+    let dbChanged = false;
+    const now = new Date();
+    const nowMs = now.getTime();
+
+    db.forEach((user: any) => {
+      // 1. Process activeTaskAlarm (custom timers / exercise alarms)
+      if (user.activeTaskAlarm && user.activeTaskAlarm.expiresAt && !user.activeTaskAlarm.triggered) {
+        const expiresAtMs = new Date(user.activeTaskAlarm.expiresAt).getTime();
+        if (nowMs >= expiresAtMs) {
+          // Time to trigger this alarm!
+          console.log(`⏰ [Server Alarm Trigger] Custom alarm "${user.activeTaskAlarm.taskName}" for user ${user.email} expired.`);
+          
+          user.activeTaskAlarm.triggered = true;
+          dbChanged = true;
+
+          // Dispatch Web Push Notification
+          dispatchServerPushNotification(
+            user,
+            "⏰ Alarma de Bienestar",
+            `Es hora de tu ejercicio: "${user.activeTaskAlarm.taskName}"`,
+            "Guía Rápida de Emergencia"
+          );
+        }
+      }
+
+      // 2. Process testReminder (daily test reminder)
+      if (
+        user.testReminderAlarmEnabled && 
+        user.testReminderMode === "scheduled" && 
+        user.testReminderTime && 
+        user.pushSubscriptions && 
+        user.pushSubscriptions.length > 0
+      ) {
+        // Calculate user's current local time using their timezoneOffset (default to +300 minutes / Colombia)
+        const offset = Number(user.timezoneOffset !== undefined ? user.timezoneOffset : 300);
+        const userLocalTime = new Date(now.getTime() - offset * 60 * 1000);
+        
+        const year = userLocalTime.getUTCFullYear();
+        const month = String(userLocalTime.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(userLocalTime.getUTCDate()).padStart(2, '0');
+        const userDateStr = `${year}-${month}-${day}`;
+
+        const hourStr = String(userLocalTime.getUTCHours()).padStart(2, '0');
+        const minStr = String(userLocalTime.getUTCMinutes()).padStart(2, '0');
+        const userTimeStr = `${hourStr}:${minStr}`;
+
+        // If the user's local time matches the scheduled time and we haven't fired today
+        if (userTimeStr === user.testReminderTime && user.lastReminderFiredDate !== userDateStr) {
+          console.log(`⏰ [Server Alarm Trigger] Daily scheduled reminder for user ${user.email} matching time ${user.testReminderTime}.`);
+          
+          user.lastReminderFiredDate = userDateStr;
+          dbChanged = true;
+
+          // Dispatch Web Push Notification
+          dispatchServerPushNotification(
+            user,
+            "🔔 Recordatorio Diario M.A.P.A.",
+            "¡Tu recordatorio M.A.P.A.™! Es el momento ideal seleccionado para realizar tu práctica de calma.",
+            "Alerta Motivacional"
+          );
+        }
+      }
+    });
+
+    if (dbChanged) {
+      writeUsersDB(db);
+    }
+  } catch (err) {
+    console.error("Error in server background alarm loop:", err);
+  }
+}, 10000); // Check every 10 seconds
 
 // Configure Vite middleware in development or static serving inside production
 async function startServer() {

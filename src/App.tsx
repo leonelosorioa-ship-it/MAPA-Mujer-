@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Compass, 
@@ -833,6 +833,71 @@ export default function App() {
       if (interval) clearInterval(interval);
     };
   }, [activeTaskAlarm]);
+
+  // Synchronize alarm settings to server for reliable background triggers (even with locked/inactive screens!)
+  const lastSyncedAlarmRef = useRef<{ taskName: string; secondsLeft: number } | null>(null);
+
+  useEffect(() => {
+    const emailKey = currentUserEmail || leadInfo.email || "";
+    if (!emailKey) return;
+
+    // Determine if the activeTaskAlarm has changed significantly (newly set or cancelled)
+    let shouldSyncAlarm = false;
+    if (!activeTaskAlarm && lastSyncedAlarmRef.current) {
+      // Alarm was cancelled or finished
+      shouldSyncAlarm = true;
+    } else if (activeTaskAlarm) {
+      if (!lastSyncedAlarmRef.current) {
+        // Newly set alarm
+        shouldSyncAlarm = true;
+      } else {
+        // If task name changed, or we set a brand new duration
+        const diff = Math.abs(lastSyncedAlarmRef.current.secondsLeft - activeTaskAlarm.secondsLeft);
+        if (lastSyncedAlarmRef.current.taskName !== activeTaskAlarm.taskName || diff > 10) {
+          shouldSyncAlarm = true;
+        }
+      }
+    }
+
+    if (shouldSyncAlarm) {
+      lastSyncedAlarmRef.current = activeTaskAlarm ? { taskName: activeTaskAlarm.taskName, secondsLeft: activeTaskAlarm.secondsLeft } : null;
+    }
+
+    // Always sync on daily reminder settings changes, but debounce slightly to avoid double calls
+    const delayDebounce = setTimeout(() => {
+      let expiresAt: string | null = null;
+      if (activeTaskAlarm && activeTaskAlarm.isRunning) {
+        // Calculate expiresAt based on current time and secondsLeft
+        expiresAt = new Date(Date.now() + activeTaskAlarm.secondsLeft * 1000).toISOString();
+      }
+
+      fetch("/api/sync-alarms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailKey,
+          testReminderAlarmEnabled,
+          testReminderMode,
+          testReminderTime,
+          timezoneOffset: new Date().getTimezoneOffset(),
+          activeTaskAlarm: activeTaskAlarm ? {
+            taskName: activeTaskAlarm.taskName,
+            expiresAt: expiresAt
+          } : null
+        })
+      }).catch((err) => console.warn("Failed to sync alarm settings to server:", err));
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [
+    currentUserEmail,
+    leadInfo.email,
+    testReminderAlarmEnabled,
+    testReminderMode,
+    testReminderTime,
+    activeTaskAlarm ? activeTaskAlarm.taskName : null,
+    activeTaskAlarm ? activeTaskAlarm.isRunning : false,
+  ]);
 
   // Daily test countdown reminder check
   useEffect(() => {
@@ -6379,6 +6444,15 @@ export default function App() {
                 >
                   <X className="w-4.5 h-4.5" />
                 </button>
+              </div>
+
+              {/* Server Background Synchronization Status Badge */}
+              <div className="bg-emerald-50/70 border border-emerald-100/80 rounded-xl p-2.5 flex items-start gap-2.5 text-emerald-800 text-[11px] leading-snug">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5 animate-pulse" />
+                <div className="text-left">
+                  <span className="font-bold block text-emerald-900">Sintonización en Segundo Plano Activa</span>
+                  <span>Tus alarmas se sincronizan con el servidor para sonar y notificarte puntualmente aunque cierres la app o apagues la pantalla de tu celular.</span>
+                </div>
               </div>
 
               {/* Quick Test Audio Button */}
