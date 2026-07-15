@@ -305,7 +305,7 @@ export default function App() {
         try {
           const parsed = JSON.parse(savedUserProgress);
           if (parsed && parsed.activationDate) {
-            return "LANDING";
+            return "DASHBOARD";
           }
         } catch (e) {
           console.error(e);
@@ -319,7 +319,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(savedLegacy);
         if (parsed && parsed.activationDate) {
-          return "LANDING";
+          return "DASHBOARD";
         }
       } catch (e) {
         console.error(e);
@@ -418,10 +418,13 @@ export default function App() {
         if (adminEmails.includes(currentUserEmail.toLowerCase().trim())) {
           setPhase("ADMIN");
           return;
+        } else if (programProgress && programProgress.activationDate) {
+          setPhase("DASHBOARD");
+          return;
         }
       }
     }
-  }, [currentUserEmail, phase]);
+  }, [currentUserEmail, phase, programProgress]);
 
   // Precise chronological calculations for 24h consecutive lock logic (based on previous day completion)
   const getChronologicalState = () => {
