@@ -5259,29 +5259,24 @@ export default function App() {
                 </p>
               </div>
 
-              {/* FASE 8: MOMENTO WOW - PERFIL PRINCIPAL */}
-              <motion.section 
+              {/* FASE 8: MOMENTO WOW - PERFIL PRINCIPAL REDISEÑADO */}
+              <div 
                 id="results_hero" 
-                className="bg-white border border-[#6E488A]/12 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-2xl shadow-[#6E488A]/8 hover:shadow-[#6E488A]/12 transition-shadow duration-500 ease-in-out"
-                animate={{
-                  scale: [1, 1.012, 1]
-                }}
-                transition={{
-                  duration: 6, // 6-second calming respiratory cycle (inhalation/exhalation)
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+                className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch"
               >
-                <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-[#36C4D8]/5 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute -left-12 -top-12 w-48 h-48 bg-gradient-to-br from-[#E36DB4]/3 to-transparent pointer-events-none" />
-                
-                <div className="flex flex-col md:flex-row gap-8 items-center text-left">
+                {/* CARD 1: PERFIL PRINCIPAL */}
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="lg:col-span-2 bg-white border border-[#6E488A]/12 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-xl hover:shadow-2xl hover:border-[#6E488A]/20 transition-all duration-300 flex flex-col md:flex-row gap-8 items-center text-left"
+                >
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#36C4D8]/5 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute -left-12 -top-12 w-48 h-48 bg-gradient-to-br from-[#E36DB4]/3 to-transparent pointer-events-none" />
                   
                   {/* Giant Avatar with dynamic visual style */}
                   <motion.div 
                     whileHover={{ 
-                      scale: 1.06, 
-                      filter: "drop-shadow(0 10px 25px rgba(227, 109, 180, 0.45))" 
+                      scale: 1.08, 
+                      filter: "drop-shadow(0 12px 28px rgba(227, 109, 180, 0.45))" 
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     className="relative group shrink-0 transition-all duration-500 ease-out"
@@ -5291,7 +5286,7 @@ export default function App() {
                     
                     <div 
                       onClick={() => setIsAvatarModalOpen(true)}
-                      className="relative w-36 h-36 rounded-2xl bg-gradient-to-tr from-[#EDE0F0] to-[#FAF7F9] border-2 border-[#E36DB4] flex items-center justify-center text-6xl shadow-md overflow-hidden cursor-pointer transition-all duration-500 hover:border-[#36C4D8] hover:shadow-xl active:scale-95 group"
+                      className="relative w-40 h-40 md:w-44 md:h-44 rounded-3xl bg-gradient-to-tr from-[#EDE0F0] to-[#FAF7F9] border-2 border-[#E36DB4] flex items-center justify-center text-7xl shadow-md overflow-hidden cursor-pointer transition-all duration-500 hover:border-[#36C4D8] hover:shadow-xl active:scale-95 group"
                       title="Personalizar tu foto o emoji de avatar"
                     >
                       {programProgress.customAvatar?.type === "image" ? (
@@ -5309,25 +5304,25 @@ export default function App() {
                       
                       {/* Hover Edit Overlay */}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1 text-white">
-                        <svg className="w-6 h-6 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-7 h-7 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Personalizar</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">Personalizar</span>
                       </div>
                     </div>
                     
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#36C4D8] text-white font-mono text-[9px] px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap shadow-sm z-10">
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#36C4D8] text-white font-mono text-[10px] px-3.5 py-1 rounded-full font-bold whitespace-nowrap shadow-sm z-10">
                       PERFIL DOMINANTE
                     </div>
                     
                     {/* Tiny Edit helper trigger badge for mobile devices without hover */}
                     <button 
                       onClick={() => setIsAvatarModalOpen(true)}
-                      className="absolute -top-2 -right-2 bg-white text-[#6E488A] border border-[#6E488A]/20 p-1.5 rounded-full shadow-md hover:bg-[#EDE0F0] transition-colors md:hidden"
+                      className="absolute -top-2 -right-2 bg-white text-[#6E488A] border border-[#6E488A]/20 p-2 rounded-full shadow-md hover:bg-[#EDE0F0] transition-colors md:hidden"
                       aria-label="Cambiar avatar"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
                     </button>
@@ -5336,7 +5331,7 @@ export default function App() {
                   <div className="space-y-4 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs text-[#E36DB4] tracking-widest uppercase font-bold">PERFIL EMOCIONAL REVELADO</span>
-                      <span className="bg-[#EDE0F0]/50 border border-[#6E488A]/10 text-[#56346F]/70 py-0.5 px-2 rounded-full text-[10px] font-mono">ID: {evaluationResult.id}</span>
+                      <span className="bg-[#EDE0F0]/50 border border-[#6E488A]/10 text-[#56346F]/70 py-0.5 px-2.5 rounded-full text-[10px] font-mono">ID: {evaluationResult.id}</span>
                     </div>
 
                     <h2 className="font-display font-bold text-3xl sm:text-4xl text-[#6E488A] tracking-tight">
@@ -5344,186 +5339,261 @@ export default function App() {
                       <span className="block text-lg font-sans font-normal text-[#56346F]/80 mt-1">{evaluationResult.subTitle}</span>
                     </h2>
 
-                    <p className="text-[#56346F]/85 text-sm leading-relaxed max-w-2xl">
-                    {evaluationResult.description}
+                    <p className="text-[#56346F]/85 text-sm leading-relaxed max-w-2xl font-sans">
+                      {evaluationResult.description}
                     </p>
+                  </div>
+                </motion.div>
 
-                    {/* Activation Level Progress bar */}
-                    <div className="bg-[#FAF7F9] p-4 rounded-xl border border-[#6E488A]/12 space-y-2">
-                      <div className="flex items-center justify-between font-mono text-xs">
-                        <span className="text-[#56346F]/65 font-semibold">NIVEL DE ACTIVACIÓN DE ALERTA:</span>
-                        <span className="text-[#E36DB4] font-bold">{evaluationResult.activationLevel}%</span>
+                {/* CARD 2: NIVEL DE ACTIVACIÓN */}
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="col-span-1 bg-white border border-[#6E488A]/12 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-xl hover:shadow-2xl hover:border-[#E36DB4]/20 transition-all duration-300 flex flex-col justify-between text-left"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#E36DB4]/3 via-transparent to-transparent pointer-events-none" />
+                  
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs text-gray-400 tracking-wider uppercase font-bold">Carga de Alerta</span>
+                      <div className="w-12 h-12 bg-pink-50 text-[#E36DB4] rounded-2xl flex items-center justify-center animate-pulse shadow-sm">
+                        <Activity className="w-6 h-6" />
                       </div>
-                      <div className="w-full bg-[#EDE0F0] h-3 rounded-full overflow-hidden border border-[#6E488A]/12">
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-5xl font-black text-[#E36DB4] font-display tracking-tight flex items-baseline">
+                        {evaluationResult.activationLevel}
+                        <span className="text-2xl text-[#E36DB4]/80 ml-0.5">%</span>
+                      </div>
+                      <span className="text-[10px] font-mono uppercase bg-[#EDE0F0] text-[#E36DB4] font-bold py-0.5 px-2 rounded-md">
+                        {evaluationResult.activationLevel > 75 ? "🔴 Alerta Sostenida" : "💛 Alerta Moderada"}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-[#56346F]/75 leading-relaxed font-sans">
+                      Indica que tu sistema nervioso autónomo opera actualmente bajo una carga simpática sostenida que requiere descompresión guiada.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <div className="w-full bg-[#EDE0F0] h-3 rounded-full overflow-hidden border border-[#6E488A]/12">
+                      <div 
+                        className="bg-gradient-to-r from-[#36C4D8] via-[#E36DB4] to-[#6E488A] h-full rounded-full transition-all duration-1000"
+                        style={{ width: `${evaluationResult.activationLevel}%` }}
+                      />
+                    </div>
+                    <p className="text-[9px] text-[#56346F]/50 font-mono leading-tight">
+                      Desciende progresivamente hacia la Calma Vagal realizando tu Ruta diaria.
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* CARD 3: ESPACIO DEDICADO A RECOMENDACIONES DE LA IA */}
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="col-span-1 lg:col-span-3 bg-gradient-to-br from-[#FAF7F9] via-white to-[#EDE0F0]/50 border-2 border-[#E36DB4]/25 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-xl hover:shadow-2xl hover:border-[#E36DB4]/40 transition-all duration-300 text-left"
+                >
+                  {/* Decorative glowing gradient elements */}
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-[#36C4D8]/8 via-[#E36DB4]/5 to-transparent pointer-events-none blur-3xl" />
+                  <div className="absolute -left-10 -bottom-10 w-64 h-64 bg-gradient-to-tr from-[#6E488A]/5 via-transparent to-transparent pointer-events-none blur-2xl" />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 border-b border-[#6E488A]/12 pb-6 relative z-10">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-[#E36DB4] to-[#6E488A] text-white p-3.5 rounded-2xl shadow-lg flex items-center justify-center shrink-0 animate-pulse">
+                      <Sparkles className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono font-black uppercase text-[#E36DB4] tracking-widest block">RECOMENDACIONES DE LA IA</span>
+                      <h3 className="font-display font-bold text-2xl text-[#6E488A] tracking-tight">Lectura Psicológica & Plan Personalizado</h3>
+                    </div>
+                  </div>
+
+                  {/* Psychological Insight Quotation Block */}
+                  <div className="bg-[#6E488A]/5 p-6 rounded-2xl border-l-4 border-l-[#36C4D8] border border-[#6E488A]/5 my-6 text-sm italic text-[#56346F]/90 relative z-10 shadow-sm">
+                    <span className="absolute -top-4 -left-1 text-6xl font-serif text-[#36C4D8] opacity-35 select-none">“</span>
+                    <p className="relative z-10 leading-relaxed font-sans">{evaluationResult.psychologicalInsight}</p>
+                  </div>
+
+                  {/* Dynamic Actionable AI Recommendations Cards Grid */}
+                  <div className="space-y-4 relative z-10">
+                    <h4 className="text-xs font-mono font-extrabold uppercase text-[#6E488A] tracking-wider block mb-3">
+                      🎯 ACCIONES DE CORRECCIÓN NEURO-COGNITIVA
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      {getAiRecommendationsForArchetype(evaluationResult.id).map((rec) => (
                         <div 
-                          className="bg-gradient-to-r from-[#36C4D8] via-[#E36DB4] to-[#6E488A] h-full rounded-full transition-all duration-1000"
-                          style={{ width: `${evaluationResult.activationLevel}%` }}
-                        />
-                      </div>
-                      <p className="text-[10px] text-[#56346F]/50 font-mono">
-                        Indica que tu sistema nervioso autónomo actualmente opera bajo una carga sostenida.
+                          key={rec.id} 
+                          className="bg-white/80 backdrop-blur-sm border border-[#6E488A]/10 hover:border-[#E36DB4]/40 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group cursor-default"
+                        >
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="bg-[#EDE0F0] text-[#6E488A] text-[9px] font-mono font-black tracking-wider uppercase px-2.5 py-1 rounded-md">
+                                {rec.badge}
+                              </span>
+                              <div className="text-[#36C4D8] group-hover:text-[#E36DB4] group-hover:scale-110 transition-all duration-300">
+                                {renderRecommendationIcon(rec.icon, "w-8 h-8")}
+                              </div>
+                            </div>
+                            <h5 className="font-display font-bold text-sm text-[#6E488A] leading-snug group-hover:text-[#E36DB4] transition-colors">
+                              {rec.title}
+                            </h5>
+                          </div>
+                          <p className="text-xs text-[#56346F]/80 leading-relaxed font-sans">
+                            {rec.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* CARD 4: EVOLUCIÓN DE NIVEL DE ACTIVACIÓN (7 DÍAS) */}
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="col-span-1 lg:col-span-3 bg-white border border-[#6E488A]/12 rounded-3xl p-6 md:p-8 space-y-5 shadow-xl hover:shadow-2xl hover:border-[#6E488A]/15 transition-all duration-300 text-left"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#6E488A]/5 p-4 rounded-2xl border border-[#6E488A]/10">
+                    <div className="max-w-md">
+                      <h3 className="font-display font-bold text-lg text-[#6E488A]">
+                        Evolución del Nivel de Activación (7 Días)
+                      </h3>
+                      <p className="text-xs text-[#56346F]/70">
+                        Comparativa diaria de tu estado de alerta simpática y regulación emocional durante el programa. Haz clic en la leyenda para ocultar o mostrar datos.
                       </p>
                     </div>
-
-                  </div>
-                </div>
-
-                {/* New card for the 7-day activation level evolution */}
-                <div className="mt-8 pt-8 border-t border-[#6E488A]/12">
-                  <div className="bg-[#FAF7F9] p-6 rounded-2xl border border-[#6E488A]/12 space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[#6E488A]/5 p-4 rounded-xl">
-                      <div className="max-w-md">
-                        <h3 className="font-display font-bold text-lg text-[#6E488A]">
-                          Evolución del Nivel de Activación (7 Días)
-                        </h3>
-                        <p className="text-xs text-[#56346F]/70">
-                          Comparativa diaria de tu estado de alerta simpática y regulación emocional durante el programa. Haz clic en la leyenda para ocultar o mostrar datos.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-                        <button
-                          type="button"
-                          onClick={() => setShowActivationData(!showActivationData)}
-                          className={`transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-left ${
-                            showActivationData 
-                              ? "bg-[#E36DB4]/10 border-[#E36DB4]/30 text-[#E36DB4] font-semibold shadow-sm" 
-                              : "bg-gray-200/50 border-gray-300/40 text-gray-400 line-through"
-                          }`}
-                          title="Alternar visibilidad del Nivel de Activación"
-                        >
-                          <span className={`w-2.5 h-2.5 rounded-sm inline-block shrink-0 ${showActivationData ? "bg-[#E36DB4]" : "bg-gray-300"}`} />
-                          <span>Activación (%)</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowHealthyLimit(!showHealthyLimit)}
-                          className={`transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-left ${
-                            showHealthyLimit 
-                              ? "bg-[#36C4D8]/10 border-[#36C4D8]/30 text-[#36C4D8] font-semibold shadow-sm" 
-                              : "bg-gray-200/50 border-gray-300/40 text-gray-400 line-through"
-                          }`}
-                          title="Alternar visibilidad del Límite Saludable"
-                        >
-                          <span className={`w-3.5 h-0.5 inline-block shrink-0 border-t-2 border-dashed ${showHealthyLimit ? "border-[#36C4D8]" : "border-gray-300"}`} />
-                          <span>Límite Saludable (45%)</span>
-                        </button>
-                      </div>
-                    </div>
                     
-                    <div className="w-full h-64 sm:h-72">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={get7DayActivationData()}
-                          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" stroke="#6E488A" strokeOpacity={0.1} vertical={false} />
-                          <XAxis 
-                            dataKey="name" 
-                            tickLine={false} 
-                            axisLine={false}
-                            tick={{ fill: "#56346F", fontSize: 11, fontWeight: 500 }}
-                          />
-                          <YAxis 
-                            domain={[0, 100]} 
-                            tickLine={false} 
-                            axisLine={false}
-                            tick={{ fill: "#56346F", fontSize: 11 }}
-                          />
-                          <Tooltip 
-                            cursor={{ fill: "rgba(110, 72, 138, 0.04)" }}
-                            content={({ active, payload }) => {
-                              if (active && payload && payload.length && showActivationData) {
-                                const val = payload[0].value as number;
-                                
-                                let statusTitle = "";
-                                let adviceTip = "";
-                                let colorClass = "";
-                                
-                                if (val > 70) {
-                                  statusTitle = "⚠️ Activación Alta";
-                                  adviceTip = "Consejo: Practica la respiración prolongando la exhalación (p. ej., inhala en 4 tiempos y exhala en 8) para enviar señales de seguridad a tu cerebro.";
-                                  colorClass = "text-[#E36DB4]";
-                                } else if (val > 45) {
-                                  statusTitle = "⚖️ Alerta Moderada";
-                                  adviceTip = "Consejo: Realiza un escaneo corporal rápido de 1 minuto para relajar hombros y mandíbula, manteniendo un ritmo constante.";
-                                  colorClass = "text-[#6E488A]";
-                                } else {
-                                  statusTitle = "✅ Regulación Vagal";
-                                  adviceTip = "Consejo: Dedica unos segundos a registrar esta sensación de seguridad en tu memoria corporal para acceder a ella más tarde.";
-                                  colorClass = "text-[#36C4D8]";
-                                }
+                    <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+                      <button
+                        type="button"
+                        onClick={() => setShowActivationData(!showActivationData)}
+                        className={`transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-left ${
+                          showActivationData 
+                            ? "bg-[#E36DB4]/10 border-[#E36DB4]/30 text-[#E36DB4] font-semibold shadow-sm" 
+                            : "bg-gray-200/50 border-gray-300/40 text-gray-400 line-through"
+                        }`}
+                        title="Alternar visibilidad del Nivel de Activación"
+                      >
+                        <span className={`w-2.5 h-2.5 rounded-sm inline-block shrink-0 ${showActivationData ? "bg-[#E36DB4]" : "bg-gray-300"}`} />
+                        <span>Activación (%)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowHealthyLimit(!showHealthyLimit)}
+                        className={`transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-left ${
+                          showHealthyLimit 
+                            ? "bg-[#36C4D8]/10 border-[#36C4D8]/30 text-[#36C4D8] font-semibold shadow-sm" 
+                            : "bg-gray-200/50 border-gray-300/40 text-gray-400 line-through"
+                        }`}
+                        title="Alternar visibilidad del Límite Saludable"
+                      >
+                        <span className={`w-3.5 h-0.5 inline-block shrink-0 border-t-2 border-dashed ${showHealthyLimit ? "border-[#36C4D8]" : "border-gray-300"}`} />
+                        <span>Límite Saludable (45%)</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full h-64 sm:h-72">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={get7DayActivationData()}
+                        margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#6E488A" strokeOpacity={0.1} vertical={false} />
+                        <XAxis 
+                          dataKey="name" 
+                          tickLine={false} 
+                          axisLine={false}
+                          tick={{ fill: "#56346F", fontSize: 11, fontWeight: 500 }}
+                        />
+                        <YAxis 
+                          domain={[0, 100]} 
+                          tickLine={false} 
+                          axisLine={false}
+                          tick={{ fill: "#56346F", fontSize: 11 }}
+                        />
+                        <Tooltip 
+                          cursor={{ fill: "rgba(110, 72, 138, 0.04)" }}
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length && showActivationData) {
+                              const val = payload[0].value as number;
+                              
+                              let statusTitle = "";
+                              let adviceTip = "";
+                              let colorClass = "";
+                              
+                              if (val > 70) {
+                                statusTitle = "⚠️ Activación Alta";
+                                adviceTip = "Consejo: Practica la respiración prolongando la exhalación (p. ej., inhala en 4 tiempos y exhala en 8) para enviar señales de seguridad a tu cerebro.";
+                                colorClass = "text-[#E36DB4]";
+                              } else if (val > 45) {
+                                statusTitle = "⚖️ Alerta Moderada";
+                                adviceTip = "Consejo: Realiza un escaneo corporal rápido de 1 minuto para relajar hombros y mandíbula, manteniendo un ritmo constante.";
+                                colorClass = "text-[#6E488A]";
+                              } else {
+                                statusTitle = "✅ Regulación Vagal";
+                                adviceTip = "Consejo: Dedica unos segundos a registrar esta sensación de seguridad en tu memoria corporal para acceder a ella más tarde.";
+                                colorClass = "text-[#36C4D8]";
+                              }
 
-                                const randomMessage = getMotivationalMessageForDay(payload[0].payload.name);
+                              const randomMessage = getMotivationalMessageForDay(payload[0].payload.name);
 
-                                return (
-                                  <div className="bg-white border border-[#6E488A]/15 p-4 rounded-xl shadow-xl max-w-xs text-xs space-y-3">
-                                    <div className="flex items-center justify-between gap-2 border-b border-[#6E488A]/10 pb-1.5">
-                                      <p className="font-bold text-[#6E488A]">{payload[0].payload.name}</p>
-                                      <span className={`font-semibold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#6E488A]/5 ${colorClass}`}>
-                                        {statusTitle}
-                                      </span>
-                                    </div>
-                                    <div className="bg-[#6E488A]/5 p-2.5 rounded-lg border border-[#6E488A]/10">
-                                      <p className="text-[10px] font-semibold text-[#6E488A] uppercase tracking-wider mb-1 flex items-center gap-1">
-                                        <span>✨ Mensaje de Regulación</span>
-                                      </p>
-                                      <p className="text-[#56346F] font-semibold leading-relaxed">
-                                        "{randomMessage}"
-                                      </p>
-                                    </div>
-                                    <p className="text-[#56346F]/80 text-[11px] leading-relaxed">
-                                      {adviceTip}
+                              return (
+                                <div className="bg-white border border-[#6E488A]/15 p-4 rounded-xl shadow-xl max-w-xs text-xs space-y-3">
+                                  <div className="flex items-center justify-between gap-2 border-b border-[#6E488A]/10 pb-1.5">
+                                    <p className="font-bold text-[#6E488A]">{payload[0].payload.name}</p>
+                                    <span className={`font-semibold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#6E488A]/5 ${colorClass}`}>
+                                      {statusTitle}
+                                    </span>
+                                  </div>
+                                  <div className="bg-[#6E488A]/5 p-2.5 rounded-lg border border-[#6E488A]/10">
+                                    <p className="text-[10px] font-semibold text-[#6E488A] uppercase tracking-wider mb-1 flex items-center gap-1">
+                                      <span>✨ Mensaje de Regulación</span>
+                                    </p>
+                                    <p className="text-[#56346F] font-semibold leading-relaxed">
+                                      "{randomMessage}"
                                     </p>
                                   </div>
-                                );
-                              }
-                              return null;
-                            }}
+                                  <p className="text-[#56346F]/80 text-[11px] leading-relaxed">
+                                    {adviceTip}
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        {showHealthyLimit && (
+                          <ReferenceLine 
+                            y={45} 
+                            stroke="#36C4D8" 
+                            strokeDasharray="4 4" 
+                            strokeWidth={1.5}
                           />
-                          {showHealthyLimit && (
-                            <ReferenceLine 
-                              y={45} 
-                              stroke="#36C4D8" 
-                              strokeDasharray="4 4" 
-                              strokeWidth={1.5}
-                            />
-                          )}
-                          <Bar 
-                            dataKey="Nivel de Activación" 
-                            radius={[6, 6, 0, 0]}
-                            maxBarSize={32}
-                            hide={!showActivationData}
-                          >
-                            {get7DayActivationData().map((entry, index) => {
-                              const val = entry["Nivel de Activación"];
-                              const fill = val > 70 
-                                ? "#E36DB4" 
-                                : val > 45 
-                                  ? "#6E488A" 
-                                  : "#36C4D8"; 
-                              return <Cell key={`cell-${index}`} fill={fill} fillOpacity={0.85} />;
-                            })}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    <p className="text-[10px] text-center text-[#56346F]/50 font-mono leading-relaxed max-w-xl mx-auto">
-                      💡 El gráfico muestra cómo tu sistema autónomo responde a las técnicas de descompresión neurocognitiva del programa M.A.P.A.™. Un descenso progresivo hacia el Límite Saludable (45%) refleja una exitosa transición de alerta a calma vagal.
-                    </p>
+                        )}
+                        <Bar 
+                          dataKey="Nivel de Activación" 
+                          radius={[6, 6, 0, 0]}
+                          maxBarSize={32}
+                          hide={!showActivationData}
+                        >
+                          {get7DayActivationData().map((entry, index) => {
+                            const val = entry["Nivel de Activación"];
+                            const fill = val > 70 
+                              ? "#E36DB4" 
+                              : val > 45 
+                                ? "#6E488A" 
+                                : "#36C4D8"; 
+                            return <Cell key={`cell-${index}`} fill={fill} fillOpacity={0.85} />;
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
-                </div>
-              </motion.section>
 
-              {/* Cognitive CBT insight with Sparkles */}
-              <div className="bg-white border border-[#6E488A]/12 rounded-2xl p-6 border-l-4 border-l-[#36C4D8] text-left space-y-3 shadow-sm">
-                <div className="flex items-center space-x-2 text-[#36C4D8]">
-                  <Sparkles className="w-5 h-5 shrink-0" />
-                  <h4 className="font-display font-medium text-sm tracking-wider uppercase font-bold">Lectura Psicológica de la IA</h4>
-                </div>
-                <p className="text-[#56346F]/85 text-sm leading-relaxed italic font-sans">
-                  "{evaluationResult.psychologicalInsight}"
-                </p>
+                  <p className="text-[10px] text-center text-[#56346F]/50 font-mono leading-relaxed max-w-xl mx-auto">
+                    💡 El gráfico muestra cómo tu sistema autónomo responde a las técnicas de descompresión neurocognitiva del programa M.A.P.A.™. Un descenso progresivo hacia el Límite Saludable (45%) refleja una exitosa transición de alerta a calma vagal.
+                  </p>
+                </motion.div>
               </div>
 
               {/* FASE 9: PREMIUM DASHBOARD WITH CUSTOM RADAR & PILLARS */}
@@ -6608,3 +6678,150 @@ export default function App() {
     </div>
   );
 }
+
+// Helper functions for AI Recommendations
+function getAiRecommendationsForArchetype(id: string) {
+  switch (id) {
+    case "VIGILANTE":
+      return [
+        {
+          id: 1,
+          icon: "Activity",
+          badge: "Somático",
+          title: "Descompresión Diafragmática",
+          desc: "Tu amígdala escanea micro-tensiones constantemente. Realiza respiraciones 4-7-8 al mediodía para inducir calma vagal profunda y relajar el diafragma."
+        },
+        {
+          id: 2,
+          icon: "ShieldCheck",
+          badge: "Cognitivo",
+          title: "Bitácora de Seguridad",
+          desc: "Anota las situaciones cotidianas donde temías juicio ajeno o tensión pero terminaron en paz. Reentrena tu cerebro en la percepción de seguridad social."
+        },
+        {
+          id: 3,
+          icon: "Zap",
+          badge: "Conductual",
+          title: "Ritual de Transición Fisiológica",
+          desc: "Lávate las manos al llegar a casa. Dile a tu mente consciente: 'Mi turno de protección ha terminado, puedo bajar la armadura'."
+        }
+      ];
+    case "ANTICIPADOR":
+      return [
+        {
+          id: 1,
+          icon: "Sparkles",
+          badge: "Mental",
+          title: "Deconstrucción de Películas Futuras",
+          desc: "Cuando tu mente empiece a simular escenarios catastróficos, escribe de inmediato el desenlace más positivo posible para contrarrestar el sesgo de supervivencia."
+        },
+        {
+          id: 2,
+          icon: "Compass",
+          badge: "Presencia",
+          title: "Presencia Sensorial Plena",
+          desc: "Haz caminatas diarias de 5 minutos reconociendo conscientemente 3 sonidos y 2 texturas físicas en el presente absoluto, rompiendo la inercia del mañana."
+        },
+        {
+          id: 3,
+          icon: "Clock",
+          badge: "Regulación",
+          title: "Filtro de Desgaste Anticipado",
+          desc: "Planifica tus actividades en bloques cerrados de 1 hora. Reducir el horizonte temporal de planificación reduce drásticamente el nivel de alerta simpática."
+        }
+      ];
+    case "HIPERCONTROLADOR":
+      return [
+        {
+          id: 1,
+          icon: "Lock",
+          badge: "Asimilación",
+          title: "Permiso de Caos Controlado",
+          desc: "Elige una pequeña tarea cotidiana sin importancia al día (p. ej., dejar un vaso sin secar o un correo no urgente sin archivar) y asimila la incomodidad sin actuar."
+        },
+        {
+          id: 2,
+          icon: "Brain",
+          badge: "Cognitivo",
+          title: "Caja de Preocupaciones Cerrada",
+          desc: "Asigna 15 minutos fijos al final del día para preocuparte libremente. Si surge un control impulsivo fuera de ese horario, escríbelo y pospónlo ahí."
+        },
+        {
+          id: 3,
+          icon: "Heart",
+          badge: "Soma",
+          title: "Descarga Somática Intencionada",
+          desc: "Sacude tus extremidades y estira tu cuerpo durante 1 minuto cada tarde. El control mental se acumula como rigidez severa en hombros y mandíbula."
+        }
+      ];
+    case "SOBRECARGADO":
+      return [
+        {
+          id: 1,
+          icon: "Eye",
+          badge: "Desconexión",
+          title: "Pausa de Vacío Cognitivo",
+          desc: "Establece 3 pausas de 5 minutos al día sin pantallas ni lecturas. Mira al horizonte o cierra los ojos para permitir que tus redes neuronales se enfríen."
+        },
+        {
+          id: 2,
+          icon: "Award",
+          badge: "Límite",
+          title: "Blindaje de Agenda Semanal",
+          desc: "Bloquea un espacio sagrado de 2 horas los fines de semana donde esté estrictamente prohibido planificar, ordenar, limpiar, organizar o ser productiva."
+        },
+        {
+          id: 3,
+          icon: "Zap",
+          badge: "Sueño",
+          title: "Regulación de Ritmo Circadiano",
+          desc: "Saca el móvil de tu habitación 30 minutos antes de dormir y haz un vaciado mental en papel anotando tus pendientes para asegurar un sueño reparador."
+        }
+      ];
+    case "PROTECTOR":
+    default:
+      return [
+        {
+          id: 1,
+          icon: "MessageCircle",
+          badge: "Límites",
+          title: "Declaración de Límites Seguros",
+          desc: "Expresa una necesidad menor hoy en voz alta ('necesito un momento de silencio', 'prefiero otra opción') para validar tu presencia y espacio en el entorno."
+        },
+        {
+          id: 2,
+          icon: "Heart",
+          badge: "Auto-Amor",
+          title: "Auto-Compasión Somática Radical",
+          desc: "Dedica 3 minutos al día a respirar sosteniendo tu mano derecha sobre el corazón, reconociendo con cariño que sostener el peso ajeno también agota."
+        },
+        {
+          id: 3,
+          icon: "Volume2",
+          badge: "Filtro",
+          title: "Sintonización Sonora de Calma",
+          desc: "Escucha un audio de descompresión neurocognitiva M.A.P.A.™ con auriculares aislantes para silenciar el peso de la responsabilidad del entorno ajeno."
+        }
+      ];
+  }
+}
+
+function renderRecommendationIcon(iconName: string, className: string = "w-6 h-6") {
+  switch (iconName) {
+    case "Activity": return <Activity className={className} />;
+    case "ShieldCheck": return <ShieldCheck className={className} />;
+    case "Zap": return <Zap className={className} />;
+    case "Sparkles": return <Sparkles className={className} />;
+    case "Compass": return <Compass className={className} />;
+    case "Clock": return <Clock className={className} />;
+    case "Lock": return <Lock className={className} />;
+    case "Brain": return <Layers className={className} />;
+    case "Heart": return <Heart className={className} />;
+    case "Eye": return <Eye className={className} />;
+    case "Award": return <Award className={className} />;
+    case "MessageCircle": return <MessageCircle className={className} />;
+    case "Volume2": return <Volume2 className={className} />;
+    default: return <Sparkles className={className} />;
+  }
+}
+
