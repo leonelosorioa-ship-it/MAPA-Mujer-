@@ -1,8 +1,10 @@
-const CACHE_NAME = "mapa-cache-v2";
+const CACHE_NAME = "mapa-cache-v3";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.json",
+  "/icono-192x192.png",
+  "/icono-512x512.png",
   "/favicon.png",
   "/icon-512.png",
   "/icon.svg",
