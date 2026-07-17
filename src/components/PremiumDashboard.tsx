@@ -1325,18 +1325,18 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             <div className="space-y-6 animate-fadeIn">
               
               {/* Header/Disclaimer banner */}
-              <div className="bg-[#EDE0F0]/50 border border-[#6E488A]/20 p-6 rounded-2xl flex flex-col md:flex-row gap-5 shadow-sm items-start md:items-center">
-                <div className="w-12 h-12 rounded-full bg-white border border-[#6E488A]/20 flex items-center justify-center shrink-0 shadow-sm">
-                  <Brain className="w-6 h-6 text-[#36C4D8] animate-pulse" />
+              <div className="bg-[#EDE0F0]/40 border border-[#6E488A]/20 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row gap-4 shadow-sm items-start md:items-center">
+                <div className="w-10 h-10 rounded-full bg-white border border-[#6E488A]/20 flex items-center justify-center shrink-0 shadow-sm">
+                  <Brain className="w-5.5 h-5.5 text-[#36C4D8] animate-pulse" />
                 </div>
-                <div className="space-y-1.5 flex-1 text-left">
-                  <h4 className="font-display font-black text-base text-[#6E488A] uppercase tracking-wider flex flex-wrap items-center gap-2">
-                    MENTORA CLARA • M.A.P.A.™ <span className="text-xs px-2 py-0.5 rounded bg-[#EDE0F0] border border-[#6E488A]/25 text-[#6E488A] font-bold">BY TU PODER MENTAL MUJER™</span>
+                <div className="space-y-1 flex-1 text-left">
+                  <h4 className="font-display font-black text-sm md:text-base text-[#6E488A] uppercase tracking-wider flex flex-wrap items-center gap-2">
+                    MENTORA CLARA • M.A.P.A.™ <span className="text-[10px] px-2 py-0.5 rounded bg-[#EDE0F0] border border-[#6E488A]/25 text-[#6E488A] font-bold">BY TU PODER MENTAL MUJER™</span>
                   </h4>
-                  <p className="text-[#56346F]/90 text-sm leading-relaxed font-medium">
+                  <p className="text-[#56346F]/95 text-xs sm:text-sm leading-relaxed font-medium">
                     Soporte inmediato basado en reglas y análisis de palabras clave. Aquí comprendemos tus emociones para transformarlas sin realizar juicios, diagnósticos clínicos, ni sustituir la atención médica o de un especialista psicológico.
                   </p>
-                  <p className="text-xs text-[#E36DB4] font-mono italic font-semibold">
+                  <p className="text-[11px] text-[#E36DB4] font-mono italic font-semibold">
                     Filosofía M.A.P.A.™: "Comprender es el primer paso para transformar."
                   </p>
                 </div>
@@ -1346,7 +1346,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
                 {/* Column 1: Interactive Chat Window (7 cols) */}
-                <div className="lg:col-span-7 bg-white rounded-3xl p-5 md:p-6 border-2 border-[#6E488A]/15 border-b-4 border-b-[#EDE0F0] shadow-[0_12px_24px_rgba(110,72,138,0.04)] flex flex-col h-[520px] justify-between space-y-4">
+                <div className="lg:col-span-7 bg-white rounded-3xl p-4 md:p-6 border-2 border-[#6E488A]/15 border-b-4 border-b-[#EDE0F0] shadow-[0_12px_24px_rgba(110,72,138,0.04)] flex flex-col h-[650px] md:h-[700px] justify-between space-y-4">
                   
                   {/* Message History area */}
                   <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
@@ -1355,11 +1355,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                       return (
                         <div
                           key={idx}
-                          className={`flex gap-3 max-w-[85%] text-left ${
+                          className={`flex gap-3 max-w-[92%] text-left ${
                             isCoach ? "mr-auto" : "ml-auto flex-row-reverse"
                           }`}
                         >
-                          <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-black border ${
+                          <div className={`w-8.5 h-8.5 rounded-full shrink-0 flex items-center justify-center text-sm font-black border shadow-sm ${
                             isCoach 
                               ? "bg-[#EDE0F0] text-[#6E488A] border-[#6E488A]/20"
                               : "bg-[#EDE0F0] text-[#36C4D8] border-[#36C4D8]/20"
@@ -1367,15 +1367,15 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                             {isCoach ? "🧠" : "👤"}
                           </div>
                           
-                          <div className="space-y-1">
-                            <div className={`p-4 rounded-2xl whitespace-pre-line ${
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className={`p-4 rounded-2xl whitespace-pre-line w-full shadow-sm leading-relaxed ${
                               isCoach 
-                                ? "bg-[#EDE0F0]/70 border-2 border-[#6E488A]/30 text-[#1C0630] rounded-tl-none text-base sm:text-lg font-bold leading-relaxed sm:leading-loose shadow-sm" 
-                                : "bg-[#36C4D8]/15 border-2 border-[#36C4D8]/40 text-[#1C0630] rounded-tr-none text-base sm:text-lg font-bold leading-relaxed"
+                                ? "bg-[#EDE0F0]/85 border border-[#6E488A]/25 text-[#2C133F] rounded-tl-none text-sm sm:text-base font-semibold" 
+                                : "bg-[#36C4D8]/12 border border-[#36C4D8]/35 text-[#11383F] rounded-tr-none text-sm sm:text-base font-semibold"
                             }`}>
                               {msg.content}
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-[#1C0630]/80 block px-1">
+                            <span className="text-[10px] font-mono font-bold text-[#1C0630]/75 block px-1.5">
                               {msg.timestamp || "Hace un momento"}
                             </span>
                           </div>
@@ -1383,11 +1383,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                       );
                     })}
                     {isCoachSending && (
-                      <div className="flex gap-3 max-w-[80%] mr-auto">
-                        <div className="w-8 h-8 rounded-full shrink-0 bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/20 flex items-center justify-center animate-spin">
+                      <div className="flex gap-3 max-w-[85%] mr-auto">
+                        <div className="w-8.5 h-8.5 rounded-full shrink-0 bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/20 flex items-center justify-center animate-spin">
                           🌀
                         </div>
-                        <div className="p-4 rounded-2xl bg-[#EDE0F0]/40 border-2 border-[#6E488A]/25 text-[#1C0630] text-base sm:text-lg rounded-tl-none font-extrabold">
+                        <div className="p-4 rounded-2xl bg-[#EDE0F0]/50 border border-[#6E488A]/20 text-[#2C133F] text-sm sm:text-base rounded-tl-none font-extrabold flex-1 min-w-0">
                           La Mentora Clara está sintonizando con tu sentir...
                         </div>
                       </div>
@@ -1396,7 +1396,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   </div>
 
                   {/* Input form */}
-                  <div className="pt-2 border-t border-[#6E488A]/12 space-y-3">
+                  <div className="pt-2 border-t border-[#6E488A]/12 space-y-3 shrink-0">
                     <div className="flex gap-2">
                       <input
                         type="text"
@@ -1405,30 +1405,30 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                         onKeyDown={(e) => {
                           if (e.key === "Enter") sendCoachMessage();
                         }}
-                        placeholder="Describe cómo te sientes hoy... (ej: 'siento mucha ansiedad', 'no puedo dormir', 'tengo palpitaciones')"
-                        className="flex-1 bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] rounded-xl px-4 py-3 text-sm text-[#56346F] placeholder-gray-400 focus:outline-none transition-colors font-medium font-sans"
+                        placeholder="Describe cómo te sientes hoy... (ej: 'siento mucha ansiedad', 'no puedo dormir')"
+                        className="flex-1 bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] rounded-xl px-4 py-3 text-sm text-[#56346F] placeholder-gray-400 focus:outline-none transition-colors font-semibold font-sans shadow-sm"
                       />
                       <button
                         onClick={sendCoachMessage}
                         disabled={isCoachSending || !coachInput.trim()}
-                        className="p-3 bg-gradient-to-r from-[#36C4D8] to-[#7BE3E8] text-slate-950 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer shrink-0"
+                        className="p-3 bg-gradient-to-r from-[#36C4D8] to-[#7BE3E8] text-slate-950 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer shrink-0 active:scale-95"
                       >
                         <Send className="w-5 h-5" />
                       </button>
                     </div>
 
-                    <div className="flex flex-col gap-2 p-3 bg-[#EDE0F0]/15 rounded-2xl border border-[#6E488A]/10">
-                      <span className="text-xs font-mono font-bold text-[#6E488A] flex items-center gap-1.5">
-                        <span>🏷️</span> Selecciona una emoción para que el Mentor la analice:
+                    <div className="flex flex-col gap-2 p-3 bg-[#EDE0F0]/15 rounded-xl border border-[#6E488A]/10 text-left">
+                      <span className="text-[11px] font-mono font-bold text-[#6E488A] flex items-center gap-1.5 uppercase tracking-wider">
+                        <span>🏷️</span> Selecciona una emoción para que la Mentora la analice:
                       </span>
-                      <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+                      <div className="flex gap-2 overflow-x-auto pb-1.5 custom-scrollbar snap-x">
                         {COACH_CATEGORIES.map((cat) => (
                           <button
                             key={cat.id}
                             onClick={() => {
                               setCoachInput(`Me siento con un estado de ${cat.name.toLowerCase()}`);
                             }}
-                            className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-[#EDE0F0]/50 text-[#6E488A] hover:text-[#56346F] text-xs font-bold border border-[#6E488A]/15 hover:border-[#36C4D8] transition-all cursor-pointer shadow-sm active:scale-95"
+                            className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#EDE0F0]/50 text-[#6E488A] hover:text-[#56346F] text-xs font-bold border border-[#6E488A]/15 hover:border-[#36C4D8] transition-all cursor-pointer shadow-sm active:scale-95 shrink-0 snap-start"
                           >
                             ● {cat.name}
                           </button>
