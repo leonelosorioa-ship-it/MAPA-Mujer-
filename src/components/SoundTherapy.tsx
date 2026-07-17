@@ -315,6 +315,7 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
   // Master Gain node of the active session
   const masterGainNode = useRef<GainNode | null>(null);
+  const fadeOutTimeoutRef = useRef<any>(null);
 
   // Maintain precise breathing guide interval on UI
   useEffect(() => {
@@ -348,6 +349,9 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
   // Clean up Web Audio on component unmount
   useEffect(() => {
     return () => {
+      if (fadeOutTimeoutRef.current) {
+        clearTimeout(fadeOutTimeoutRef.current);
+      }
       stopAllSoundsAndClean();
       if (audioCtxRef.current) {
         audioCtxRef.current.close().catch(() => {});
@@ -365,7 +369,8 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
   // Start sound when active track changes while playing
   useEffect(() => {
-    if (isPlaying) {
+    // Only auto-trigger start if playing and we are not in the middle of a fade transition
+    if (isPlaying && !fadeOutTimeoutRef.current) {
       startSynthesizer(selectedTrack);
     }
   }, [selectedTrack]);
@@ -422,10 +427,74 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
     }
   };
 
+  // Gracefully fades out the active sound and then stops completely
+  const fadeAndStop = (onComplete?: () => void) => {
+    setIsPlaying(false);
+
+    if (fadeOutTimeoutRef.current) {
+      clearTimeout(fadeOutTimeoutRef.current);
+      fadeOutTimeoutRef.current = null;
+    }
+
+    const ctx = audioCtxRef.current;
+    const masterGain = masterGainNode.current;
+
+    if (ctx && masterGain && ctx.state !== "closed") {
+      const currTime = ctx.currentTime;
+      masterGain.gain.setValueAtTime(masterGain.gain.value, currTime);
+      masterGain.gain.linearRampToValueAtTime(0, currTime + 3.0); // Smooth 3-second fade-out
+
+      fadeOutTimeoutRef.current = setTimeout(() => {
+        stopAllSoundsAndClean();
+        fadeOutTimeoutRef.current = null;
+        if (onComplete) onComplete();
+      }, 3000);
+    } else {
+      stopAllSoundsAndClean();
+      if (onComplete) onComplete();
+    }
+  };
+
+  // Handles smooth track switching with a 3-second fade-out and 3-second fade-in
+  const handleTrackSelect = (track: SoundExperience) => {
+    if (selectedTrack.id === track.id) return;
+
+    if (fadeOutTimeoutRef.current) {
+      clearTimeout(fadeOutTimeoutRef.current);
+      fadeOutTimeoutRef.current = null;
+    }
+
+    if (isPlaying) {
+      // Fade out current track first
+      const ctx = audioCtxRef.current;
+      const masterGain = masterGainNode.current;
+      if (ctx && masterGain && ctx.state !== "closed") {
+        const currTime = ctx.currentTime;
+        masterGain.gain.setValueAtTime(masterGain.gain.value, currTime);
+        masterGain.gain.linearRampToValueAtTime(0, currTime + 3.0);
+
+        fadeOutTimeoutRef.current = setTimeout(() => {
+          setSelectedTrack(track);
+          fadeOutTimeoutRef.current = null;
+          // Start the new track (which has its own 3-second fade-in)
+          startSynthesizer(track);
+        }, 3000);
+      } else {
+        setSelectedTrack(track);
+      }
+    } else {
+      setSelectedTrack(track);
+    }
+  };
+
   const togglePlayPause = () => {
     if (isPlaying) {
-      stopAllSoundsAndClean();
+      fadeAndStop();
     } else {
+      if (fadeOutTimeoutRef.current) {
+        clearTimeout(fadeOutTimeoutRef.current);
+        fadeOutTimeoutRef.current = null;
+      }
       startSynthesizer(selectedTrack);
     }
   };
@@ -440,8 +509,11 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
     // 2. Establish Master Gain connected directly to user destination via a warm soft Limiter/Compressor
     const masterGain = ctx.createGain();
-    const initialTargetVolume = isMuted ? 0 : (volume * 2.8);
-    masterGain.gain.setValueAtTime(initialTargetVolume, currTime);
+    
+    // Start at 0 for a perfect 3-second Fade-In
+    const targetVolume = isMuted ? 0 : (volume * 2.8);
+    masterGain.gain.setValueAtTime(0, currTime);
+    masterGain.gain.linearRampToValueAtTime(targetVolume, currTime + 3.0);
 
     const compressor = ctx.createDynamicsCompressor();
     compressor.threshold.setValueAtTime(-12, currTime);
@@ -454,23 +526,7 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
     compressor.connect(ctx.destination);
     masterGainNode.current = masterGain;
 
-    // Helper functions for soft synthesis tracking
-    const playOsc = (freq: number, type: OscillatorType, gainVol: number, outputNode: AudioNode): OscillatorNode => {
-      const osc = ctx.createOscillator();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, currTime);
-
-      const oscGain = ctx.createGain();
-      oscGain.gain.setValueAtTime(gainVol, currTime);
-
-      osc.connect(oscGain).connect(outputNode);
-      osc.start(currTime);
-
-      activeOscillators.current.push(osc);
-      activeGains.current.push(oscGain);
-      return osc;
-    };
-
+    // Helper functions for high-fidelity noise buffers
     const createWhiteNoiseBuffer = (): AudioBuffer => {
       const bufferSize = ctx.sampleRate * 4; // 4 seconds of unique noise loops
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
@@ -481,8 +537,50 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
       return buffer;
     };
 
-    const playAmbientNoise = (filterFreq: number, q: number, scaleVolume: number): BiquadFilterNode => {
-      const buffer = createWhiteNoiseBuffer();
+    const createPinkNoiseBuffer = (): AudioBuffer => {
+      const bufferSize = ctx.sampleRate * 4;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+        b6 = white * 0.115926;
+        data[i] = pink * 0.11; // rescale
+      }
+      return buffer;
+    };
+
+    const createBrownNoiseBuffer = (): AudioBuffer => {
+      const bufferSize = ctx.sampleRate * 4;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let lastOut = 0.0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        data[i] = (lastOut + (0.02 * white)) / 1.02;
+        lastOut = data[i];
+        data[i] *= 3.5; // Amplify to compensate for the integration loss
+      }
+      return buffer;
+    };
+
+    const playAmbientNoise = (type: "white" | "pink" | "brown", filterFreq: number, q: number, scaleVolume: number): BiquadFilterNode => {
+      let buffer;
+      if (type === "brown") {
+        buffer = createBrownNoiseBuffer();
+      } else if (type === "pink") {
+        buffer = createPinkNoiseBuffer();
+      } else {
+        buffer = createWhiteNoiseBuffer();
+      }
+      
       const source = ctx.createBufferSource();
       source.buffer = buffer;
       source.loop = true;
@@ -505,13 +603,29 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
       return filter;
     };
 
+    const playOsc = (freq: number, type: OscillatorType, gainVol: number, outputNode: AudioNode): OscillatorNode => {
+      const osc = ctx.createOscillator();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, currTime);
+
+      const oscGain = ctx.createGain();
+      oscGain.gain.setValueAtTime(gainVol, currTime);
+
+      osc.connect(oscGain).connect(outputNode);
+      osc.start(currTime);
+
+      activeOscillators.current.push(osc);
+      activeGains.current.push(oscGain);
+      return osc;
+    };
+
     // Synthesize the selected audio design gracefully with very soft textures
     switch (track.type) {
       case "compass": { // G3 / D3 ground + sparse notes
         const padRoot = playOsc(98.0, "sine", 0.35, masterGain);
         const padFifth = playOsc(146.8, "sine", 0.22, masterGain);
 
-        const compassFilter = playAmbientNoise(180, 0.8, 0.18);
+        const compassFilter = playAmbientNoise("brown", 180, 0.8, 0.18);
         
         const breezeLfo = ctx.createOscillator();
         breezeLfo.frequency.setValueAtTime(0.04, currTime);
@@ -563,7 +677,8 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
       }
 
       case "breathe": {
-        const oceanFilter = playAmbientNoise(120, 0.7, 0.38);
+        // High-fidelity Brown Noise modulated breathing sound
+        const oceanFilter = playAmbientNoise("brown", 150, 0.7, 0.45);
 
         const breathOsc = ctx.createOscillator();
         breathOsc.type = "sine";
@@ -573,7 +688,7 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
         breathOscGain.gain.setValueAtTime(0.18, currTime);
 
         const breatheLfo = ctx.createOscillator();
-        breatheLfo.frequency.setValueAtTime(0.1, currTime);
+        breatheLfo.frequency.setValueAtTime(0.1, currTime); // 10 seconds breathing cycle
 
         const breatheVolumeMover = ctx.createGain();
         breatheVolumeMover.gain.setValueAtTime(0.06, currTime);
@@ -613,7 +728,7 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
           const birdGain = audioCtxRef.current.createGain();
           birdGain.gain.setValueAtTime(0, contextNow);
-          birdGain.gain.linearRampToValueAtTime(0.05, contextNow + 0.05);
+          birdGain.gain.linearRampToValueAtTime(0.015, contextNow + 0.05); // Extremely soft background coos
           birdGain.gain.exponentialRampToValueAtTime(0.0001, contextNow + 0.35);
 
           const birdLp = audioCtxRef.current.createBiquadFilter();
@@ -631,48 +746,67 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
       }
 
       case "refuge": {
-        const rainFilter = playAmbientNoise(280, 0.6, 0.45);
-        
-        const playCampfireSpark = () => {
-          if (!audioCtxRef.current || !masterGainNode.current || audioCtxRef.current.state === "closed") return;
-          const contextNow = audioCtxRef.current.currentTime;
+        // Deep soothing rain: pink noise lowpassed at 350Hz, brown noise lowpassed at 180Hz
+        // Completely removed campfire clicks/sparks to avoid sudden startling noises.
+        const rainPink = playAmbientNoise("pink", 350, 0.5, 0.35);
+        const rainBrown = playAmbientNoise("brown", 180, 0.6, 0.25);
 
-          const popOsc = audioCtxRef.current.createOscillator();
-          popOsc.type = "triangle";
-          popOsc.frequency.setValueAtTime(140 + Math.random() * 80, contextNow);
+        // A very slow LFO to simulate gentle wind gusts blowing through the rain
+        const rainLfo = ctx.createOscillator();
+        rainLfo.frequency.setValueAtTime(0.05, currTime);
+        const rainLfoGain = ctx.createGain();
+        rainLfoGain.gain.setValueAtTime(50, currTime);
 
-          const popGain = audioCtxRef.current.createGain();
-          popGain.gain.setValueAtTime(0.03, contextNow);
-          popGain.gain.exponentialRampToValueAtTime(0.0001, contextNow + 0.04);
+        rainLfo.connect(rainLfoGain).connect(rainPink.frequency);
+        rainLfo.start(currTime);
 
-          const popFilter = audioCtxRef.current.createBiquadFilter();
-          popFilter.type = "lowpass";
-          popFilter.frequency.setValueAtTime(300, contextNow);
-
-          popOsc.connect(popFilter).connect(popGain).connect(masterGainNode.current);
-          popOsc.start(contextNow);
-          popOsc.stop(contextNow + 0.05);
-        };
-
-        const fireTimer = setInterval(() => {
-          if (Math.random() > 0.4) {
-            playCampfireSpark();
-          }
-        }, 1100);
-        activeIntervals.current.push(fireTimer);
+        activeOscillators.current.push(rainLfo);
+        activeGains.current.push(rainLfoGain);
         break;
       }
 
       case "mind": {
-        const earthRoot = playOsc(110.0, "sine", 0.24, masterGain);
-        const earthHarmonic = playOsc(220.0, "sine", 0.12, masterGain);
+        // 4Hz Theta Wave Binaural Beats with 136.1Hz Earth Carrier Frequency
+        const leftOsc = ctx.createOscillator();
+        leftOsc.type = "sine";
+        leftOsc.frequency.setValueAtTime(136.1, currTime);
 
+        const rightOsc = ctx.createOscillator();
+        rightOsc.type = "sine";
+        rightOsc.frequency.setValueAtTime(140.1, currTime); // 136.1 + 4Hz = 140.1Hz (Theta)
+
+        const leftGain = ctx.createGain();
+        leftGain.gain.setValueAtTime(0.18, currTime);
+
+        const rightGain = ctx.createGain();
+        rightGain.gain.setValueAtTime(0.18, currTime);
+
+        if (ctx.createStereoPanner) {
+          const panLeft = ctx.createStereoPanner();
+          panLeft.pan.setValueAtTime(-1.0, currTime);
+          const panRight = ctx.createStereoPanner();
+          panRight.pan.setValueAtTime(1.0, currTime);
+
+          leftOsc.connect(leftGain).connect(panLeft).connect(masterGain);
+          rightOsc.connect(rightGain).connect(panRight).connect(masterGain);
+        } else {
+          leftOsc.connect(leftGain).connect(masterGain);
+          rightOsc.connect(rightGain).connect(masterGain);
+        }
+
+        leftOsc.start(currTime);
+        rightOsc.start(currTime);
+
+        activeOscillators.current.push(leftOsc, rightOsc);
+        activeGains.current.push(leftGain, rightGain);
+
+        // Gentle Tibetan Singing Bowl that triggers sparse notes
         const playTibetanSingingBowl = () => {
           if (!audioCtxRef.current || !masterGainNode.current || audioCtxRef.current.state === "closed") return;
           const contextNow = audioCtxRef.current.currentTime;
 
           const bowlFreqs = [144.0, 216.0, 288.0, 432.0];
-          const bowlVolumeFactors = [0.18, 0.12, 0.08, 0.05];
+          const bowlVolumeFactors = [0.12, 0.08, 0.05, 0.03]; // Soft comfortable volumes
 
           bowlFreqs.forEach((freq, idx) => {
             const osc = audioCtxRef.current!.createOscillator();
@@ -681,92 +815,45 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
             const oscGain = audioCtxRef.current!.createGain();
             oscGain.gain.setValueAtTime(0, contextNow);
-            oscGain.gain.linearRampToValueAtTime(bowlVolumeFactors[idx], contextNow + 0.1);
-            oscGain.gain.exponentialRampToValueAtTime(0.0001, contextNow + 7.5);
+            oscGain.gain.linearRampToValueAtTime(bowlVolumeFactors[idx], contextNow + 0.15); // Smooth onset
+            oscGain.gain.exponentialRampToValueAtTime(0.0001, contextNow + 8.0);
 
             osc.connect(oscGain).connect(masterGainNode.current!);
             osc.start(contextNow);
-            osc.stop(contextNow + 8.0);
+            osc.stop(contextNow + 8.5);
           });
         };
 
         playTibetanSingingBowl();
-        const bowlTimer = setInterval(playTibetanSingingBowl, 9500);
+        const bowlTimer = setInterval(playTibetanSingingBowl, 10000);
         activeIntervals.current.push(bowlTimer);
         break;
       }
 
       case "nature_tranquility": {
-        const padRoot = playOsc(164.81, "sine", 0.35, masterGain);
-        const padFifth = playOsc(220.00, "sine", 0.25, masterGain);
+        // Warm, natural ambient pad (G3, C4, D4 chords)
+        const pad1 = playOsc(196.00, "sine", 0.22, masterGain); 
+        const pad2 = playOsc(261.63, "sine", 0.18, masterGain); 
+        const pad3 = playOsc(293.66, "sine", 0.15, masterGain); 
 
-        const forestFilter = playAmbientNoise(320, 0.55, 0.42);
-        const breezeLfo = ctx.createOscillator();
-        breezeLfo.frequency.setValueAtTime(0.08, currTime);
-        const breezeLfoGain = ctx.createGain();
-        breezeLfoGain.gain.setValueAtTime(140, currTime);
+        // Multi-layered wind: Brown and Pink noise filtered around 250Hz with a very slow LFO
+        // Completely removed sharp bird chirps to ensure no sudden high-frequency startle.
+        const windBrown = playAmbientNoise("brown", 220, 0.6, 0.35);
+        const windPink = playAmbientNoise("pink", 280, 0.5, 0.20);
 
-        breezeLfo.connect(breezeLfoGain).connect(forestFilter.frequency);
-        breezeLfo.start(currTime);
+        const windLfo = ctx.createOscillator();
+        windLfo.frequency.setValueAtTime(0.04, currTime); // Slow natural gust (25 seconds cycle)
+        
+        const windLfoGain = ctx.createGain();
+        windLfoGain.gain.setValueAtTime(80, currTime);
 
-        activeOscillators.current.push(breezeLfo);
-        activeGains.current.push(breezeLfoGain);
+        windLfo.connect(windLfoGain).connect(windBrown.frequency);
+        windLfo.connect(windLfoGain).connect(windPink.frequency);
+        
+        windLfo.start(currTime);
 
-        const playForestBirdChirp = () => {
-          if (!audioCtxRef.current || !masterGainNode.current || audioCtxRef.current.state === "closed") return;
-          const contextNow = audioCtxRef.current.currentTime;
-
-          const birder = Math.random();
-          if (birder < 0.5) {
-            for (let i = 0; i < 3; i++) {
-              const delay = i * 0.18;
-              const osc = audioCtxRef.current.createOscillator();
-              osc.type = "sine";
-              const startFreq = 1800 + Math.random() * 400;
-              osc.frequency.setValueAtTime(startFreq, contextNow + delay);
-              osc.frequency.exponentialRampToValueAtTime(startFreq + 600, contextNow + delay + 0.08);
-
-              const oscGain = audioCtxRef.current.createGain();
-              oscGain.gain.setValueAtTime(0, contextNow + delay);
-              oscGain.gain.linearRampToValueAtTime(0.06, contextNow + delay + 0.02);
-              oscGain.gain.exponentialRampToValueAtTime(0.0001, contextNow + delay + 0.08);
-
-              const filterNode = audioCtxRef.current.createBiquadFilter();
-              filterNode.type = "bandpass";
-              filterNode.frequency.setValueAtTime(startFreq + 300, contextNow + delay);
-
-              osc.connect(filterNode).connect(oscGain).connect(masterGainNode.current);
-              osc.start(contextNow + delay);
-              osc.stop(contextNow + delay + 0.1);
-            }
-          } else {
-            for (let i = 0; i < 3; i++) {
-              const delay = i * 0.35;
-              const osc = audioCtxRef.current.createOscillator();
-              osc.type = "sine";
-              const baseFreq = 550 + Math.random() * 40;
-              osc.frequency.setValueAtTime(baseFreq, contextNow + delay);
-              osc.frequency.linearRampToValueAtTime(baseFreq - 30, contextNow + delay + 0.22);
-
-              const oscGain = audioCtxRef.current.createGain();
-              oscGain.gain.setValueAtTime(0, contextNow + delay);
-              oscGain.gain.linearRampToValueAtTime(0.12, contextNow + delay + 0.06); 
-              oscGain.gain.exponentialRampToValueAtTime(0.0001, contextNow + delay + 0.28);
-
-              const filterNode = audioCtxRef.current.createBiquadFilter();
-              filterNode.type = "lowpass";
-              filterNode.frequency.setValueAtTime(650, contextNow + delay);
-
-              osc.connect(filterNode).connect(oscGain).connect(masterGainNode.current);
-              osc.start(contextNow + delay);
-              osc.stop(contextNow + delay + 0.3);
-            }
-          }
-        };
-
-        playForestBirdChirp();
-        const birdsInterval = setInterval(playForestBirdChirp, 3800);
-        activeIntervals.current.push(birdsInterval);
+        activeOscillators.current.push(windLfo);
+        activeGains.current.push(windLfoGain);
         break;
       }
     }
@@ -939,7 +1026,7 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
           return (
             <motion.button
               key={track.id}
-              onClick={() => setSelectedTrack(track)}
+              onClick={() => handleTrackSelect(track)}
               whileHover={{ y: -2, scale: 1.01 }}
               className={`p-5 rounded-2xl text-left flex flex-col justify-between h-56 transition-all cursor-pointer relative overflow-hidden group select-none ${
                 isSelected 

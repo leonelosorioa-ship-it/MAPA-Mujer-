@@ -923,13 +923,15 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
       {/* Wayfinding Header for Dedicated Views */}
       {activeTab !== "menu" && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#6E488A]/12 pb-4 mb-6 gap-3 animate-fadeIn">
-          <button 
+          <motion.button 
             onClick={() => setActiveTab("menu")}
-            className="flex items-center gap-2 text-[#6E488A] hover:text-[#E36DB4] font-extrabold text-xs sm:text-sm font-sans transition-all group shrink-0 cursor-pointer"
+            whileHover={{ scale: 1.03, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex items-center gap-2.5 px-4 py-2.5 bg-gradient-to-r from-[#EDE0F0] to-[#F5ECF7] hover:from-[#E8D4EC] hover:to-[#EFDEF3] text-[#6E488A] hover:text-[#56346F] font-black text-xs sm:text-sm font-sans transition-all border border-[#6E488A]/25 hover:border-[#6E488A]/40 rounded-xl shadow-[0_4px_12px_rgba(110,72,138,0.08)] hover:shadow-[0_6px_16px_rgba(110,72,138,0.15)] group shrink-0 cursor-pointer"
           >
-            <ChevronLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1 text-[#6E488A]" />
-            <span>Volver al Menú Principal</span>
-          </button>
+            <ChevronLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1.5 text-[#6E488A] group-hover:text-[#E36DB4]" />
+            <span className="tracking-wide">Volver al Menú Principal</span>
+          </motion.button>
           
           <div className="flex items-center gap-2 justify-end">
             <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest text-[#E36DB4] bg-[#EDE0F0] border border-[#E36DB4]/25 px-2.5 py-1 rounded-full shadow-sm font-mono">
