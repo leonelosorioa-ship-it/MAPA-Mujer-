@@ -1353,9 +1353,12 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     {premiumData.coachHistory.map((msg, idx) => {
                       const isCoach = msg.role === "coach";
                       return (
-                        <div
+                        <motion.div
                           key={idx}
-                          className={`flex gap-3 max-w-[92%] text-left ${
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, ease: "easeOut" }}
+                          className={`message-bubble flex gap-3 max-w-[92%] text-left ${
                             isCoach ? "mr-auto" : "ml-auto flex-row-reverse"
                           }`}
                         >
@@ -1370,8 +1373,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                           <div className="space-y-1 flex-1 min-w-0">
                             <div className={`p-4 rounded-2xl whitespace-pre-line w-full shadow-sm leading-relaxed ${
                               isCoach 
-                                ? "bg-[#EDE0F0]/85 border border-[#6E488A]/25 text-[#2C133F] rounded-tl-none text-sm sm:text-base font-semibold" 
-                                : "bg-[#36C4D8]/12 border border-[#36C4D8]/35 text-[#11383F] rounded-tr-none text-sm sm:text-base font-semibold"
+                                ? "bg-[#EDE0F0]/85 border border-[#6E488A]/25 border-l-4 border-l-[#6E488A] text-[#2C133F] rounded-tl-none text-sm sm:text-base font-semibold" 
+                                : "bg-[#36C4D8]/12 border border-[#36C4D8]/35 border-l-4 border-l-[#36C4D8] text-[#11383F] rounded-tr-none text-sm sm:text-base font-semibold"
                             }`}>
                               {msg.content}
                             </div>
@@ -1379,7 +1382,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                               {msg.timestamp || "Hace un momento"}
                             </span>
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })}
                     {isCoachSending && (
