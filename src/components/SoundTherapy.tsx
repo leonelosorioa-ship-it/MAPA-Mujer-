@@ -553,35 +553,24 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
     }
   };
 
-  // Handles smooth track switching with a 3-second fade-out and 3-second fade-in
+  // Handles smooth track switching with instant play/pause toggle and rapid track changing
   const handleTrackSelect = (track: SoundExperience) => {
-    if (selectedTrack.id === track.id) return;
-
     if (fadeOutTimeoutRef.current) {
       clearTimeout(fadeOutTimeoutRef.current);
       fadeOutTimeoutRef.current = null;
     }
 
-    if (isPlaying) {
-      // Fade out current track first
-      const ctx = audioCtxRef.current;
-      const masterGain = masterGainNode.current;
-      if (ctx && masterGain && ctx.state !== "closed") {
-        const currTime = ctx.currentTime;
-        masterGain.gain.setValueAtTime(masterGain.gain.value, currTime);
-        masterGain.gain.linearRampToValueAtTime(0, currTime + 3.0);
-
-        fadeOutTimeoutRef.current = setTimeout(() => {
-          setSelectedTrack(track);
-          fadeOutTimeoutRef.current = null;
-          // Start the new track (which has its own 3-second fade-in)
-          startSynthesizer(track);
-        }, 3000);
-      } else {
-        setSelectedTrack(track);
-      }
+    if (selectedTrack.id === track.id) {
+      // Toggle play/pause for the same track
+      togglePlayPause();
     } else {
+      // Stop current track instantly and start the selected track immediately
+      stopAllSoundsAndClean();
       setSelectedTrack(track);
+      // Small timeout or microtask to ensure clean state transition
+      setTimeout(() => {
+        startSynthesizer(track);
+      }, 50);
     }
   };
 
@@ -1132,8 +1121,9 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="audio_experiences_grid">
         {BIBLIOTECA_SONIDOS.map((track) => {
           const isSelected = selectedTrack.id === track.id;
+          const isCurrentPlaying = isSelected && isPlaying;
           return (
-            <motion.button
+            <motion.div
               key={track.id}
               onClick={() => handleTrackSelect(track)}
               whileHover={{ y: -2, scale: 1.01 }}
@@ -1160,8 +1150,8 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
                 <div>
                   <h3 className="font-display font-extrabold text-base text-[#6E488A] flex items-center gap-1.5">
                     {track.title}
-                    {isSelected && (
-                      <span className="w-2 h-2 rounded-full bg-[#36C4D8] animate-ping shrink-0" />
+                    {isCurrentPlaying && (
+                      <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping shrink-0" />
                     )}
                   </h3>
                   <p className="text-[10px] font-mono text-[#36C4D8] font-bold tracking-wider uppercase mb-1.5">{track.subtitle}</p>
@@ -1171,18 +1161,41 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
                 </div>
               </div>
 
-              {/* Emotional Affirmation Badge Footer */}
-              <div className="border-t border-[#6E488A]/10 pt-2.5 mt-2 flex justify-between items-center w-full">
-                <div className="text-[10.5px] text-[#56346F]/90 font-bold italic truncate max-w-[80%]">
+              {/* Emotional Affirmation Badge Footer with custom interactive Escuchar button */}
+              <div className="border-t border-[#6E488A]/10 pt-2.5 mt-2 flex justify-between items-center w-full gap-2">
+                <div className="text-[10.5px] text-[#56346F]/90 font-bold italic truncate max-w-[55%]">
                   "{track.emotion}"
                 </div>
-                {isSelected ? (
-                  <span className="text-[10px] font-mono text-[#36C4D8] font-bold uppercase shrink-0">Seleccionado</span>
-                ) : (
-                  <span className="text-[10px] font-mono text-[#56346F]/60 group-hover:text-[#56346F]/80 transition-colors shrink-0 font-bold">Escuchar</span>
-                )}
+                
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Avoid double call from parent div onClick
+                    handleTrackSelect(track);
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider transition-all duration-300 shadow-sm border cursor-pointer flex items-center gap-1 shrink-0 ${
+                    isCurrentPlaying
+                      ? "bg-[#10B981] hover:bg-emerald-600 text-white border-emerald-400 shadow-emerald-500/20 scale-[1.03]"
+                      : isSelected
+                      ? "bg-[#36C4D8]/10 hover:bg-[#36C4D8]/20 text-[#36C4D8] border-[#36C4D8]/30 hover:border-[#36C4D8]/50"
+                      : "bg-[#6E488A]/10 hover:bg-[#6E488A]/20 text-[#6E488A] border-[#6E488A]/20 hover:border-[#6E488A]/35"
+                  }`}
+                  id={`escuchar_btn_${track.id}`}
+                >
+                  {isCurrentPlaying ? (
+                    <>
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span>Escuchando</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-2.5 h-2.5 fill-current" />
+                      <span>Escuchar</span>
+                    </>
+                  )}
+                </button>
               </div>
-            </motion.button>
+            </motion.div>
           );
         })}
       </div>
