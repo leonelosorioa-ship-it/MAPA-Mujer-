@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Award, Trophy, X, Compass, CheckCircle2, Star, Share2 } from "lucide-react";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
@@ -17,7 +17,8 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
   userName
 }) => {
   const nameToShow = userName || "Preciosa Usuaria";
-  const { shareToWhatsApp, shareWithFallback } = useWhatsAppShare();
+  const { shareToWhatsApp, shareWithFallback, getShareText } = useWhatsAppShare();
+  const [copied, setCopied] = useState(false);
 
   // Configuration based on the specific completed days milestone (3, 5, or 7)
   const getMilestoneDetails = () => {
@@ -92,6 +93,13 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
       }
     }
   }, [isOpen, daysCount]);
+
+  const shareOptions = {
+    variant: "milestone" as const,
+    badgeName: details.badgeName,
+    day: daysCount
+  };
+  const shareText = getShareText(shareOptions);
 
   // Generate confetti items
   const confettiArray = Array.from({ length: 45 });
@@ -226,7 +234,7 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
             </p>
 
             {/* Professional Insight Box */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-6 text-left relative">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-5 text-left relative">
               <div className="absolute -top-3 left-4 px-2 bg-[#1E1135] text-[9px] font-mono text-cyan-300 font-bold uppercase tracking-wider">
                 🔬 REVELACIÓN DE TU M.A.P.A.™
               </div>
@@ -235,39 +243,59 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
               </p>
             </div>
 
+            {/* Predesigned Social Share Preview Card */}
+            <div className="bg-[#E86FA3]/10 border border-[#E86FA3]/25 rounded-2xl p-4 mb-6 text-left relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#E86FA3]/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono font-bold text-[#E86FA3] uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 animate-pulse text-[#E86FA3]" />
+                  Mensaje Prediseñado para Redes
+                </span>
+                {copied && (
+                  <span className="text-[10px] font-mono font-black text-green-400 bg-green-400/10 px-2.5 py-0.5 rounded border border-green-400/20 animate-bounce">
+                    ¡COPIADO! 🎉
+                  </span>
+                )}
+              </div>
+              <div className="bg-[#120822]/90 border border-white/10 rounded-xl p-3 text-xs text-slate-100 font-sans leading-relaxed select-all cursor-text whitespace-pre-wrap font-medium">
+                {shareText}
+              </div>
+              <p className="text-[10px] text-slate-400 mt-2 font-medium">
+                * Puedes seleccionar y copiar este texto para compartir tu progreso, o presionar los botones directos abajo.
+              </p>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3 items-center justify-center">
               <button
                 onClick={onClose}
-                className="w-full sm:flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-pink-500 to-[#E86FA3] hover:from-pink-600 hover:to-[#d55d91] text-white font-display font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-pink-500/20 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 py-3 px-5 rounded-xl bg-white/5 border border-white/10 hover:bg-[#2A1140] text-white font-sans font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
                 id="milestone-claim-btn"
               >
-                <Compass className="w-4.5 h-4.5" />
+                <Compass className="w-4.5 h-4.5 text-cyan-300" />
                 <span>Continuar mi viaje de bienestar</span>
               </button>
               
               <button
                 type="button"
                 onClick={async () => {
-                  const options = {
-                    variant: "milestone" as const,
-                    badgeName: details.badgeName,
-                    day: daysCount
-                  };
-                  const result = await shareWithFallback(options);
+                  const result = await shareWithFallback(shareOptions);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 3000);
                   if (result.success) {
                     if (result.method === "clipboard") {
-                      alert("¡Mensaje de logro M.A.P.A.™ y enlace al Test copiados al portapapeles! Compártelo con tus seres queridos.");
+                      // Handled by copy indicator
                     }
                   } else {
-                    shareToWhatsApp(options);
+                    shareToWhatsApp(shareOptions);
                   }
                 }}
-                className="w-full sm:w-auto py-3 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-sans font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-pink-500 via-[#E86FA3] to-pink-500 hover:from-pink-600 hover:to-[#d55d91] text-white font-display font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-pink-500/20 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 animate-pulse"
                 id="milestone-share-btn"
+                style={{ animationDuration: '3s' }}
               >
-                <Share2 className="w-4 h-4 text-cyan-300" />
-                <span className="sm:hidden">Compartir logro</span>
+                <Share2 className="w-4.5 h-4.5 text-white" />
+                <span>Compartir este logro</span>
               </button>
             </div>
           </motion.div>
