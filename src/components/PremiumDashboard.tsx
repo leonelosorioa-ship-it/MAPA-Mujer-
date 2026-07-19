@@ -901,7 +901,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   const shareAssets = [
     {
       title: "Desafío Mental Completado",
-      text: `🏆 ¡He escalado con éxito al nivel de "${levelInfo.title}" con M.A.P.A.™! He aprendido a comprender mejor mis emociones y desarrollar hábitos más saludables.\n\nTú también puedes iniciar tu proceso de sanación mental personalizado hoy mismo.\n\n🧠 Fortalece Tu Mente. Transforma Tu Vida.\n👉 https://quizmapa.tupodermental.club/\n\n#PoderMentalIA #MAPA #Ansiedad #BienestarMental`
+      text: `🏆 ¡He escalado con éxito al nivel de "${levelInfo.title}" con M.A.P.A.™! He aprendido a comprender mejor mis emociones y desarrollar hábitos más saludables.\n\nTú también puedes iniciar tu proceso de sanación mental personalizado hoy mismo.\n\n🧠 Fortalece Tu Mente. Transforma Tu Vida.\n👉 https://quizmapa.tupodermental.club/quiz\n\n#PoderMentalIA #MAPA #Ansiedad #BienestarMental`
     },
     {
       title: "Rescate del Botón de Pánico",

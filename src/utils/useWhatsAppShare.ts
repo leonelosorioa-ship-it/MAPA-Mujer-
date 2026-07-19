@@ -16,7 +16,7 @@ export interface ShareOptions {
   rewardTitle?: string;
 }
 
-export const FUNNEL_URL = "https://quizmapa.tupodermental.club/";
+export const FUNNEL_URL = "https://quizmapa.tupodermental.club/quiz";
 
 /**
  * Hook de React para gestionar y construir los mensajes persuasivos de WhatsApp 
@@ -81,8 +81,7 @@ export const useWhatsAppShare = () => {
       try {
         await navigator.share({
           title: "M.A.P.A.™ Mujer",
-          text: text,
-          url: FUNNEL_URL
+          text: text
         });
         return { success: true, method: "share" };
       } catch (err) {

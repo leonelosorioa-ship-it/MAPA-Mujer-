@@ -256,11 +256,6 @@ export const RewardModal: React.FC<RewardModalProps> = ({
     if (!audioSrc) return;
     setIsDownloading(true);
     try {
-      const response = await fetch(audioSrc);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
       const fileName = isDay3 
         ? "MAPA_Mujer_Audio_de_Tranquilidad.mp3" 
         : isDay5 
@@ -268,14 +263,29 @@ export const RewardModal: React.FC<RewardModalProps> = ({
           : isDay4 
             ? "MAPA_Mujer_Audiolibro.mp3" 
             : "MAPA_Mujer_El_Despertar_de_Tu_Calma.mp3";
+            
+      const proxyUrl = `/api/download-audio?url=${encodeURIComponent(audioSrc)}&name=${encodeURIComponent(fileName)}`;
+      const response = await fetch(proxyUrl);
+      if (!response.ok) throw new Error("Failed to download via server proxy");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
       a.download = fileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Download failed, using backup direct window open method:", err);
-      window.open(audioSrc, "_blank");
+      console.error("Download failed, using backup direct window open proxy method:", err);
+      const fileName = isDay3 
+        ? "MAPA_Mujer_Audio_de_Tranquilidad.mp3" 
+        : isDay5 
+          ? "MAPA_Mujer_Centinela_de_la_Calma.mp3" 
+          : isDay4 
+            ? "MAPA_Mujer_Audiolibro.mp3" 
+            : "MAPA_Mujer_El_Despertar_de_Tu_Calma.mp3";
+      window.open(`/api/download-audio?url=${encodeURIComponent(audioSrc)}&name=${encodeURIComponent(fileName)}`, "_blank");
     } finally {
       setIsDownloading(false);
     }

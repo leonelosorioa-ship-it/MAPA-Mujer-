@@ -6418,7 +6418,7 @@ export default function App() {
           {/* Floating WhatsApp Share Button */}
           <motion.button
             onClick={() => {
-              const message = "¡Hola! Te recomiendo de todo corazón M.A.P.A.™ Mujer. Mi experiencia con esta aplicación ha sido excelente para mi calma y equilibrio emocional. Descubre tu mapa hoy y pruébala tú también en: https://quizmapa.tupodermental.club/";
+              const message = "¡Hola! Te recomiendo de todo corazón M.A.P.A.™ Mujer. Mi experiencia con esta aplicación ha sido excelente para mi calma y equilibrio emocional. Descubre tu mapa hoy y pruébala tú también en: https://quizmapa.tupodermental.club/quiz";
               const link = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
               window.open(link, "_blank", "noopener,noreferrer");
             }}

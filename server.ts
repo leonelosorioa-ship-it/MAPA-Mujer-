@@ -82,11 +82,20 @@ async function hydrateLocalDBFromFirestore() {
     console.log("⚠️ [Hydration] Firestore not initialized, skipping hydration.");
     return;
   }
+  
+  // Helper to race Firestore promises against a timeout to prevent hanging connections
+  const withTimeout = <T>(promise: Promise<T>, timeoutMs = 8000): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Timeout (8s) waiting for Firestore response")), timeoutMs))
+    ]);
+  };
+
   try {
     console.log("🔄 [Hydration] Loading user profiles from Firestore...");
-    const userSnap = await dbFirestore.collection("users").get();
+    const userSnap = await withTimeout(dbFirestore.collection("users").get()) as any;
     const cloudUsers: any[] = [];
-    userSnap.forEach((doc) => {
+    userSnap.forEach((doc: any) => {
       cloudUsers.push(doc.data());
     });
     
@@ -117,9 +126,9 @@ async function hydrateLocalDBFromFirestore() {
     
     // Also hydrate invite codes
     console.log("🔄 [Hydration] Loading invite codes from Firestore...");
-    const inviteSnap = await dbFirestore.collection("invite_codes").get();
+    const inviteSnap = await withTimeout(dbFirestore.collection("invite_codes").get()) as any;
     const cloudCodes: any[] = [];
-    inviteSnap.forEach((doc) => {
+    inviteSnap.forEach((doc: any) => {
       cloudCodes.push(doc.data());
     });
     if (cloudCodes.length > 0) {
@@ -145,9 +154,9 @@ async function hydrateLocalDBFromFirestore() {
 
     // Also hydrate Hotmart logs
     console.log("🔄 [Hydration] Loading Hotmart logs from Firestore...");
-    const logSnap = await dbFirestore.collection("hotmart_logs").get();
+    const logSnap = await withTimeout(dbFirestore.collection("hotmart_logs").get()) as any;
     const cloudLogs: any[] = [];
-    logSnap.forEach((doc) => {
+    logSnap.forEach((doc: any) => {
       cloudLogs.push(doc.data());
     });
     if (cloudLogs.length > 0) {
@@ -936,6 +945,56 @@ app.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
         </body>
       </html>
     `);
+  }
+});
+
+// API Route to safely proxy audio file downloads and stream with proper headers
+app.get("/api/download-audio", async (req, res) => {
+  const audioUrl = req.query.url as string;
+  let fileName = (req.query.name as string) || "audio.mp3";
+
+  // Ensure fileName ends with .mp3
+  if (!fileName.toLowerCase().endsWith(".mp3")) {
+    fileName += ".mp3";
+  }
+
+  if (!audioUrl) {
+    return res.status(400).json({ error: "Missing url parameter" });
+  }
+
+  try {
+    const parsedUrl = new URL(audioUrl);
+    if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+      return res.status(400).json({ error: "Invalid protocol" });
+    }
+
+    console.log(`📥 [Download Proxy] Fetching audio from remote: ${audioUrl}`);
+    const remoteRes = await fetch(audioUrl);
+    if (!remoteRes.ok) {
+      throw new Error(`Failed to fetch audio from remote source: ${remoteRes.statusText}`);
+    }
+
+    // Set proper headers for direct file download
+    res.setHeader("Content-Type", remoteRes.headers.get("content-type") || "audio/mpeg");
+    res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(fileName)}"`);
+    
+    const contentLength = remoteRes.headers.get("content-length");
+    if (contentLength) {
+      res.setHeader("Content-Length", contentLength);
+    }
+    
+    // Set caching and connection headers for clean download
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    // Convert to ArrayBuffer and send as Buffer to avoid web stream reader compatibility issues on various node versions
+    const arrayBuffer = await remoteRes.arrayBuffer();
+    res.send(Buffer.from(arrayBuffer));
+    console.log(`✅ [Download Proxy] Successfully streamed audio: ${fileName} (${contentLength || "unknown"} bytes)`);
+  } catch (err: any) {
+    console.error("❌ [Download Proxy] Error proxying audio download:", err.message || err);
+    // If it fails, redirect to the direct link as fallback
+    res.redirect(audioUrl);
   }
 });
 
@@ -4023,8 +4082,10 @@ setInterval(() => {
 
 // Configure Vite middleware in development or static serving inside production
 async function startServer() {
-  // Pre-load and sync database with Cloud Firestore to avoid ephemeral data wipes
-  await hydrateLocalDBFromFirestore();
+  // Pre-load and sync database with Cloud Firestore asynchronously to avoid blocking server startup
+  hydrateLocalDBFromFirestore().catch((err) => {
+    console.error("❌ [Hydration] Background hydration failed:", err.message || err);
+  });
 
   if (process.env.NODE_ENV !== "production") {
     // Development Mode

@@ -201,15 +201,28 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
     onComplete().catch((err) => console.error("Error on share complete:", err));
   };
 
-  const handleDirectDownload = () => {
+  const handleDirectDownload = async () => {
     setHasInteracted(true);
-    const link = document.createElement("a");
-    link.href = audioUrl;
-    link.target = "_blank";
-    link.download = "Bienvenida_MAPA_Mujer.mp3";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const fileName = "Bienvenida_MAPA_Mujer.mp3";
+    const proxyUrl = `/api/download-audio?url=${encodeURIComponent(audioUrl)}&name=${encodeURIComponent(fileName)}`;
+    
+    try {
+      const response = await fetch(proxyUrl);
+      if (!response.ok) throw new Error("Failed to download via server proxy");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Onboarding download fallback to direct window open proxy:", err);
+      window.open(proxyUrl, "_blank");
+    }
+    
     setIsDismissed(true);
     onComplete().catch((err) => console.error("Error on download complete:", err));
   };
