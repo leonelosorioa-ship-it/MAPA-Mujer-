@@ -130,6 +130,54 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
 
+  // Screen Wake Lock API to keep the screen active when audio is playing
+  useEffect(() => {
+    let wakeLock: any = null;
+
+    const requestWakeLock = async () => {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLock = await (navigator as any).wakeLock.request('screen');
+          console.log("M.A.P.A.™ Screen Wake Lock adquirido con éxito para PremiumAudioPlayer.");
+        } catch (err) {
+          console.warn("Screen Wake Lock no disponible o denegado:", err);
+        }
+      }
+    };
+
+    const releaseWakeLock = async () => {
+      if (wakeLock) {
+        try {
+          await wakeLock.release();
+          wakeLock = null;
+          console.log("M.A.P.A.™ Screen Wake Lock liberado con éxito para PremiumAudioPlayer.");
+        } catch (err) {
+          console.warn("Error liberando Screen Wake Lock:", err);
+        }
+      }
+    };
+
+    if (isPlaying) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+
+    // Reacquire lock when page is visible again
+    const handleVisibilityChange = async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible' && isPlaying) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      releaseWakeLock();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isPlaying]);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -298,6 +346,54 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
   const [volume, setVolume] = useState<number>(0.3); // Soft default
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
+
+  // Screen Wake Lock API to keep the screen active when sound therapy or breathing session is playing
+  useEffect(() => {
+    let wakeLock: any = null;
+
+    const requestWakeLock = async () => {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLock = await (navigator as any).wakeLock.request('screen');
+          console.log("M.A.P.A.™ Screen Wake Lock adquirido con éxito para SoundTherapy.");
+        } catch (err) {
+          console.warn("Screen Wake Lock no disponible o denegado:", err);
+        }
+      }
+    };
+
+    const releaseWakeLock = async () => {
+      if (wakeLock) {
+        try {
+          await wakeLock.release();
+          wakeLock = null;
+          console.log("M.A.P.A.™ Screen Wake Lock liberado con éxito para SoundTherapy.");
+        } catch (err) {
+          console.warn("Error liberando Screen Wake Lock:", err);
+        }
+      }
+    };
+
+    if (isPlaying) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+
+    // Reacquire lock when page is visible again
+    const handleVisibilityChange = async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible' && isPlaying) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      releaseWakeLock();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isPlaying]);
 
   // Breathing visualization state (for Respirar en Calma)
   const [breathPhase, setBreathPhase] = useState<"Inhalar" | "Retener" | "Exhalar" | "Sostener">("Inhalar");
@@ -935,15 +1031,17 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
       {/* UNLOCKED PACIFIC AUDIOS IN PROFILE SECTION */}
       {unlockedAudios && (unlockedAudios.includes("day3") || unlockedAudios.includes("day4") || unlockedAudios.includes("day5") || unlockedAudios.includes("day7")) && (
-        <div className="bg-[#56346F]/5 border border-[#56346F]/15 p-5 sm:p-6 rounded-3xl space-y-4 mb-8 text-left animate-fadeIn">
-          <div className="flex items-center space-x-2">
+        <div className="bg-gradient-to-br from-[#2A1140] via-[#1A062B] to-[#0E021A] border border-[#E86FA3]/30 p-5 sm:p-6 rounded-3xl space-y-4 mb-8 text-left shadow-lg relative overflow-hidden animate-fadeIn">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#E86FA3]/5 rounded-full blur-2xl pointer-events-none" />
+          
+          <div className="flex items-center space-x-2 relative z-10">
             <Sparkles className="w-5 h-5 text-[#E86FA3] animate-pulse" />
-            <h3 className="font-display font-black text-lg text-[#56346F]">Tus Recompensas de Paz Desbloqueadas</h3>
+            <h3 className="font-display font-black text-lg text-white">Tus Recompensas de Paz Desbloqueadas</h3>
           </div>
-          <p className="text-xs text-[#56346F]/80 leading-relaxed max-w-2xl font-medium">
-            ¡Felicidades por tu inmensa dedicación! La <strong>Mentora Clara</strong> ha liberado de forma permanente estas sintonías especiales para proteger tu paz y regular tu sistema nervioso cuando lo necesites.
+          <p className="text-xs text-slate-300 leading-relaxed max-w-2xl font-semibold relative z-10">
+            ¡Felicidades por tu inmensa dedicación! La <strong className="text-[#36C4D8]">Mentora Clara</strong> ha liberado de forma permanente estas sintonías especiales para proteger tu paz y regular tu sistema nervioso cuando lo necesites.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
             {unlockedAudios.includes("day3") && (
               <PremiumAudioPlayer
                 src="https://f005.backblazeb2.com/file/M.A.P.A/Audio+de+tranquilidad+por+Clara+Premio+tercer+dia.mp3"
@@ -982,23 +1080,23 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
                 />
                 
                 {/* Book Companion Card */}
-                <div className="bg-[#FAF7F9] hover:bg-white border-2 border-dashed border-[#E36DB4]/30 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:shadow-md transition-all">
+                <div className="bg-[#1A0A26]/80 hover:bg-[#1A0A26] border-2 border-dashed border-[#E36DB4]/35 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:shadow-md transition-all text-white">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-mono font-black text-[#E36DB4] uppercase tracking-widest bg-[#E36DB4]/10 px-2 py-0.5 rounded border border-[#E36DB4]/15">
+                      <span className="text-[9px] font-mono font-black text-[#E36DB4] uppercase tracking-widest bg-[#E36DB4]/15 px-2 py-0.5 rounded border border-[#E36DB4]/35">
                         Segundo Recurso • Regalo Especial 📚
                       </span>
                       <BookOpen className="w-4.5 h-4.5 text-[#E36DB4]" />
                     </div>
                     
-                    <h4 className="font-display font-black text-sm text-[#56346F] leading-snug">
+                    <h4 className="font-display font-black text-sm text-white leading-snug">
                       Libro "Cuídate para Crecer"
                     </h4>
-                    <p className="text-[10px] text-[#56346F]/60 font-sans italic font-bold">
+                    <p className="text-[10px] text-pink-300 font-sans italic font-bold">
                       Por la maravillosa escritora Ana Pérez
                     </p>
                     
-                    <p className="text-xs text-[#56346F]/80 leading-relaxed font-sans bg-[#EDE0F0]/15 p-2.5 rounded-lg border border-[#6E488A]/5 font-medium italic">
+                    <p className="text-xs text-slate-300 leading-relaxed font-sans bg-black/20 p-2.5 rounded-lg border border-white/5 font-medium italic">
                       "Es una lectura consciente que se convertirá en el complemento perfecto para este nuevo ritmo de vida sostenible que hoy empiezas a edificar."
                     </p>
                   </div>

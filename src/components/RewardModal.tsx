@@ -70,6 +70,54 @@ export const RewardModal: React.FC<RewardModalProps> = ({
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  // Screen Wake Lock API to keep the screen active when audio is playing
+  useEffect(() => {
+    let wakeLock: any = null;
+
+    const requestWakeLock = async () => {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLock = await (navigator as any).wakeLock.request('screen');
+          console.log("M.A.P.A.™ Screen Wake Lock adquirido con éxito para Reward Player.");
+        } catch (err) {
+          console.warn("Screen Wake Lock no disponible o denegado:", err);
+        }
+      }
+    };
+
+    const releaseWakeLock = async () => {
+      if (wakeLock) {
+        try {
+          await wakeLock.release();
+          wakeLock = null;
+          console.log("M.A.P.A.™ Screen Wake Lock liberado con éxito para Reward Player.");
+        } catch (err) {
+          console.warn("Error liberando Screen Wake Lock:", err);
+        }
+      }
+    };
+
+    if (isOpen && isPlaying) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+
+    // Reacquire lock when page is visible again
+    const handleVisibilityChange = async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible' && isOpen && isPlaying) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      releaseWakeLock();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isOpen, isPlaying]);
+
   // Auto-play and state resetting
   useEffect(() => {
     setIsPlaying(false);
@@ -269,11 +317,12 @@ export const RewardModal: React.FC<RewardModalProps> = ({
 
           {/* Cinematic Glassmorphism Content Card */}
           <motion.div
+            id="reward-card"
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: "spring", duration: 0.6 }}
-            className="relative w-full max-w-xl bg-gradient-to-br from-[#2D163F] via-[#1E092D] to-[#0F0417] text-white rounded-3xl p-6 sm:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.75)] border border-white/10 overflow-hidden z-10"
+            className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto custom-scrollbar bg-gradient-to-br from-[#2D163F] via-[#1E092D] to-[#0F0417] text-white rounded-3xl p-5 sm:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.75)] border border-white/10 z-10 text-center"
           >
             {/* Ambient dynamic glowing orbs behind card */}
             <div 

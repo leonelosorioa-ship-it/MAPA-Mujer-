@@ -153,7 +153,7 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
-            className={`relative w-full max-w-lg bg-gradient-to-b from-[#1E1135] to-[#0E061B] text-white rounded-3xl border ${details.borderColor} shadow-2xl overflow-hidden z-20 p-6 sm:p-8 text-center`}
+            className={`relative w-full max-w-lg max-h-[92vh] overflow-y-auto custom-scrollbar bg-gradient-to-b from-[#1E1135] to-[#0E061B] text-white rounded-3xl border ${details.borderColor} shadow-2xl z-20 p-5 sm:p-8 text-center`}
             id="milestone-card"
           >
             {/* Glossy top lighting reflection */}
@@ -212,7 +212,7 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
 
             {/* Heading Texts */}
             <div className="space-y-2 mb-6">
-              <h3 className="text-xl sm:text-2xl font-display font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-pink-100 to-white">
+              <h3 className="text-xl sm:text-2xl font-display font-black tracking-wider text-white">
                 {details.title}
               </h3>
               <h4 className="text-base sm:text-lg font-sans font-bold text-cyan-300 tracking-wide">

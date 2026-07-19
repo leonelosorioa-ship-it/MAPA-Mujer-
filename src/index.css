@@ -204,6 +204,96 @@ h1, h2, h3, h4, h5, h6 {
   color: #0F172A !important;
 }
 
+/* 
+ * Forzar legibilidad y contraste supremo en modales oscuros (Milestone y Reward Modals) 
+ * superando los selectores globales de etiquetas.
+ */
+#milestone-card,
+#milestone-card p,
+#milestone-card li,
+#milestone-card label,
+#milestone-card span,
+#milestone-card div,
+#milestone-card h3,
+#milestone-card h4,
+#reward-card,
+#reward-card p,
+#reward-card li,
+#reward-card label,
+#reward-card span,
+#reward-card div,
+#reward-card h3,
+#reward-card h4 {
+  color: #FFFFFF !important;
+}
+
+#milestone-card h3,
+#reward-card h3 {
+  color: #FFFFFF !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  text-fill-color: initial !important;
+  -webkit-text-fill-color: initial !important;
+}
+
+#milestone-card h4,
+#reward-card h4 {
+  color: #36C4D8 !important; /* Turquesa brillante premium para subtítulos */
+}
+
+#milestone-card .text-cyan-300,
+#reward-card .text-cyan-300,
+#milestone-card .text-cyan-300 *,
+#reward-card .text-cyan-300 * {
+  color: #22D3EE !important;
+}
+
+#milestone-card .text-gray-300,
+#reward-card .text-white\/90,
+#milestone-card .text-gray-300 *,
+#reward-card .text-white\/90 * {
+  color: #E2E8F0 !important; /* Blanco tiza para fácil lectura */
+}
+
+#milestone-card .text-pink-400,
+#reward-card .text-[#E86FA3],
+#milestone-card .text-pink-400 *,
+#reward-card .text-[#E86FA3] * {
+  color: #F472B6 !important; /* Rosa encendido de Clara */
+}
+
+#milestone-card .text-cyan-100\/90,
+#milestone-card .text-cyan-100\/90 * {
+  color: #E0F2FE !important; /* Azul celeste claro para las revelaciones del mapa */
+}
+
+#milestone-card .bg-pink-500\/10,
+#reward-card .bg-white\/5 {
+  background-color: rgba(244, 114, 182, 0.15) !important;
+}
+
+#milestone-card .bg-white\/5,
+#reward-card .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Custom scrollbar para los contenedores responsivos */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 @keyframes shine {
   0% {
     transform: translateX(-100%) skewX(-15deg);
