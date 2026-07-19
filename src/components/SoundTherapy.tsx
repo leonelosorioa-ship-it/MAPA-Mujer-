@@ -244,9 +244,9 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
   };
 
   return (
-    <div className="bg-[#56346F]/80 backdrop-blur-md border border-[#EDE0F0]/15 rounded-2xl p-5 text-white space-y-4 relative overflow-hidden shadow-md">
+    <div className="bg-white/95 backdrop-blur-md border-2 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-sm hover:shadow-md transition-all text-[#1C0630]" style={{ borderColor: `${themeColor}25`, borderBottomColor: `${themeColor}50` }}>
       <div 
-        className="absolute -right-8 -bottom-8 w-20 h-20 rounded-full blur-2xl opacity-25 pointer-events-none"
+        className="absolute -right-8 -bottom-8 w-20 h-20 rounded-full blur-2xl opacity-10 pointer-events-none"
         style={{ backgroundColor: themeColor }}
       />
       
@@ -260,15 +260,15 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
       <div className="flex justify-between items-start text-left">
         <div className="space-y-1">
           <span 
-            className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wider text-xs border bg-white/5"
-            style={{ color: themeColor, borderColor: `${themeColor}35` }}
+            className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border"
+            style={{ color: themeColor, borderColor: `${themeColor}30`, backgroundColor: `${themeColor}10` }}
           >
             {badge}
           </span>
-          <h4 className="font-display font-black text-base text-white leading-tight mt-1">
+          <h4 className="font-display font-black text-base text-[#411F66] leading-tight mt-2">
             {title}
           </h4>
-          <p className="text-xs text-white/70 font-sans italic">
+          <p className="text-xs text-[#6E488A]/80 font-sans italic font-semibold">
             {subtitle}
           </p>
         </div>
@@ -282,16 +282,17 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
           max={duration || 100}
           value={currentTime}
           onChange={handleSeek}
-          className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#36C4D8]"
+          className="w-full h-1 bg-slate-100 rounded-lg appearance-none cursor-pointer outline-none"
           style={{
+            accentColor: themeColor,
             background: `linear-gradient(to right, ${themeColor} 0%, ${themeColor} ${
               (currentTime / (duration || 1)) * 100
-            }%, rgba(255, 255, 255, 0.2) ${
+            }%, #E2E8F0 ${
               (currentTime / (duration || 1)) * 100
-            }%, rgba(255, 255, 255, 0.2) 100%)`
+            }%, #E2E8F0 100%)`
           }}
         />
-        <div className="flex justify-between text-[10px] font-mono text-white/60">
+        <div className="flex justify-between text-[10px] font-mono font-semibold text-[#6E488A]/70">
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration || 300)}</span>
         </div>
@@ -300,25 +301,25 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
       <div className="flex items-center justify-between pt-1">
         <button 
           onClick={togglePlay}
-          className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-95 text-slate-950 shadow border-none outline-none"
+          className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-95 text-white shadow border-none outline-none"
           style={{ backgroundColor: themeColor }}
         >
           {isPlaying ? (
-            <Pause className="w-4 h-4 fill-current text-[#1A0A26]" />
+            <Pause className="w-4 h-4 fill-current text-white" />
           ) : (
-            <Play className="w-4 h-4 fill-current text-[#1A0A26] ml-0.5" />
+            <Play className="w-4 h-4 fill-current text-white ml-0.5" />
           )}
         </button>
 
         <div className="flex items-center space-x-2">
           <button 
             onClick={toggleMute}
-            className="text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0"
+            className="text-[#6E488A]/60 hover:text-[#6E488A] transition-colors cursor-pointer bg-transparent border-none p-0"
           >
             {isMuted ? (
-              <span className="text-[10px] font-mono font-bold text-red-400">MUTED</span>
+              <span className="text-[10px] font-mono font-bold text-red-500">MUTED</span>
             ) : (
-              <Volume2 className="w-3.5 h-3.5 text-white" />
+              <Volume2 className="w-4 h-4 text-[#6E488A]/75" />
             )}
           </button>
           <input 
@@ -328,7 +329,8 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
             step="0.05"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-14 h-0.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white"
+            className="w-14 h-1 bg-slate-100 rounded-lg appearance-none cursor-pointer"
+            style={{ accentColor: themeColor }}
           />
         </div>
       </div>
@@ -1031,17 +1033,26 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
       {/* UNLOCKED PACIFIC AUDIOS IN PROFILE SECTION */}
       {unlockedAudios && (unlockedAudios.includes("day3") || unlockedAudios.includes("day4") || unlockedAudios.includes("day5") || unlockedAudios.includes("day7")) && (
-        <div className="bg-gradient-to-br from-[#2A1140] via-[#1A062B] to-[#0E021A] border border-[#E86FA3]/30 p-5 sm:p-6 rounded-3xl space-y-4 mb-8 text-left shadow-lg relative overflow-hidden animate-fadeIn">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#E86FA3]/5 rounded-full blur-2xl pointer-events-none" />
+        <div className="bg-gradient-to-br from-[#FFF5FA] via-[#FAEEF7] to-[#EFFFFE] border-2 border-[#E86FA3]/40 border-b-[6px] border-b-[#E86FA3]/40 p-5 sm:p-7 rounded-3xl space-y-5 mb-8 text-left shadow-[0_15px_40px_rgba(232,111,163,0.12),_0_5px_15px_rgba(54,196,216,0.06)] relative overflow-hidden animate-fadeIn" id="unlocked-rewards-section">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-[#E86FA3]/8 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-[#36C4D8]/8 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="flex items-center space-x-2 relative z-10">
-            <Sparkles className="w-5 h-5 text-[#E86FA3] animate-pulse" />
-            <h3 className="font-display font-black text-lg text-white">Tus Recompensas de Paz Desbloqueadas</h3>
+          <div className="flex items-center space-x-2.5 relative z-10">
+            <div className="p-2 bg-[#E86FA3]/10 rounded-xl">
+              <Sparkles className="w-5.5 h-5.5 text-[#E86FA3] animate-pulse" />
+            </div>
+            <div>
+              <span className="text-[10px] font-mono font-black text-[#E86FA3] uppercase tracking-widest bg-[#E86FA3]/10 px-2.5 py-0.5 rounded-full border border-[#E86FA3]/20">
+                Área de Premios Especiales 🏆
+              </span>
+              <h3 className="font-display font-black text-xl sm:text-2xl text-[#1C0630] mt-1">Tus Recompensas de Paz Desbloqueadas</h3>
+            </div>
           </div>
-          <p className="text-xs text-slate-300 leading-relaxed max-w-2xl font-semibold relative z-10">
-            ¡Felicidades por tu inmensa dedicación! La <strong className="text-[#36C4D8]">Mentora Clara</strong> ha liberado de forma permanente estas sintonías especiales para proteger tu paz y regular tu sistema nervioso cuando lo necesites.
+          
+          <p className="text-sm text-[#411F66] leading-relaxed max-w-2xl font-medium relative z-10">
+            ¡Felicidades por tu inmensa dedicación! La <strong className="text-[#E86FA3] font-bold">Mentora Clara</strong> ha liberado de forma permanente estas sintonías y recursos especiales para ti. Utilízalos siempre que lo necesites para regular tu calma y recuperar tu centro. 🌸
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
             {unlockedAudios.includes("day3") && (
               <PremiumAudioPlayer
                 src="https://f005.backblazeb2.com/file/M.A.P.A/Audio+de+tranquilidad+por+Clara+Premio+tercer+dia.mp3"
@@ -1080,23 +1091,23 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
                 />
                 
                 {/* Book Companion Card */}
-                <div className="bg-[#1A0A26]/80 hover:bg-[#1A0A26] border-2 border-dashed border-[#E36DB4]/35 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:shadow-md transition-all text-white">
+                <div className="bg-white/95 border-2 border-dashed border-[#E36DB4]/35 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:shadow-md transition-all text-[#1C0630]">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-mono font-black text-[#E36DB4] uppercase tracking-widest bg-[#E36DB4]/15 px-2 py-0.5 rounded border border-[#E36DB4]/35">
+                      <span className="text-[9px] font-mono font-black text-[#E36DB4] uppercase tracking-widest bg-[#E36DB4]/10 px-2 py-0.5 rounded border border-[#E36DB4]/30">
                         Segundo Recurso • Regalo Especial 📚
                       </span>
                       <BookOpen className="w-4.5 h-4.5 text-[#E36DB4]" />
                     </div>
                     
-                    <h4 className="font-display font-black text-sm text-white leading-snug">
+                    <h4 className="font-display font-black text-base text-[#411F66] leading-snug">
                       Libro "Cuídate para Crecer"
                     </h4>
-                    <p className="text-[10px] text-pink-300 font-sans italic font-bold">
+                    <p className="text-[10px] text-[#E36DB4] font-sans italic font-bold">
                       Por la maravillosa escritora Ana Pérez
                     </p>
                     
-                    <p className="text-xs text-slate-300 leading-relaxed font-sans bg-black/20 p-2.5 rounded-lg border border-white/5 font-medium italic">
+                    <p className="text-xs text-[#56346F]/80 leading-relaxed font-sans bg-[#E36DB4]/5 p-2.5 rounded-lg border border-[#E36DB4]/10 font-medium italic">
                       "Es una lectura consciente que se convertirá en el complemento perfecto para este nuevo ritmo de vida sostenible que hoy empiezas a edificar."
                     </p>
                   </div>
