@@ -4461,12 +4461,16 @@ export default function App() {
                                       </p>
                                     </div>
                                     
-                                    <div className="bg-[#FAF7F9] border border-[#6E488A]/12 p-4 rounded-xl max-w-sm flex items-center space-x-4 shadow-inner">
-                                      <Clock className="w-8 h-8 text-amber-600 shrink-0" />
+                                    <div className="bg-yellow-50/60 border-2 border-yellow-400 p-4 rounded-xl max-w-sm flex items-center space-x-4 shadow-[0_0_12px_rgba(234,179,8,0.2)] animate-pulse">
+                                      <Clock className="w-8 h-8 text-yellow-600 shrink-0" />
                                       <div className="space-y-1">
-                                        <span className="block text-[10px] font-mono text-[#56346F]/60 uppercase tracking-widest font-bold">DISPONIBLE EN</span>
-                                        <div className="font-mono text-xl sm:text-2xl font-black text-[#6E488A] tracking-wider">
-                                          {timeRemaining.text}
+                                        <span className="block text-[10px] font-mono text-yellow-800 uppercase tracking-widest font-black">DISPONIBLE EN</span>
+                                        <div className="font-mono text-xl sm:text-2xl font-black text-yellow-950 tracking-wider flex items-center gap-1">
+                                          <span>{String(timeRemaining.hours).padStart(2, '0')}h</span>
+                                          <span>:</span>
+                                          <span>{String(timeRemaining.minutes).padStart(2, '0')}m</span>
+                                          <span>:</span>
+                                          <span className="text-yellow-600">{String(timeRemaining.seconds).padStart(2, '0')}s</span>
                                         </div>
                                       </div>
                                     </div>
@@ -4497,7 +4501,7 @@ export default function App() {
                                   <p className="leading-relaxed">Este día de evaluación se desbloqueará una vez completes de forma secuencial y cronológica el test del día correspondiente.</p>
                                   <div className="pt-2 flex items-center space-x-1.5 font-mono text-[#E36DB4] font-black text-[11px]">
                                     <Clock className="w-4 h-4" />
-                                    <span>Tiempo de asimilación aproximado restante: {timeRemaining.text}</span>
+                                    <span>Tiempo de asimilación aproximado restante: {String(timeRemaining.hours).padStart(2, '0')}h : {String(timeRemaining.minutes).padStart(2, '0')}m : {String(timeRemaining.seconds).padStart(2, '0')}s</span>
                                   </div>
                                 </div>
                               )}
@@ -4638,8 +4642,8 @@ export default function App() {
                               className={`p-6 rounded-3xl text-left border-2 transition-all duration-300 ease-out hover:scale-[1.02] hover:opacity-100 hover:shadow-md relative flex flex-col justify-between min-h-[250px] w-full shadow-xs ${
                                 isActive
                                   ? isChronologicallyLocked
-                                    ? "bg-[#FFFDF6] border-amber-300 border-b-4 border-b-amber-400 text-black shadow-md ring-1 ring-amber-300/40"
-                                    : "bg-white border-[#36C4D8] border-b-4 border-b-[#27A1B2] shadow-lg ring-1 ring-[#36C4D8]/50 text-black"
+                                    ? "bg-[#FEFCE8] border-yellow-400 border-b-4 border-b-yellow-500 text-black shadow-lg ring-2 ring-yellow-400/50 scale-[1.01]"
+                                    : "bg-white border-[#36C4D8] border-b-4 border-b-[#27A1B2] shadow-[0_0_18px_rgba(54,196,216,0.25)] ring-2 ring-[#36C4D8]/60 text-black scale-[1.01]"
                                   : isCompleted
                                   ? "bg-white border-[#6E488A]/12 border-b-4 border-b-emerald-400 text-black shadow-sm"
                                   : "bg-[#FDF9FE]/50 border-[#6E488A]/15 border-b-4 border-b-[#EDE0F0] text-black shadow-xs opacity-85"
@@ -4655,7 +4659,7 @@ export default function App() {
                                       </span>
                                     ) : isActive ? (
                                       isChronologicallyLocked ? (
-                                        <span className="text-[10px] font-mono bg-amber-100 text-amber-800 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-bold">
+                                        <span className="text-[10px] font-mono bg-yellow-100 text-yellow-900 border border-yellow-300 py-1 px-2.5 rounded-full inline-flex items-center gap-1 font-black">
                                           <span>Espera... 🔒</span>
                                         </span>
                                       ) : (
@@ -4682,32 +4686,45 @@ export default function App() {
                                   <div className="pt-2">
                                     {isChronologicallyLocked ? (
                                       /* Locked Countdown direct feedback inside card */
-                                      <div className="p-3 bg-amber-50 border border-amber-200 text-[#56346F] rounded-xl text-left space-y-1 animate-pulse">
-                                        <span className="block text-[9px] font-mono font-black text-amber-800 uppercase tracking-widest">
+                                      <div className="p-3 bg-yellow-50/80 border-2 border-yellow-400 text-yellow-950 rounded-xl text-left space-y-1 shadow-[0_0_12px_rgba(234,179,8,0.2)] animate-pulse">
+                                        <span className="block text-[9px] font-mono font-black text-yellow-800 uppercase tracking-widest">
                                           ⏳ ASIMILACIÓN: DISPONIBLE EN
                                         </span>
-                                        <div className="font-mono text-sm font-black text-amber-900">
-                                          {timeRemaining.text}
+                                        <div className="font-mono text-sm font-black text-yellow-950 tracking-wider flex items-center gap-1">
+                                          <span>{String(timeRemaining.hours).padStart(2, '0')}h</span>
+                                          <span>:</span>
+                                          <span>{String(timeRemaining.minutes).padStart(2, '0')}m</span>
+                                          <span>:</span>
+                                          <span className="text-yellow-600 font-extrabold">{String(timeRemaining.seconds).padStart(2, '0')}s</span>
                                         </div>
                                       </div>
                                     ) : (
                                       /* Active Unlocked CTA right in the active card */
-                                      <button
+                                      <motion.button
                                         onClick={() => launchDailyQuiz()}
-                                        className="w-full py-3 px-4 rounded-xl font-display font-bold text-xs text-slate-950 bg-[#36C4D8] hover:bg-[#2DB3C7] active:scale-[0.98] transition-all shadow-md cursor-pointer inline-flex items-center justify-center space-x-2 border-none outline-none"
+                                        animate={{ 
+                                          scale: [1, 1.025, 1],
+                                          boxShadow: [
+                                            "0 4px 6px -1px rgba(54, 196, 216, 0.4), 0 2px 4px -1px rgba(54, 196, 216, 0.2)",
+                                            "0 10px 15px -3px rgba(54, 196, 216, 0.5), 0 4px 6px -2px rgba(54, 196, 216, 0.25)",
+                                            "0 4px 6px -1px rgba(54, 196, 216, 0.4), 0 2px 4px -1px rgba(54, 196, 216, 0.2)"
+                                          ]
+                                        }}
+                                        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                                        className="w-full py-3.5 px-4 rounded-xl font-display font-black text-xs text-slate-950 bg-gradient-to-r from-[#36C4D8] to-[#2DB3C7] hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center space-x-2 border-none outline-none"
                                       >
-                                        <span>Comenzar Test del Día</span>
-                                        <Compass className="w-4 h-4 text-slate-950" />
-                                      </button>
+                                        <span>¡Ya está listo! Puedes hacer tu test de hoy ✨</span>
+                                        <Compass className="w-4 h-4 text-slate-950 animate-spin" style={{ animationDuration: '6s' }} />
+                                      </motion.button>
                                     )}
                                   </div>
                                 )}
 
                                 {/* OTHER DAYS REMAINING ESTIMATOR TO REDUCE ANXIETY */}
                                 {isChronologicallyLocked && !isActive && (
-                                  <div className="pt-1.5 flex items-center space-x-1.5 text-[10px] font-mono text-[#E36DB4] font-black">
+                                  <div className="pt-1.5 flex items-center space-x-1.5 text-[10px] font-mono text-amber-600 font-black">
                                     <Clock className="w-3.5 h-3.5" />
-                                    <span>Disponible en: {timeRemaining.text}</span>
+                                    <span>Disponible en: {String(timeRemaining.hours).padStart(2, '0')}h : {String(timeRemaining.minutes).padStart(2, '0')}m : {String(timeRemaining.seconds).padStart(2, '0')}s</span>
                                   </div>
                                 )}
                               </div>
