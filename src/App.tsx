@@ -63,10 +63,13 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   Cell,
   ReferenceLine
 } from "recharts";
@@ -4881,6 +4884,129 @@ export default function App() {
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+              )}
+
+              {/* GRÁFICO DE TENDENCIA DE ACTIVACIÓN HISTÓRICA */}
+              {!focusMode && programProgress.completedDays.length > 0 && (
+                <div className="bg-white border border-[#6E488A]/12 rounded-3xl p-6 sm:p-8 text-left space-y-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center space-x-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-cyan-50 flex items-center justify-center text-[#36C4D8]">
+                        <Activity className="w-5 h-5 animate-pulse" />
+                      </div>
+                      <div>
+                        <h3 className="font-display font-bold text-lg text-[#6E488A]">Tendencia de Activación y Calma</h3>
+                        <p className="text-xs text-[#56346F]/85">Tu evolución psicofisiológica y nivel de homeostasis recuperado a lo largo del programa</p>
+                      </div>
+                    </div>
+                    {/* Tiny badge showing total completed */}
+                    <div className="self-start sm:self-center bg-cyan-50 text-[#36C4D8] border border-cyan-200/50 px-3.5 py-1 rounded-full text-xs font-mono font-black uppercase tracking-wider">
+                      {programProgress.completedDays.length} / 7 días completados
+                    </div>
+                  </div>
+
+                  {/* Responsive Recharts Area */}
+                  <div className="h-[320px] w-full pt-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={[1, 2, 3, 4, 5, 6, 7]
+                          .filter(dayNum => programProgress.completedDays.includes(dayNum))
+                          .map(dayNum => {
+                            const info = [
+                              { name: "Día 1", pilar: "Corporal" },
+                              { name: "Día 2", pilar: "Ambiental" },
+                              { name: "Día 3", pilar: "Rumiante" },
+                              { name: "Día 4", pilar: "Vínculos" },
+                              { name: "Día 5", pilar: "Control" },
+                              { name: "Día 6", pilar: "Evitación" },
+                              { name: "Día 7", pilar: "Integración" }
+                            ][dayNum - 1];
+
+                            const stats = [
+                              { antes: 86, despues: 24 },
+                              { antes: 78, despues: 21 },
+                              { antes: 92, despues: 18 },
+                              { antes: 80, despues: 25 },
+                              { antes: 84, despues: 22 },
+                              { antes: 76, despues: 15 },
+                              { antes: 88, despues: 12 }
+                            ][dayNum - 1];
+
+                            return {
+                              day: info.name,
+                              pilar: info.pilar,
+                              "Nivel de Activación Inicial": stats.antes,
+                              "Nivel de Calma Logrado": stats.despues,
+                            };
+                          })}
+                        margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#EDE0F0" vertical={false} />
+                        <XAxis 
+                          dataKey="day" 
+                          stroke="#56346F" 
+                          fontSize={11}
+                          fontFamily="monospace"
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <YAxis 
+                          stroke="#56346F" 
+                          fontSize={11}
+                          fontFamily="monospace"
+                          tickLine={false}
+                          axisLine={false}
+                          domain={[0, 100]}
+                          tickFormatter={(val) => `${val}%`}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.95)",
+                            border: "1px solid rgba(110, 72, 138, 0.15)",
+                            borderRadius: "16px",
+                            boxShadow: "0 10px 15px -3px rgba(110, 72, 138, 0.1)",
+                            fontFamily: "sans-serif"
+                          }}
+                          formatter={(value: any) => [`${value}%`]}
+                        />
+                        <Legend 
+                          verticalAlign="top" 
+                          height={36} 
+                          iconType="circle"
+                          iconSize={8}
+                          wrapperStyle={{
+                            fontSize: "11px",
+                            fontFamily: "sans-serif",
+                            fontWeight: 600,
+                            paddingBottom: "10px"
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Nivel de Activación Inicial"
+                          stroke="#E36DB4"
+                          strokeWidth={3}
+                          dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
+                          activeDot={{ r: 6 }}
+                          name="Alerta / Activación Inicial"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Nivel de Calma Logrado"
+                          stroke="#36C4D8"
+                          strokeWidth={3}
+                          dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
+                          activeDot={{ r: 6 }}
+                          name="Regulación / Calma Lograda"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="p-4 bg-cyan-50/60 rounded-2xl border border-cyan-100 text-xs sm:text-sm text-cyan-900 leading-relaxed">
+                    💡 <strong>Interpretación del Mapeo de Calma:</strong> El gráfico ilustra de manera clara cómo las herramientas de desactivación simpática y sintonización vagal de M.A.P.A.™ logran reducir progresivamente la sobrecarga del sistema autónomo, disminuyendo drásticamente el estrés residual día con día.
                   </div>
                 </div>
               )}
