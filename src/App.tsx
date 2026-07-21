@@ -401,6 +401,9 @@ export default function App() {
   // Focus Mode state to hide visual distractions and focus on active day & sound player
   const [focusMode, setFocusMode] = useState<boolean>(false);
 
+  // Active Card reference for smooth auto-scrolling
+  const activeCardRef = useRef<HTMLDivElement | null>(null);
+
   // Tick state to drive the dynamic countdown timers every second
   const [tick, setTick] = useState<number>(0);
   useEffect(() => {
@@ -430,6 +433,24 @@ export default function App() {
   const getChronologicalState = () => {
     return calculateChronoState(programProgress);
   };
+
+  const currentChronoState = getChronologicalState();
+  const activeDayReady = phase === "DASHBOARD" && !currentChronoState.isLocked;
+
+  useEffect(() => {
+    if (activeDayReady && activeCardRef.current) {
+      // 1. Desplazamiento suave y automático directo a la tarjeta del día listo
+      const timer = setTimeout(() => {
+        if (activeCardRef.current) {
+          activeCardRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [activeDayReady, phase]);
 
   const getUserShortName = (info: { nombre: string; alias?: string }) => {
     if (info.alias && info.alias.trim()) {
@@ -4639,6 +4660,7 @@ export default function App() {
                           return (
                             <div
                               key={dayNum}
+                              ref={isActive && !isChronologicallyLocked ? activeCardRef : undefined}
                               className={`p-6 rounded-3xl text-left border-2 transition-all duration-300 ease-out hover:scale-[1.02] hover:opacity-100 hover:shadow-md relative flex flex-col justify-between min-h-[250px] w-full shadow-xs ${
                                 isActive
                                   ? isChronologicallyLocked
