@@ -4258,6 +4258,8 @@ export default function App() {
                     userEmail={currentUserEmail} 
                     currentDay={programProgress.currentDay}
                     isDayLocked={getChronologicalState().isLocked}
+                    completionTimestamps={programProgress.completionTimestamps}
+                    exerciseLogs={programProgress.exerciseLogs}
                     onGoToDay={(dayNum) => {
                       setSelectedDayPreview(dayNum);
                       // Smooth scroll directly to the dedicated day guide view or the timeline container

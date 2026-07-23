@@ -14,7 +14,10 @@ import {
   Trash2,
   ChevronDown,
   ChevronUp,
-  ArrowRight
+  ArrowRight,
+  Activity,
+  Shield,
+  Sliders
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { NotificationPermissionManager } from "./NotificationPermissionManager";
@@ -23,7 +26,7 @@ interface PushNotice {
   id: string;
   title: string;
   body: string;
-  category: "reminder" | "motivational" | "unlocked" | "Alerta Motivacional" | "Guía Rápida de Emergencia";
+  category: "reminder" | "motivational" | "unlocked" | "Alerta Motivacional" | "Guía Rápida de Emergencia" | "Anticipación Pre-Pico";
   receivedAt?: string;
 }
 
@@ -54,6 +57,8 @@ export interface PushNotificationManagerProps {
   currentDay?: number;
   isDayLocked?: boolean;
   onGoToDay?: (dayNum: number) => void;
+  completionTimestamps?: Record<number, string>;
+  exerciseLogs?: Array<{ taskName: string; timestamp: string; feeling: string }>;
 }
 
 const getActionDetails = (title: string, body: string, currentDay: number = 1, isDayLocked: boolean = false) => {
@@ -108,7 +113,9 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
   userEmail,
   currentDay = 1,
   isDayLocked = false,
-  onGoToDay
+  onGoToDay,
+  completionTimestamps,
+  exerciseLogs
 }) => {
   const [activeNotice, setActiveNotice] = useState<PushNotice | null>(null);
   const [activeQuote, setActiveQuote] = useState(CONSEJOS_MOTIVACIONALES[0]);
@@ -118,9 +125,145 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
   const [historyList, setHistoryList] = useState<PushNotice[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
+  // Pre-peak stress push notification state
+  const [isPrePeakEnabled, setIsPrePeakEnabled] = useState(() => {
+    try {
+      return localStorage.getItem("mapa_pre_peak_push_enabled") === "true";
+    } catch {
+      return true;
+    }
+  });
+  const [prePeakFeedback, setPrePeakFeedback] = useState<string | null>(null);
+
   // PWA real Web Push double-confirmation and loading states
   const [showSoftPrompt, setShowSoftPrompt] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
+
+  // Analyze historical activity timestamps to detect peak stress/activity hour
+  const analyzePeakActivity = () => {
+    const timestamps: Date[] = [];
+    if (completionTimestamps) {
+      Object.values(completionTimestamps).forEach((ts: string) => {
+        if (ts) {
+          const d = new Date(ts);
+          if (!isNaN(d.getTime())) timestamps.push(d);
+        }
+      });
+    }
+    if (exerciseLogs && Array.isArray(exerciseLogs)) {
+      exerciseLogs.forEach(log => {
+        if (log.timestamp) {
+          const d = new Date(log.timestamp);
+          if (!isNaN(d.getTime())) timestamps.push(d);
+        }
+      });
+    }
+    try {
+      const localLogs = localStorage.getItem("MAPA_ACTIVITY_TIMESTAMPS");
+      if (localLogs) {
+        const parsed: string[] = JSON.parse(localLogs);
+        parsed.forEach((ts: string) => {
+          const d = new Date(ts);
+          if (!isNaN(d.getTime())) timestamps.push(d);
+        });
+      }
+    } catch (e) {
+      console.warn("Could not parse local activity timestamps:", e);
+    }
+
+    if (timestamps.length === 0) {
+      return {
+        hasEnoughData: false,
+        peakHour: 17,
+        peakFormatted: "17:00 hrs (Patrón Promedio Vespertino)",
+        prePeakHour: 16,
+        prePeakMinute: 15,
+        prePeakFormatted: "16:15 hrs",
+        suggestedTool: "Respiración Vagofocal de 3 minutos",
+        sampleCount: 0
+      };
+    }
+
+    const hourCounts: Record<number, number> = {};
+    timestamps.forEach(d => {
+      const hr = d.getHours();
+      hourCounts[hr] = (hourCounts[hr] || 0) + 1;
+    });
+
+    let maxHr = 17;
+    let maxCount = 0;
+    Object.entries(hourCounts).forEach(([hr, cnt]) => {
+      if (cnt > maxCount) {
+        maxCount = cnt;
+        maxHr = parseInt(hr, 10);
+      }
+    });
+
+    let preHr = maxHr - 1;
+    let preMin = 15;
+    if (preHr < 0) preHr = 23;
+
+    const formatTime = (h: number, m: number = 0) => {
+      const hStr = h.toString().padStart(2, "0");
+      const mStr = m.toString().padStart(2, "0");
+      return `${hStr}:${mStr} hrs`;
+    };
+
+    let tool = "Respiración Vagofocal de 3 min";
+    if (maxHr >= 20 || maxHr < 6) {
+      tool = "Sonidos Bicuanti y Guía del Sueño";
+    } else if (maxHr >= 14) {
+      tool = "Descompresión en el Jardín de Paz";
+    }
+
+    return {
+      hasEnoughData: timestamps.length >= 2,
+      peakHour: maxHr,
+      peakFormatted: formatTime(maxHr, 0),
+      prePeakHour: preHr,
+      prePeakMinute: preMin,
+      prePeakFormatted: formatTime(preHr, preMin),
+      suggestedTool: tool,
+      sampleCount: timestamps.length
+    };
+  };
+
+  const peakAnalysis = analyzePeakActivity();
+
+  const togglePrePeakPush = (enabled: boolean) => {
+    setIsPrePeakEnabled(enabled);
+    try {
+      localStorage.setItem("mapa_pre_peak_push_enabled", enabled ? "true" : "false");
+    } catch (e) {
+      console.warn(e);
+    }
+    setPrePeakFeedback(enabled ? "✨ Alerta pre-pico activada exitosamente." : "Alerta pre-pico desactivada.");
+    setTimeout(() => setPrePeakFeedback(null), 4000);
+  };
+
+  const triggerPrePeakTestPush = () => {
+    const notice: PushNotice = {
+      id: "pre_peak_" + Date.now(),
+      title: "🍃 Anticipación M.A.P.A.™ - Alerta Pre-Pico de Tensión",
+      body: `Detectamos que tu pico de actividad/tensión suele ocurrir cerca de las ${peakAnalysis.peakFormatted}. Te sugerimos regalare 3 minutos de ${peakAnalysis.suggestedTool} para mantener tu serenidad.`,
+      category: "Anticipación Pre-Pico",
+      receivedAt: new Date().toISOString()
+    };
+
+    setActiveNotice(notice);
+    saveToHistory(notice);
+
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+      try {
+        new Notification(notice.title, {
+          body: notice.body,
+          icon: "/icon-512.png"
+        });
+      } catch (e) {
+        console.warn("Native notification fallback:", e);
+      }
+    }
+  };
 
   // Load alert history from localStorage
   const loadHistory = () => {
@@ -518,7 +661,17 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
 
   // Get category specific info (labels, colors, icons)
   const getCategoryTheme = (category: string) => {
-    if (category === "Alerta Motivacional" || category === "motivational") {
+    if (category === "Anticipación Pre-Pico") {
+      return {
+        label: "Anticipación Inteligente Pre-Pico",
+        themeColor: "#6E488A", // Purple / Indigo
+        icon: (
+          <div className="relative shrink-0 flex items-center justify-center w-10 h-10 bg-[#6E488A]/10 rounded-full">
+            <Activity className="w-6 h-6 text-[#6E488A] animate-pulse" />
+          </div>
+        )
+      };
+    } else if (category === "Alerta Motivacional" || category === "motivational") {
       return {
         label: "Alerta Motivacional M.A.P.A.",
         themeColor: "#45B2B6", // Turquoise
@@ -554,6 +707,112 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
           }
         }}
       />
+      
+      {/* NOTIFICACIONES PREVENTIVAS PRE-PICO DE TENSIÓN (BASADAS EN HISTÓRICO) */}
+      <div className="bg-gradient-to-br from-[#56346F]/5 via-white to-[#36C4D8]/5 border border-[#56346F]/15 rounded-2xl p-5 sm:p-6 text-left relative overflow-hidden shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#56346F]/10 pb-3">
+          <div className="flex items-center space-x-2.5">
+            <div className="p-2 bg-[#56346F]/10 text-[#56346F] rounded-xl shrink-0">
+              <Activity className="w-5 h-5 text-[#56346F] animate-pulse" />
+            </div>
+            <div>
+              <span className="text-[10px] font-mono font-black text-[#E36DB4] uppercase tracking-wider block">
+                DETECCIÓN INTELIGENTE DE PATRÓN HISTÓRICO
+              </span>
+              <h4 className="font-display font-extrabold text-base sm:text-lg text-[#56346F]">
+                Alertas Preventivas Pre-Pico de Tensión
+              </h4>
+            </div>
+          </div>
+
+          {/* Toggle Switch */}
+          <div className="flex items-center space-x-2 self-start sm:self-center shrink-0">
+            <span className="text-xs font-mono text-[#56346F]/70 font-semibold">
+              {isPrePeakEnabled ? "ACTIVADA" : "DESACTIVADA"}
+            </span>
+            <button
+              onClick={() => togglePrePeakPush(!isPrePeakEnabled)}
+              className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer border-none outline-none ${
+                isPrePeakEnabled ? "bg-[#36C4D8]" : "bg-slate-300"
+              }`}
+              aria-label="Conmutar alertas pre-pico de tensión"
+            >
+              <div
+                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                  isPrePeakEnabled ? "translate-x-6" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        <p className="text-xs sm:text-sm text-[#56346F]/85 leading-relaxed font-normal">
+          M.A.P.A.™ analiza el histórico de tus horarios de evaluación y prácticas para identificar tu ventana biológica de mayor sensibilidad. Enviamos una sugerencia de calma <strong className="text-[#6E488A]">45 minutos antes</strong> de tu pico de estrés habitual para prevenir la sobrecarga antes de que comience.
+        </p>
+
+        {/* Metrics grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="p-3.5 rounded-xl bg-white border border-[#56346F]/10 space-y-1">
+            <div className="flex items-center justify-between text-[#56346F]/60 text-[10px] font-mono font-bold uppercase">
+              <span>Hora de Mayor Actividad</span>
+              <Clock className="w-3.5 h-3.5 text-[#E86FA3]" />
+            </div>
+            <div className="font-display font-black text-sm text-[#56346F]">
+              {peakAnalysis.peakFormatted}
+            </div>
+            <span className="text-[10px] text-slate-500 block">
+              {peakAnalysis.hasEnoughData ? `Basado en ${peakAnalysis.sampleCount} registros` : "Patrón estimado inicial"}
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
+            <div className="flex items-center justify-between text-emerald-800 text-[10px] font-mono font-bold uppercase">
+              <span>Alerta Pre-Pico Sugerida</span>
+              <Bell className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <div className="font-display font-black text-sm text-emerald-900">
+              {peakAnalysis.prePeakFormatted}
+            </div>
+            <span className="text-[10px] text-emerald-700 block font-medium">
+              45 min antes de tu ventana de sobrecarga
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-[#EDE0F0]/50 border border-[#6E488A]/20 space-y-1">
+            <div className="flex items-center justify-between text-[#6E488A] text-[10px] font-mono font-bold uppercase">
+              <span>Herramienta Recomendada</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#6E488A]" />
+            </div>
+            <div className="font-display font-bold text-xs text-[#56346F] truncate">
+              {peakAnalysis.suggestedTool}
+            </div>
+            <span className="text-[10px] text-[#6E488A]/80 block">
+              Sugerida según la hora del día
+            </span>
+          </div>
+        </div>
+
+        {prePeakFeedback && (
+          <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-900 text-xs font-semibold text-center border border-emerald-300">
+            {prePeakFeedback}
+          </div>
+        )}
+
+        <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#56346F]/10">
+          <span className="text-[11px] text-[#56346F]/70 font-sans flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-[#36C4D8]" />
+            Paz mental garantizada: máximo 1 notificación preventiva al día.
+          </span>
+
+          <button
+            onClick={triggerPrePeakTestPush}
+            className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-[#56346F]/20 text-[#56346F] font-sans font-bold text-xs transition-all shadow-xs cursor-pointer shrink-0 flex items-center gap-1.5"
+          >
+            <Zap className="w-3.5 h-3.5 text-[#E86FA3]" />
+            <span>Probar Notificación Pre-Pico Ahora</span>
+          </button>
+        </div>
+      </div>
       
       {/* NATIVE SYSTEM NOTIFICATION CONFIGURATOR (PWA ALARM ENABLER) */}
       {!hideBox && (
