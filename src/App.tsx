@@ -48,6 +48,7 @@ import { ScanResults } from "./components/ScanResults";
 import { SoundTherapy } from "./components/SoundTherapy";
 import { AdminPanel } from "./components/AdminPanel";
 import { PushNotificationManager } from "./components/PushNotificationManager";
+import { InAppNotificationSystem } from "./components/InAppNotificationSystem";
 import { TermsAndPrivacy } from "./components/TermsAndPrivacy";
 import { AppDownloadPrompt } from "./components/AppDownloadPrompt";
 import { PremiumDashboard } from "./components/PremiumDashboard";
@@ -4266,6 +4267,33 @@ export default function App() {
                           element.scrollIntoView({ behavior: "smooth", block: "start" });
                         }
                       }, 100);
+                    }}
+                  />
+                  <InAppNotificationSystem
+                    userName={leadInfo?.nombre || getUserShortName(leadInfo) || "Querida Usuaria"}
+                    currentDay={programProgress.currentDay}
+                    isDayLocked={getChronologicalState().isLocked}
+                    onGoToTest={() => {
+                      if (activeCardRef.current) {
+                        activeCardRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+                      } else {
+                        const element = document.getElementById("emotional_timeline_section");
+                        if (element) {
+                          element.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                      }
+                    }}
+                    onOpenTool={(toolId) => {
+                      const el = document.getElementById(toolId) || document.getElementById("emotional_regulation_labs") || document.getElementById("emotional_timeline_section");
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }}
+                    onOpenClaraLuzChat={() => {
+                      window.open(
+                        `https://wa.me/573207739761?text=${encodeURIComponent("¡Hola, Clara! 😊\nSoy " + (leadInfo?.nombre || "usuaria de M.A.P.A.") + " y me gustaría conversar contigo.")}`,
+                        "_blank"
+                      );
                     }}
                   />
                 </div>
