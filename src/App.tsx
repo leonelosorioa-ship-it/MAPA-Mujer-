@@ -2517,13 +2517,14 @@ export default function App() {
 
   const handleDownloadPDF = () => {
     // Compile consolidated dossier data elegantly
-    const nombre = leadInfo.nombre || "Usuario M.A.P.A.™";
+    const nombre = leadInfo.nombre || "Usuaria M.A.P.A.™";
     const email = leadInfo.email || "No registrado";
     const fecha = new Date().toLocaleDateString("es-ES", { year: 'numeric', month: 'long', day: 'numeric' });
     const profileName = evaluationResult?.name || "El Vigilante Permanente";
     const profileSub = evaluationResult?.subTitle || "Foco de Hiperatención Simpática";
-    const profileDesc = evaluationResult?.description || "";
-    
+    const profileDesc = evaluationResult?.description || "Patrón caracterizado por sostener un estado de alerta continuo y tensión preventiva. A través de las intervenciones somáticas y cognitivas de 7 días, este perfil logra una autorregulación progresiva del tono vagal.";
+    const reportRef = `MAPA-CLINIC-${Math.floor(100000 + Math.random() * 900000)}`;
+
     // Build Day by Day Clinical Overview with specific details, progress, specific recommendations
     const dayLabels = [
       "Sintomatología Fisiológica y Alerta Corporal",
@@ -2537,7 +2538,7 @@ export default function App() {
 
     const dayTechnicalSummaries = [
       "Evaluación del tono basal autonómico. Se detectó predisposición al acaparamiento de tensión física en el trapecio, hombros y mandíbula, sugiriendo una asimilación muscular rígida de estresores cotidianos.",
-      "Análisis de reactividad a estímulos y saturación auditiva/visual de entornos activos. Los marcadores revelaron híper-repuestas autónomas ante ruidos bruscos o desorden material en el área de descanso.",
+      "Análisis de reactividad a estímulos y saturación auditiva/visual de entornos activos. Los marcadores revelaron híper-respuestas autónomas ante ruidos bruscos o desorden material en el área de descanso.",
       "Diagnóstico del flujo de pensamiento irracional y anticipación catastrofista futura. Se mapearon bucles recurrentes de película catastrófica que sostienen activos los picos de cortisol pre-dormancia.",
       "Calibración de límites asertivos en relaciones interpersonales. La usuaria reflejó indicios de sobrecarga empática activa, absorbiendo emocionalmente dilemas externos hasta drenar su propia batería homeostática.",
       "Auditoría de hábitos perfeccionistas cognitivos. Se observó una correlación directa entre la compulsión de planificación inflexible y el desgaste cerebral provocado por imprevistos o anomalías de agenda.",
@@ -2573,340 +2574,479 @@ export default function App() {
       const advanceText = dayAdvances[d - 1];
 
       daysHTML += `
-        <div class="day-card animate-fade">
-          <div class="day-num">DÍA ${d} DEL PROGRAMA</div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <span class="day-badge">DÍA ${d} DE EVALUACIÓN</span>
+            <span class="day-status">✓ REGISTRADO Y COMPLETADO</span>
+          </div>
           <h3 class="day-title">${title}</h3>
           
           <div class="day-detail-block">
-            <strong>Descripción detallada del Enfoque de Regulación:</strong>
+            <strong>Evaluación Psicofisiológica y Enfoque de Regulación:</strong>
             <p>${summaryText}</p>
           </div>
 
           <div class="conclusion-grid">
-            <div class="conclusion-item border-left-blue">
-              <div class="conclusion-label">AVANCE LOGRADO DE HOY</div>
-              <div>${advanceText}</div>
+            <div class="conclusion-item border-left-green">
+              <div class="conclusion-label label-green">✓ AVANCE MEDIDO HOY</div>
+              <div class="conclusion-text">${advanceText}</div>
             </div>
             <div class="conclusion-item border-left-amber">
-              <div class="conclusion-label text-amber-300">RECOMENDACIÓN NEUROPROTECTORA</div>
-              <div>${recText}</div>
+              <div class="conclusion-label label-amber">💡 PRESCRIPCIÓN NEUROPROTECTORA</div>
+              <div class="conclusion-text">${recText}</div>
             </div>
           </div>
         </div>
       `;
     }
 
-    // Construct HTML content with embedded CSS
-    const htmlReport = `
-<!DOCTYPE html>
+    const waMsg = encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.");
+    const waUrl = `https://wa.me/573207739761?text=${waMsg}`;
+
+    // Construct HTML content with clean white background and soft pastel styling
+    const htmlReport = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>M.A.P.A.™ Reporte Clínico Consolidado - ${nombre}</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #030712;
-      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #fcf9fc;
+      color: #2d3748;
       margin: 0;
-      padding: 40px;
+      padding: 32px 16px;
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
+
     .container {
-      max-width: 850px;
+      max-width: 860px;
       margin: 0 auto;
-      background-color: #0b1329;
-      border: 1px solid #1e3b8a;
+      background-color: #ffffff;
+      border: 1px solid #e8ded1;
       border-radius: 24px;
-      padding: 48px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+      padding: 44px;
+      box-shadow: 0 10px 30px rgba(90, 40, 110, 0.04);
     }
+
     .header {
-      border-bottom: 2px solid #1d4ed8;
-      padding-bottom: 24px;
-      margin-bottom: 32px;
+      border-bottom: 2px solid #e86fa3;
+      padding-bottom: 20px;
+      margin-bottom: 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .logo {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: #7ef9ff;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #3a185c;
     }
+
+    .clinic-tag {
+      background-color: #f7edf8;
+      color: #8a519e;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: monospace;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      border: 1px solid #eaddf0;
+    }
+
+    .print-btn {
+      background-color: #f3ebf5;
+      color: #56346f;
+      font-weight: 700;
+      border: 1px solid #e0d0e8;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .print-btn:hover {
+      background-color: #eaddf0;
+      color: #3a185c;
+    }
+
     .cover-title {
-      font-size: 34px;
-      font-weight: 700;
-      color: #ffffff;
-      margin-top: 0;
-      line-height: 1.25;
+      font-size: 26px;
+      font-weight: 800;
+      color: #3a185c;
+      margin: 12px 0 4px 0;
+      line-height: 1.3;
     }
+
     .subtitle {
-      font-size: 16px;
-      color: #38bdf8;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6e488a;
       margin-bottom: 24px;
     }
+
     .metadata {
-      background-color: #030712;
-      border-left: 4px solid #7ef9ff;
-      padding: 20px;
-      margin-bottom: 32px;
+      background-color: #faf5fc;
+      border-left: 4px solid #8a519e;
       border-radius: 0 16px 16px 0;
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      border: 1px solid #eae0f0;
+      border-left-width: 4px;
     }
+
     .metadata table {
       width: 100%;
       border-collapse: collapse;
     }
+
     .metadata td {
-      padding: 8px;
-      font-size: 14px;
+      padding: 5px 8px;
+      font-size: 13px;
     }
+
     .metadata td.label {
-      font-weight: 600;
-      color: #7ef9ff;
+      font-weight: 700;
+      color: #56346f;
       width: 180px;
     }
+
     .disclaimer {
-      background-color: rgba(220, 38, 38, 0.08);
-      border: 1px solid rgba(220, 38, 38, 0.25);
+      background-color: #fff5f8;
+      border: 1px solid #f3c4db;
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px 18px;
       margin-bottom: 32px;
-      font-size: 12px;
-      color: #fca5a5;
+      font-size: 11.5px;
+      color: #8a2b68;
       text-align: justify;
+      line-height: 1.55;
     }
+
     .section-title {
-      font-size: 20px;
-      color: #7ef9ff;
-      border-bottom: 1px solid #1e3a8a;
+      font-size: 16px;
+      font-weight: 800;
+      color: #3a185c;
+      border-bottom: 2px solid #e86fa3;
       padding-bottom: 8px;
-      margin-top: 40px;
+      margin-top: 36px;
       margin-bottom: 20px;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-weight: 700;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .day-card {
-      background-color: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
+
+    /* EXECUTIVE METRICS DASHBOARD */
+    .metrics-grid {
+      display: grid;
+      grid-template-cols: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
     }
-    .day-num {
+
+    .metric-card {
+      background-color: #faf5fc;
+      border: 1px solid #eae0f0;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: #3a185c;
+      margin-bottom: 2px;
+    }
+
+    .metric-lbl {
       font-size: 11px;
       font-weight: 700;
-      color: #00d4ff;
+      color: #6e488a;
       text-transform: uppercase;
-      margin-bottom: 6px;
+    }
+
+    .metric-sub {
+      font-size: 10px;
+      color: #16a34a;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .day-card {
+      background-color: #ffffff;
+      border: 1px solid #eae0f0;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(110, 72, 138, 0.03);
+    }
+
+    .day-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .day-badge {
+      font-size: 10px;
+      font-weight: 800;
+      color: #27a1b2;
+      font-family: monospace;
+      text-transform: uppercase;
       letter-spacing: 1px;
     }
+
+    .day-status {
+      font-size: 10px;
+      font-weight: 700;
+      color: #16a34a;
+      font-family: monospace;
+    }
+
     .day-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #ffffff;
-      margin-top: 0;
-      margin-bottom: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #3a185c;
+      margin: 0 0 12px 0;
     }
+
     .day-detail-block {
-      background-color: #030712;
-      padding: 16px;
+      background-color: #faf5fc;
+      padding: 14px 16px;
       border-radius: 12px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255,255,255,0.03);
+      margin-bottom: 14px;
+      border: 1px solid #f0e6f4;
     }
+
     .day-detail-block strong {
-      font-size: 12px;
-      color: #94a3b8;
+      font-size: 11px;
+      color: #6e488a;
+      font-weight: 800;
       text-transform: uppercase;
       display: block;
       margin-bottom: 4px;
-      letter-spacing: 0.5px;
     }
+
     .day-detail-block p {
       margin: 0;
-      font-size: 13.5px;
-      color: #cbd5e1;
-      line-height: 1.5;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.55;
     }
+
     .conclusion-grid {
       display: grid;
       grid-template-cols: 1fr 1fr;
-      gap: 16px;
+      gap: 12px;
     }
+
     .conclusion-item {
-      background-color: #030712;
-      padding: 14px;
+      padding: 12px 14px;
       border-radius: 10px;
-      font-size: 13px;
+      font-size: 12.5px;
       line-height: 1.5;
     }
-    .conclusion-label {
-      font-weight: bold;
-      color: #00d4ff;
-      margin-bottom: 6px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+
+    .border-left-green {
+      background-color: #f0fdf4;
+      border-left: 3.5px solid #16a34a;
+      color: #166534;
     }
-    .border-left-blue {
-      border-left: 3px solid #00d4ff;
-    }
+
     .border-left-amber {
-      border-left: 3px solid #ffb703;
+      background-color: #fffbeb;
+      border-left: 3.5px solid #d97706;
+      color: #92400e;
     }
+
+    .label-green {
+      font-weight: 800;
+      color: #15803d;
+      font-size: 10.5px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .label-amber {
+      font-weight: 800;
+      color: #b45309;
+      font-size: 10.5px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .conclusion-text {
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    /* COMPARISON */
     .comparison-sec {
-      background-color: #0f172a;
+      background-color: #faf7fb;
       border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 32px;
-      border: 1px solid rgba(126, 249, 255, 0.1);
+      padding: 22px;
+      margin-bottom: 28px;
+      border: 1px solid #eae0f0;
     }
+
     .comparison-grid {
       display: grid;
       grid-template-cols: 1fr 1fr;
-      gap: 20px;
-      margin-top: 15px;
+      gap: 16px;
+      margin-top: 14px;
     }
+
     .comparison-card {
-      background-color: #030712;
+      background-color: #ffffff;
       border-radius: 12px;
       padding: 16px;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid #eaddf0;
     }
+
     .comparison-header {
-      font-size: 14px;
-      margin-bottom: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
+
     .bar-container {
-      background-color: rgba(255,255,255,0.05);
+      background-color: #f1f5f9;
       border-radius: 8px;
-      height: 24px;
+      height: 22px;
       width: 100%;
       overflow: hidden;
-      margin-bottom: 12px;
-      position: relative;
+      margin-bottom: 10px;
     }
+
     .bar-fill {
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding-right: 12px;
-      box-sizing: border-box;
+      padding-right: 10px;
       font-size: 11px;
-      font-weight: bold;
-      color: #030712;
+      font-weight: 800;
+      color: #ffffff;
     }
+
     .initial-bar {
-      background: linear-gradient(90deg, #ef4444, #f97316);
+      background: linear-gradient(90deg, #f87171, #dc2626);
     }
+
     .final-bar {
-      background: linear-gradient(90deg, #10b981, #34d399);
+      background: linear-gradient(90deg, #34d399, #059669);
     }
+
     .comparison-list {
       margin: 0;
       padding-left: 16px;
       font-size: 12px;
-      color: #94a3b8;
+      color: #475569;
     }
+
     .comparison-list li {
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
+
     .clinical-bullet-list {
       padding-left: 20px;
       margin: 0;
     }
+
     .clinical-bullet-list li {
-      margin-bottom: 12px;
-      font-size: 14.5px;
-      color: #e2e8f0;
-      line-height: 1.5;
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      color: #334155;
+      line-height: 1.55;
     }
-    .clinic-badge {
-      background-color: rgba(56, 189, 248, 0.1);
-      color: #38bdf8;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      display: inline-block;
-      margin-bottom: 8px;
-    }
+
+    /* CTA AREA */
     .cta-area {
-      margin-top: 40px;
-      border-top: 2px dashed #1e3a8a;
-      padding-top: 32px;
+      margin-top: 36px;
+      border-top: 2px dashed #e8ded1;
+      padding-top: 28px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 16px;
+      background-color: #fcf7fc;
+      border-radius: 16px;
+      padding: 28px;
+      border: 1px solid #f0e2f3;
     }
+
     .btn-action-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 16px;
+      gap: 14px;
       width: 100%;
     }
+
     .whatsapp-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(90deg, #25D366, #128C7E);
+      background: linear-gradient(135deg, #25D366, #128C7E);
       color: #ffffff;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 14px;
-      padding: 14px 28px;
+      padding: 15px 30px;
       border-radius: 12px;
       text-decoration: none;
-      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
       transition: transform 0.2s;
     }
+
     .whatsapp-btn:hover {
       transform: scale(1.02);
     }
+
     .web-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(90deg, #38bdf8, #1d4ed8);
-      color: #ffffff;
+      background-color: #f3ebf5;
+      color: #56346f;
       font-weight: 700;
-      font-size: 14px;
-      padding: 14px 28px;
+      font-size: 13px;
+      padding: 14px 24px;
       border-radius: 12px;
       text-decoration: none;
-      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+      border: 1px solid #e0d0e8;
       transition: transform 0.2s;
     }
+
     .web-btn:hover {
-      transform: scale(1.02);
+      background-color: #eaddf0;
+      color: #3a185c;
     }
-    .print-btn {
-      display: inline-block;
-      background-color: #38bdf8;
-      color: #030712;
-      font-weight: 700;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      margin-bottom: 0px;
-      font-family: inherit;
-      font-size: 13px;
-    }
-    .print-btn:hover {
-      background-color: #00d4ff;
-    }
+
     @media print {
       body {
         background-color: #ffffff;
@@ -2917,58 +3057,21 @@ export default function App() {
         border: none;
         padding: 0;
         box-shadow: none;
-        background-color: #ffffff;
       }
-      .print-btn, .whatsapp-btn, .web-btn, .cta-area {
+      .print-btn, .cta-area {
         display: none !important;
       }
       .day-card {
-        background-color: #f8fafc;
-        border: 1px solid #cbd5e1;
         page-break-inside: avoid;
-        color: #1e293b;
       }
-      .day-title {
-        color: #0f172a;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 20px;
       }
-      .day-detail-block {
-        background-color: #f1f5f9;
-        border: 1px solid #cbd5e1;
-      }
-      .day-detail-block p {
-        color: #1e293b;
-      }
-      .conclusion-grid {
+      .metrics-grid, .comparison-grid, .conclusion-grid {
         grid-template-cols: 1fr;
-      }
-      .conclusion-item {
-        background-color: #f8fafc;
-        color: #334155;
-        border: 1px solid #e2e8f0;
-      }
-      .section-title {
-        color: #0f172a;
-        border-bottom: 2px solid #94a3b8;
-      }
-      .metadata {
-        background-color: #f8fafc;
-        border-left: 4px solid #0f172a;
-        color: #334155;
-      }
-      .logo {
-        color: #0f172a;
-      }
-      .cover-title {
-        color: #0f172a;
-      }
-      .comparison-sec {
-        background-color: #ffffff;
-        border: 1px solid #cbd5e1;
-        color: #0f172a;
-      }
-      .comparison-card {
-        background-color: #f8fafc;
-        border: 1px solid #cbd5e1;
       }
     }
   </style>
@@ -2976,12 +3079,15 @@ export default function App() {
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">M.A.P.A.™</div>
-      <button class="print-btn" onclick="window.print()">Imprimir / Guardar como PDF 🖨️</button>
+      <div class="logo-area">
+        <div class="logo">M.A.P.A.™</div>
+        <span class="clinic-tag">INFORME CLÍNICO DE ORIENTACIÓN NEUROCOGNITIVA</span>
+      </div>
+      <button class="print-btn" onclick="window.print()">Imprimir / Guardar PDF 🖨️</button>
     </div>
 
-    <h1 class="cover-title">Dossier de Autodescubrimiento Emocional M.A.P.A.™</h1>
-    <div class="subtitle">Reporte Personalizado de Orientación y Autodescubrimiento Emocional</div>
+    <h1 class="cover-title">Dossier de Autodescubrimiento y Regulación Autonómica</h1>
+    <div class="subtitle">Informe Personalizado de Evolución Somática y Calma Progresiva M.A.P.A.™</div>
 
     <div class="metadata">
       <table>
@@ -3001,30 +3107,53 @@ export default function App() {
           <td class="label">Arquetipo Principal:</td>
           <td><strong>${profileName}</strong> (${profileSub})</td>
         </tr>
+        <tr>
+          <td class="label">Código de Referencia:</td>
+          <td><strong style="font-family: monospace; color: #8a519e;">${reportRef}</strong></td>
+        </tr>
       </table>
     </div>
 
     <div class="disclaimer">
-      <strong>AVISO DE METODOLOGÍA Y ORIENTACIÓN (M.A.P.A.™):</strong> Este reporte es una herramienta digital de autoconocimiento y orientación asistida por Inteligencia Artificial. NO ES UN INSTRUMENTO DE DIAGNÓSTICO CLÍNICO, no constituye una evaluación psicológica, ni reemplaza el proceso psicoterapéutico, diagnóstico médico de salud mental, ni tratamiento realizado por profesionales cualificados (psicólogos o psiquiatras). Su objetivo es facilitar una mejor comprensión de tus procesos emocionales, picos de alerta y promover el autoconocimiento.
+      <strong>AVISO DE METODOLOGÍA Y ORIENTACIÓN INTELIGENTE (M.A.P.A.™):</strong> Este informe constituye un instrumento digital de autoconocimiento, orientación somática y estructuración de hábitos asistido por Inteligencia Artificial. NO ES UN DIAGNÓSTICO CLÍNICO O PSIQUIÁTRICO, ni reemplaza la evaluación psicoterapéutica presencial realizada por profesionales de la salud mental. Su propósito es guiarte en el reconocimiento de patrones de hiperalerta y facilitar tu transición hacia la calma autonómica.
     </div>
 
-    <div class="section-title">Análisis de Orientación del Arquetipo Dominante</div>
-    <div class="day-card" style="margin-bottom:32px;">
-      <div class="clinic-badge">Evaluación de Biotipos Neurocognitivos</div>
-      <h3 class="day-title" style="margin-bottom:8px;">${profileName}</h3>
-      <p style="margin: 0; font-size:14px; color:#cbd5e1; line-height: 1.6; text-align:justify;">${profileDesc}</p>
+    <!-- EXECUTIVE METRICS -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-val">84%</div>
+        <div class="metric-lbl">Tono Parasimpático Vagal</div>
+        <div class="metric-sub">▲ +52% respecto al Día 1</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">88%</div>
+        <div class="metric-lbl">Adaptabilidad Somática</div>
+        <div class="metric-sub">✓ Estado de Asertividad</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">-68%</div>
+        <div class="metric-lbl">Bucle Rumiante Intrusivo</div>
+        <div class="metric-sub">▼ Desactivación de Alerta</div>
+      </div>
+    </div>
+
+    <div class="section-title">Análisis del Arquetipo Dominante Evaluado</div>
+    <div class="day-card" style="margin-bottom:28px;">
+      <span class="day-badge">EVALUACIÓN DE BIOTIPO NEUROCOGNITIVO</span>
+      <h3 class="day-title" style="margin-top:6px; margin-bottom:8px;">${profileName}</h3>
+      <p style="margin: 0; font-size:13.5px; color:#334155; line-height: 1.6; text-align:justify;">${profileDesc}</p>
     </div>
 
     <!-- COMPARATOR GRAPHICS (BEFORE VS AFTER) -->
     <div class="section-title">Evolución de Regulación de Alerta (Antes vs Después)</div>
     <div class="comparison-sec">
-      <p style="margin:0 0 16px 0; font-size:13.5px; color:#94a3b8; line-height:1.5;">
+      <p style="margin:0 0 14px 0; font-size:13px; color:#475569; line-height:1.5;">
         Los siguientes marcadores resumen el comportamiento del sistema nervioso autónomo de <strong>${nombre}</strong> comparando el umbral basal inicial del Día 1 frente al balance vagal alcanzado al culminar la integración en el Día 7.
       </p>
       
       <div class="comparison-grid">
         <div class="comparison-card">
-          <div class="comparison-header font-bold" style="color: #ef4444;">DÓNDE EMPEZASTE (Día 1: Hiperalerta)</div>
+          <div class="comparison-header" style="color: #dc2626;">DÓNDE EMPEZASTE (Día 1: Hiperalerta)</div>
           <div class="bar-container">
             <div class="bar-fill initial-bar" style="width: 88%;">88% Carga</div>
           </div>
@@ -3037,7 +3166,7 @@ export default function App() {
         </div>
         
         <div class="comparison-card">
-          <div class="comparison-header font-bold" style="color: #10b981;">NIVEL RESIDUAL ACTUAL (Día 7: Calma vagal)</div>
+          <div class="comparison-header" style="color: #059669;">NIVEL RESIDUAL ACTUAL (Día 7: Calma Vagal)</div>
           <div class="bar-container">
             <div class="bar-fill final-bar" style="width: 32%;">32% Balance</div>
           </div>
@@ -3058,8 +3187,8 @@ export default function App() {
     </div>
 
     <!-- POINTS OF IMPROVEMENT -->
-    <div class="section-title">Puntos Críticos Sugeridos Para Tu Mejora</div>
-    <div class="day-card" style="background-color:rgba(251, 191, 36, 0.05); border: 1px solid rgba(251,191,36,0.15);">
+    <div class="section-title">Puntos Críticos Sugeridos Para Tu Mantenimiento</div>
+    <div class="day-card" style="background-color:#fffdf5; border: 1px solid #fde68a;">
       <ul class="clinical-bullet-list">
         <li>
           <strong>Control de Micromanagement Somático:</strong> Evitar la monitorización obsesiva del ritmo cardíaco, permitiendo una autorregulación natural del nodo sinusal.
@@ -3077,41 +3206,40 @@ export default function App() {
     </div>
 
     <!-- CONCLUSIONS AND GENERAL PROFESSIONAL RECOMMENDATIONS -->
-    <div class="section-title">Síntesis Orientativa y Recomendación General del Avance</div>
-    <div class="day-card" style="line-height:1.6; text-align:justify; font-size:14px; color:#e2e8f0;">
+    <div class="section-title">Dictamen Orientativo y Recomendación Final</div>
+    <div class="day-card" style="background-color:#faf5fc; border: 1px solid #eaddf0; line-height:1.6; text-align:justify; font-size:13.5px; color:#2d3748;">
       <p style="margin-top:0;">
         <strong>Conclusión de Orientación del Avance:</strong> La persona evaluada <strong>${nombre}</strong> ha mostrado un excelente incremento en sus marcadores de adaptabilidad autonómica. A través de la autoevaluación guiada de 7 días, se observa una transición del patrón reactivo simpático inicial hacia una asertividad de autoprotección y calma. La propiocepción de alarmas físicas debilitadas y el empleo diario de anclas de calma indican una asimilación saludable y una disminución sustancial de los estados rumiantes recurrentes.
       </p>
       <p style="margin-bottom:0;">
-        <strong>Recomendaciones de Descompresión Estructurada:</strong> Se aconseja formalmente mantener el protocolo integrado del sintonizador acústico M.A.P.A.™ durante periodos de fatiga extrema. Para asegurar la consolidación permanente de las redes neurales autorreguladas, es fundamental trascender la mera teoría del autodescubrimiento y llevar a cabo sesiones de supervisión o acompañamiento con soporte especializado en regulación del sobrepensamiento y carga adrenérgica.
+        <strong>Recomendaciones de Descompresión Estructurada:</strong> Se aconseja formalmente mantener el protocolo integrado del sintonizador acústico M.A.P.A.™ durante periodos de fatiga extrema. Para asegurar la consolidación permanente de las redes neurales autorreguladas, es fundamental trascender la mera teoría del autodescubrimiento y continuar con la práctica constante de autorregulación guiada.
       </p>
     </div>
 
     <!-- CALL TO ACTIONS (INTERACTIVE ELEMENTS) -->
     <div class="cta-area">
-      <div style="font-size:15px; font-weight:700; color:#7ef9ff; text-transform:uppercase; letter-spacing:1px;">
-        Continúa Tu Optimización de Calma con Presencia Profesional
+      <div style="font-size:16px; font-weight:800; color:#3a185c; text-transform:uppercase; letter-spacing:0.5px;">
+        CONTINÚA TU PROCESO EN M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina
       </div>
-      <p style="font-size:13px; color:#94a3b8; max-w-xl; margin:0;">
-        Ponemos a tu disposición accesos de acompañamiento personalizados e interactivos para potenciar tu plan de descompresión cognitiva.
+      <p style="font-size:13px; color:#56346f; max-width:560px; margin:0;">
+        Nuestra plataforma 100% digital asistida por Inteligencia Artificial está lista para acompañarte en tu transformación de bienestar emocional.
       </p>
       <div class="btn-action-container">
-        <a href="https://wa.link/u5qnw3" target="_blank" class="whatsapp-btn">
-          <span>Agendar Sesión de Descompresión en WhatsApp 💬</span>
+        <a href="${waUrl}" target="_blank" class="whatsapp-btn">
+          <span>Quiero el proceso completo en M.A.P.A.™ Care ➔</span>
         </a>
         <a href="https://tupodermental.club" target="_blank" class="web-btn">
-          <span>Visitar Poder Mental Club para Más Información ➔</span>
+          <span>Visitar Poder Mental Club ➔</span>
         </a>
       </div>
     </div>
 
-    <div style="text-align: center; margin-top: 48px; font-size: 11px; color: #64748b;">
-      Generado por soporte de la Unidad Integradora Poder Mental IA™ y el motor Gemini API. Administrado por contacto@tupodermental.club
+    <div style="text-align: center; margin-top: 40px; font-size: 11px; color: #8a519e; font-weight: 600;">
+      Plataforma 100% Digital M.A.P.A.™ IA • Mentora Clara Luz • Administrado por soporte@podermentalia.club
     </div>
   </div>
 </body>
-</html>
-    `;
+</html>`;
     
     // Create downloaded blob
     const blob = new Blob([htmlReport], { type: "text/html;charset=utf-8" });
@@ -3369,15 +3497,6 @@ export default function App() {
               </span>
               <span className="tracking-widest uppercase font-black">SISTEMA ACTIVO</span>
             </motion.span>
-            {phase === "RESULTS" && (
-              <button 
-                onClick={handleRestart}
-                className="flex items-center space-x-2 border-2 border-[#262222] bg-[#EDE0F0] text-xs text-[#262222] font-extrabold py-1.5 px-3 rounded-lg hover:bg-white transition-all cursor-pointer"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Reiniciar</span>
-              </button>
-            )}
           </div>
         </header>
       )}
@@ -3529,7 +3648,9 @@ export default function App() {
                               <span>Próximo día en: {String(chrono.hours).padStart(2, '0')}h {String(chrono.minutes).padStart(2, '0')}m {String(chrono.seconds).padStart(2, '0')}s</span>
                             )
                           ) : (
-                            <span className="text-emerald-900 font-black">¡Siguiente prueba disponible!</span>
+                            <span className="text-emerald-900 font-black">
+                              {programProgress.completedDays.length === 7 ? "¡7 Días Completados! 🎉" : "¡Siguiente prueba disponible!"}
+                            </span>
                           )}
                         </span>
                       </div>
@@ -3752,7 +3873,11 @@ export default function App() {
                             className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-white bg-gradient-to-r from-[#E86FA3] via-[#411F66] to-[#36C4D8] btn-neon-pulse flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-[#262222] shadow-xl"
                           >
                             <Sparkles className="w-5 h-5 text-white animate-pulse" />
-                            <span>¡Haz tu test de hoy! (Día {programProgress.currentDay || 1})</span>
+                            <span>
+                              {programProgress.completedDays.length === 7
+                                ? "Ver Mi Reporte de 7 Días Completado ✨"
+                                : `¡Haz tu test de hoy! (Día ${programProgress.currentDay || 1})`}
+                            </span>
                             <Compass className="w-5 h-5 text-white shrink-0" />
                           </button>
                         );
@@ -4623,12 +4748,12 @@ export default function App() {
                             </button>
                             
                             <a
-                              href="https://wa.link/0x3911"
+                              href={`https://wa.me/573207739761?text=${encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.")}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-8 py-4 rounded-xl font-display font-bold tracking-wider text-[#6E488A] bg-[#EDE0F0] border border-[#6E488A]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center space-x-2 justify-center shadow-sm"
                             >
-                              <span>DESEO SEGUIR CON MI PROCESO PREMIUM ➔</span>
+                              <span>Continuar en M.A.P.A.™ Care ➔</span>
                               <Smartphone className="w-4 h-4 text-[#6E488A] shrink-0" />
                             </a>
                           </div>
@@ -4744,7 +4869,22 @@ export default function App() {
                                 </div>
 
                                 {/* CONTEXTUAL INTEGRATED ACTIONS IN TIMELINE CARD (LAW OF PROXIMITY) */}
-                                {isActive && (
+                                {isCompleted ? (
+                                  <div className="pt-2">
+                                    <div className="p-3 bg-emerald-50/90 border border-emerald-200 text-emerald-900 rounded-xl text-left shadow-xs flex items-center justify-between gap-2">
+                                      <div className="flex items-center space-x-1.5 font-extrabold font-mono text-[11px] text-emerald-700">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                        <span>TEST COMPLETADO Y REGISTRADO</span>
+                                      </div>
+                                      <button
+                                        onClick={() => setSelectedDayPreview(dayNum)}
+                                        className="text-[10px] font-mono text-emerald-800 hover:underline font-black cursor-pointer border-none bg-transparent whitespace-nowrap"
+                                      >
+                                        Ver Respuestas →
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : isActive ? (
                                   <div className="pt-2">
                                     {isChronologicallyLocked ? (
                                       /* Locked Countdown direct feedback inside card */
@@ -4780,7 +4920,7 @@ export default function App() {
                                       </motion.button>
                                     )}
                                   </div>
-                                )}
+                                ) : null}
 
                                 {/* OTHER DAYS REMAINING ESTIMATOR TO REDUCE ANXIETY */}
                                 {isChronologicallyLocked && !isActive && (
@@ -6358,28 +6498,46 @@ export default function App() {
                   </div>
                   <div>
                     <a
-                      href="https://wa.link/0x3911"
+                      href={`https://wa.me/573207739761?text=${encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.")}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-display font-bold tracking-wider text-white bg-gradient-to-r from-[#36C4D8] to-emerald-500 hover:scale-105 active:scale-95 transition-all cursor-pointer text-xs uppercase inline-flex items-center justify-center space-x-2 text-center decoration-none border-2 border-[#262222]"
                     >
                       <Smartphone className="w-3.5 h-3.5 text-white shrink-0 animate-bounce" />
-                      <span>CONTINUAR PROCESO PREMIUM ➔</span>
+                      <span>Continuar en M.A.P.A.™ Care ➔</span>
                     </a>
                   </div>
                 </div>
 
               </section>
 
-              {/* Reset to Start Footer Button */}
+              {/* M.A.P.A.™ Care Transition Banner (No restart option) */}
               <div className="pt-4 pb-8">
-                <button
-                  onClick={handleRestart}
-                  className="px-6 py-3.5 rounded-xl border border-[#6E488A]/15 text-[#56346F]/60 hover:text-[#56346F] hover:bg-[#EDE0F0]/50 hover:border-[#6E488A]/30 transition-all font-mono text-xs cursor-pointer inline-flex items-center space-x-2"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  <span>VOLVER A REALIZAR EVALUACIÓN DESDE CERO</span>
-                </button>
+                <div className="bg-gradient-to-br from-[#EDE0F0]/80 via-white to-[#FDF9FE] border-2 border-[#6E488A]/20 rounded-2xl p-6 sm:p-8 text-center space-y-4 max-w-2xl mx-auto shadow-sm">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6E488A]/10 text-[#6E488A] text-[11px] font-mono font-bold uppercase tracking-wider">
+                    <span>✨ PROCESO M.A.P.A. MUJER COMPLETADO Y FINALIZADO</span>
+                  </div>
+                  <h4 className="font-display font-black text-xl text-[#3A185C]">
+                    ¡Has cumplido el objetivo de tu viaje de 7 días!
+                  </h4>
+                  <p className="text-xs text-[#56346F]/80 leading-relaxed max-w-lg mx-auto font-medium">
+                    Tu cuenta sigue activa para que entres cuantas veces quieras a revisar tus sesiones, consultar tus audios en Audio Experience, tus libros, registros y retos.
+                  </p>
+                  <p className="text-xs text-[#3A185C] font-bold">
+                    Si deseas continuar con el proceso completo de acompañamiento especializado, nuestro equipo de soporte está listo para orientarte en <span className="text-[#E86FA3] font-black">M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina</span>.
+                  </p>
+                  <div className="pt-2">
+                    <a
+                      href={`https://wa.me/573207739761?text=${encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl font-display font-bold text-xs text-white bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-md decoration-none border-2 border-[#262222]"
+                    >
+                      <Smartphone className="w-4 h-4 text-white shrink-0" />
+                      <span>SOLICITAR ACOMPAÑAMIENTO EN M.A.P.A.™ CARE ➔</span>
+                    </a>
+                  </div>
+                </div>
               </div>
 
             </motion.div>
