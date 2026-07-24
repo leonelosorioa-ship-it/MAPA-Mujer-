@@ -263,8 +263,8 @@ export const NotificationPermissionManager: React.FC<PermissionManagerProps> = (
             </p>
           </div>
           
-          <div className="text-[10px] text-[#56346F]/60 font-mono italic text-right">
-            M.A.P.A.™ • Por Leonel Osorio Andrade
+          <div className="text-[10px] text-[#56346F]/70 font-mono italic text-right font-medium">
+            M.A.P.A.™ • Clara Luz, Creadora y Mentora
           </div>
         </div>
       </div>
