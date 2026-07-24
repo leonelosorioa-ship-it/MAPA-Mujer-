@@ -57,6 +57,8 @@ import { RewardModal } from "./components/RewardModal";
 import { AvatarPickerModal } from "./components/AvatarPickerModal";
 import { MilestoneModal } from "./components/MilestoneModal";
 import { WelcomeOnboardingModal } from "./components/WelcomeOnboardingModal";
+import { TechnicalSupportDrawer } from "./components/TechnicalSupportDrawer";
+import { AnimatedProgressNumber } from "./components/AnimatedProgressNumber";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
 import { useAuthSynchronizer } from "./hooks/useAuthSynchronizer";
 import { playClickCue, playAlertCue, playSuccessCue } from "./utils/audioCues";
@@ -4146,13 +4148,13 @@ export default function App() {
                     Si eres compradora y tienes inconvenientes para iniciar sesión o conseguir tu código, no te preocupes. Clara te ayudará de inmediato.
                   </p>
                   <a
-                    href={`https://wa.me/573207739761?text=${encodeURIComponent("¡Hola, Clara! 😊\nNecesito tu ayuda para ingresar a *M.A.P.A.™ Mujer.* Este es el correo electrónico con el que realicé la compra: " + (loginEmail || ""))}`}
+                    href={`https://wa.me/573207739761?text=${encodeURIComponent(`¡Hola, Clara! 🫶\nNecesito ayuda técnica con mi acceso a M.A.P.A.™ Mujer.\nMi correo de registro es: ${loginEmail || ""}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 px-4 rounded-xl font-sans font-black text-xs sm:text-sm text-white bg-[#25D366] hover:bg-[#20BA56] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm no-underline"
                   >
                     <MessageCircle className="w-4 h-4 text-white fill-current shrink-0" />
-                    <span>SOPORTE POR WHATSAPP</span>
+                    <span>AYUDA / SOPORTE POR WHATSAPP</span>
                   </a>
                 </div>
 
@@ -4217,15 +4219,20 @@ export default function App() {
                         );
                       })()}
                     </div>
-                    <div className="bg-[#FAF7F9] border border-[#6E488A]/10 p-4 rounded-2xl text-center shrink-0 w-full md:w-auto shadow-inner">
+                    <motion.div 
+                      initial={{ scale: 0.9, opacity: 0, y: 10 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      transition={{ type: "spring", stiffness: 220, damping: 18, delay: 0.1 }}
+                      className="bg-[#FAF7F9] border border-[#6E488A]/10 p-4 rounded-2xl text-center shrink-0 w-full md:w-auto shadow-inner"
+                    >
                       <span className="block text-[10px] font-mono text-[#56346F]/60 uppercase tracking-wider">PROGRESO GENERAL</span>
                       <span className="font-display font-extrabold text-3xl text-[#36C4D8] block my-1">
-                        {Math.round((programProgress.completedDays.length / 7) * 100)}%
+                        <AnimatedProgressNumber value={Math.round((programProgress.completedDays.length / 7) * 100)} suffix="%" />
                       </span>
-                      <span className="text-[10px] font-mono text-emerald-800 block bg-emerald-500/10 py-1 px-2.5 rounded-full font-semibold">
-                        {programProgress.completedDays.length} de 7 Días Listos
+                      <span className="text-[10px] font-mono text-emerald-800 block bg-emerald-500/10 py-1 px-2.5 rounded-full font-semibold flex items-center justify-center gap-1">
+                        <AnimatedProgressNumber value={programProgress.completedDays.length} /> de 7 Días Listos
                       </span>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
               )}
@@ -6562,6 +6569,11 @@ export default function App() {
         userName={leadInfo.nombre || "Usuaria"}
         userEmail={currentUserEmail}
         onComplete={handleOnboardingComplete}
+      />
+
+      {/* TECHNICAL SUPPORT & ASSISTANCE DRAWER */}
+      <TechnicalSupportDrawer
+        userEmail={currentUserEmail || loginEmail || leadInfo?.email}
       />
 
       {/* FLOATING LEAD TOAST NOTIFICATION */}

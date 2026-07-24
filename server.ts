@@ -3550,13 +3550,29 @@ app.get("/api/admin/metrics", authenticateAdminJWT, (req, res) => {
     }, 0);
     const averageProgressInDays = totalUsers > 0 ? Number((totalCompletedDaysSum / totalUsers).toFixed(1)) : 0;
 
-    // Compile sanitized user list - SENDING ONLY nombre, email, and disabled
-    // to strictly protect confidential user properties as requested.
+    // Compile enriched user list for admin display
+    const nowMs = new Date().getTime();
     const capturedEmails = db.map((u: any) => {
+      const completedDaysArr = Array.isArray(u.completedDays) ? u.completedDays : [];
+      const completedDaysCount = completedDaysArr.length;
+      const dateStr = u.lastActive || u.registeredAt;
+      let isActive = false;
+      if (dateStr) {
+        const lastActiveTime = new Date(dateStr).getTime();
+        if (!isNaN(lastActiveTime)) {
+          isActive = (nowMs - lastActiveTime) < (1000 * 60 * 60 * 24 * 30);
+        }
+      }
+
       return {
         nombre: u.nombre || "Sin Nombre",
         email: u.email || "sin-email@tupodermental.club",
+        whatsapp: u.whatsapp || "",
         disabled: !!u.disabled,
+        completedDaysCount,
+        currentDay: u.currentDay || 1,
+        lastActive: dateStr || null,
+        isActive
       };
     });
 

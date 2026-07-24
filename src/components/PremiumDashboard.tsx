@@ -32,6 +32,7 @@ import { jsPDF } from "jspdf";
 import { motion, AnimatePresence } from "motion/react";
 import { PeaceGarden } from "./PeaceGarden";
 import { ShareCard } from "./ShareCard";
+import { AnimatedProgressNumber } from "./AnimatedProgressNumber";
 import { COACH_CATEGORIES, analyzeUserMessage, GENERIC_SUPPORT_RESPONSE } from "../data/coachData";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
 import {
@@ -972,8 +973,9 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   </p>
                   <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#56346F]/70 font-semibold font-mono">
                     <span>Días completados: </span>
-                    <span className="px-1.5 py-0.5 rounded bg-[#EDE0F0] text-[#6E488A] font-extrabold">
-                      {completedDays?.length || 0} de 7
+                    <span className="px-1.5 py-0.5 rounded bg-[#EDE0F0] text-[#6E488A] font-extrabold inline-flex items-center gap-1">
+                      <AnimatedProgressNumber value={completedDays?.length || 0} />
+                      <span>de 7</span>
                     </span>
                     <span>• Cada paso que das te devuelve el control de tu vida. ¡Estamos contigo!</span>
                   </div>
@@ -996,24 +998,38 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
           </div>
 
           {/* Gamificación: Sistema de Niveles */}
-          <div className="p-5 rounded-2xl border-2 border-[#6E488A]/20 border-b-4 border-b-[#6E488A]/30 bg-[#EDE0F0]/30 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 shadow-[0_8px_20px_rgba(110,72,138,0.04)] hover:scale-[1.005] hover:shadow-[0_12px_24px_rgba(110,72,138,0.06)]">
+          <motion.div
+            initial={{ opacity: 0, y: 15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+            className="p-5 rounded-2xl border-2 border-[#6E488A]/20 border-b-4 border-b-[#6E488A]/30 bg-[#EDE0F0]/30 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 shadow-[0_8px_20px_rgba(110,72,138,0.04)] hover:scale-[1.005] hover:shadow-[0_12px_24px_rgba(110,72,138,0.06)]"
+          >
             <div className="flex items-center gap-4 w-full md:w-auto">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#6E488A] to-[#E36DB4] flex items-center justify-center text-white font-black text-2xl shadow-md relative shrink-0">
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#6E488A] to-[#E36DB4] flex items-center justify-center text-white font-black text-2xl shadow-md relative shrink-0"
+              >
                 {levelInfo.level}
-                <Trophy className="absolute -bottom-1 -right-1 w-4 h-4 text-amber-300 drop-shadow" />
-              </div>
+                <Trophy className="absolute -bottom-1 -right-1 w-4 h-4 text-amber-300 drop-shadow animate-bounce" />
+              </motion.div>
               <div className="space-y-1 w-full text-left">
                 <span className="text-[10px] tracking-wider text-[#56346F]/70 uppercase font-mono block font-bold">Nivel de Regulación</span>
                 <div className="text-lg font-extrabold text-[#6E488A] leading-tight flex items-center gap-2">
                   {levelInfo.title}
-                  <span className="text-xs text-[#E36DB4] font-mono">({premiumData.points} XP)</span>
+                  <span className="text-xs text-[#E36DB4] font-mono">
+                    (<AnimatedProgressNumber value={premiumData.points} suffix=" XP" />)
+                  </span>
                 </div>
                 
                 {/* Progress Bar */}
                 <div className="w-full md:w-64 h-2 bg-[#EDE0F0] rounded-full overflow-hidden border border-[#6E488A]/10">
-                  <div 
-                    className="h-full bg-gradient-to-r from-[#36C4D8] to-[#E36DB4] transition-all duration-500"
-                    style={{ width: `${levelInfo.progress}%` }}
+                  <motion.div 
+                    className="h-full bg-gradient-to-r from-[#36C4D8] to-[#E36DB4]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${levelInfo.progress}%` }}
+                    transition={{ duration: 1.0, ease: "easeOut" }}
                   />
                 </div>
                 <span className="text-[10px] text-[#56346F]/70 block font-medium">
@@ -1025,19 +1041,29 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             {/* Level description & dynamic stats */}
             <div className="flex items-center gap-6 text-center md:text-right shrink-0">
               <div>
-                <div className="text-2xl font-black text-[#6E488A] font-mono">{challenges.filter(c => c.completed).length}/5</div>
+                <div className="text-2xl font-black text-[#6E488A] font-mono flex items-center justify-center md:justify-end gap-0.5">
+                  <AnimatedProgressNumber value={challenges.filter(c => c.completed).length} />
+                  <span>/5</span>
+                </div>
                 <span className="text-[10px] text-[#56346F]/70 uppercase tracking-widest block font-bold">Retos Diarios</span>
               </div>
               <div className="w-px h-8 bg-[#6E488A]/20" />
               <div>
-                <div className="text-2xl font-black text-[#6E488A] font-mono">{premiumData.coachHistory.filter(m => m.role === "user").length}</div>
+                <div className="text-2xl font-black text-[#6E488A] font-mono text-center md:text-right">
+                  <AnimatedProgressNumber value={premiumData.coachHistory.filter(m => m.role === "user").length} />
+                </div>
                 <span className="text-[10px] text-[#56346F]/70 uppercase tracking-widest block font-bold">Interacciones IA</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Daily Progress Tracker Banner */}
-          <div className="bg-gradient-to-r from-[#6E488A]/5 via-[#E36DB4]/5 to-transparent border border-[#6E488A]/15 rounded-2xl p-4 sm:p-5 text-left flex flex-col md:flex-row items-center justify-between gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-gradient-to-r from-[#6E488A]/5 via-[#E36DB4]/5 to-transparent border border-[#6E488A]/15 rounded-2xl p-4 sm:p-5 text-left flex flex-col md:flex-row items-center justify-between gap-4"
+          >
             <div className="space-y-1">
               <span className="text-[9px] font-mono font-black uppercase text-[#E36DB4] bg-[#EDE0F0] border border-[#E36DB4]/20 px-2.5 py-1 rounded-full">
                 🎯 PROGRESO DIARIO M.A.P.A.™
@@ -1052,8 +1078,9 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             
             <div className="flex items-center gap-4 w-full md:w-auto shrink-0 justify-between md:justify-end">
               <div className="text-left md:text-right">
-                <div className="text-xl font-black text-[#6E488A] font-mono">
-                  {(premiumData.dailyInteractions?.[getTodayDateStr()] || []).length} de 7
+                <div className="text-xl font-black text-[#6E488A] font-mono flex items-center justify-end gap-1">
+                  <AnimatedProgressNumber value={(premiumData.dailyInteractions?.[getTodayDateStr()] || []).length} />
+                  <span>de 7</span>
                 </div>
                 <span className="text-[9px] font-mono text-[#56346F]/70 uppercase font-black tracking-wider block">
                   HERRAMIENTAS USADAS HOY
@@ -1070,7 +1097,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     strokeWidth="5"
                     fill="transparent"
                   />
-                  <circle
+                  <motion.circle
                     cx="28"
                     cy="28"
                     r="23"
@@ -1078,16 +1105,22 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     strokeWidth="5"
                     fill="transparent"
                     strokeDasharray={2 * Math.PI * 23}
-                    strokeDashoffset={2 * Math.PI * 23 * (1 - Math.min(7, (premiumData.dailyInteractions?.[getTodayDateStr()] || []).length) / 7)}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 23 }}
+                    animate={{
+                      strokeDashoffset: 2 * Math.PI * 23 * (1 - Math.min(7, (premiumData.dailyInteractions?.[getTodayDateStr()] || []).length) / 7)
+                    }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="absolute text-[10px] font-black font-mono text-emerald-600">
-                  {Math.min(100, Math.round(((premiumData.dailyInteractions?.[getTodayDateStr()] || []).length / 7) * 100))}%
-                </span>
+                <AnimatedProgressNumber
+                  value={Math.min(100, Math.round(((premiumData.dailyInteractions?.[getTodayDateStr()] || []).length / 7) * 100))}
+                  suffix="%"
+                  className="absolute text-[10px] font-black font-mono text-emerald-600 font-bold"
+                />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Premium Tools Bento Grid */}
           <div className="space-y-6">
