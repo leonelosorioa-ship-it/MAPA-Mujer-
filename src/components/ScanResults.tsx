@@ -21,7 +21,8 @@ import {
   Compass, 
   Clock, 
   ChevronRight,
-  UserCheck
+  UserCheck,
+  Smartphone
 } from "lucide-react";
 
 interface ScanResultsProps {
@@ -363,16 +364,26 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
                   <input 
                     type="text" 
                     required
-                    placeholder="Ej. K9A8B7"
+                    placeholder="123456"
                     maxLength={6}
                     value={accessCode}
                     onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
                     className="w-full bg-white border border-[#6E488A]/15 focus:border-[#36C4D8] placeholder:text-gray-400 rounded-xl p-3 pl-11 text-sm outline-none text-[#0B152B] transition-all font-mono font-bold tracking-widest uppercase"
                   />
                 </div>
-                <span className="block text-[10px] text-[#0B152B]/70 font-sans mt-0.5 leading-relaxed font-semibold">
-                  Ingresa el código de 6 caracteres que se envió a tu correo tras tu compra en Hotmart.
-                </span>
+                <div className="pt-1.5">
+                  <a
+                    href={`https://wa.me/573207739761?text=${encodeURIComponent(
+                      `¡Hola, Clara Luz! Me regalas por favor el código de acceso a mi M.A.P.A.™ Mujer. Mi correo de registro es: ${email ? email.trim() : ""}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl font-display font-bold text-xs text-white bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center space-x-2 shadow-sm decoration-none border border-[#128C7E]"
+                  >
+                    <Smartphone className="w-4 h-4 text-white shrink-0" />
+                    <span>Solicita Aquí Tu Codigo de Acceso</span>
+                  </a>
+                </div>
               </div>
 
               {/* Consent checkbox */}

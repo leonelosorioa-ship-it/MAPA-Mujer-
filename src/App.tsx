@@ -4176,7 +4176,7 @@ export default function App() {
                           <input 
                             type={isAdm ? "password" : "text"} 
                             required={isAdm}
-                            placeholder={isAdm ? "Introduce la contraseña maestra" : "Ej. K9A8B7 (Opcional para alumnas)"}
+                            placeholder={isAdm ? "Introduce la contraseña maestra" : "123456 (Opcional para alumnas)"}
                             maxLength={isAdm ? 100 : 6}
                             value={loginAccessCode}
                             onChange={(e) => setLoginAccessCode(isAdm ? e.target.value : e.target.value.toUpperCase())}
