@@ -6732,6 +6732,7 @@ export default function App() {
       {/* TECHNICAL SUPPORT & ASSISTANCE DRAWER */}
       <TechnicalSupportDrawer
         userEmail={currentUserEmail || loginEmail || leadInfo?.email}
+        isLoggedIn={!!currentUserEmail}
       />
 
       {/* FLOATING LEAD TOAST NOTIFICATION */}

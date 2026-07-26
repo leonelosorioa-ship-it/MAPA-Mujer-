@@ -18,6 +18,7 @@ import {
 
 export interface TechnicalSupportDrawerProps {
   userEmail?: string;
+  isLoggedIn?: boolean;
   isOpen?: boolean;
   onClose?: () => void;
   triggerClassName?: string;
@@ -81,12 +82,15 @@ const TUTORIALS: TutorialItem[] = [
 
 export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
   userEmail = "",
+  isLoggedIn = false,
   isOpen: externalIsOpen,
   onClose: externalOnClose,
   triggerClassName
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const [activeTutorial, setActiveTutorial] = useState<string | null>("login_code");
+  const [activeTutorial, setActiveTutorial] = useState<string | null>(
+    isLoggedIn ? "program_navigation" : "login_code"
+  );
 
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
@@ -99,6 +103,9 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
   };
 
   const handleOpen = () => {
+    if (isLoggedIn && activeTutorial === "login_code") {
+      setActiveTutorial("program_navigation");
+    }
     setInternalIsOpen(true);
   };
 
@@ -114,14 +121,18 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
           onClick={handleOpen}
           className={
             triggerClassName ||
-            "fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[998] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-white/95 backdrop-blur-md border border-[#6E488A]/25 text-[#56346F] font-display font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl hover:bg-[#56346F] hover:text-white transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95"
+            (isLoggedIn
+              ? "fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[998] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white border border-[#128C7E] font-display font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95"
+              : "fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[998] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-white/95 backdrop-blur-md border border-[#6E488A]/25 text-[#56346F] font-display font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl hover:bg-[#56346F] hover:text-white transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95")
           }
-          aria-label="Abrir centro de ayuda técnica y soporte"
+          aria-label={isLoggedIn ? "Abrir guía de uso del programa M.A.P.A." : "Abrir centro de ayuda técnica y soporte"}
         >
-          <div className="w-6 h-6 rounded-full bg-[#6E488A]/10 text-[#6E488A] group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors">
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+            isLoggedIn ? "bg-white/20 text-white" : "bg-[#6E488A]/10 text-[#6E488A] group-hover:bg-white/20 group-hover:text-white"
+          }`}>
             <LifeBuoy className="w-3.5 h-3.5" />
           </div>
-          <span className="hidden xs:inline font-bold">Ayuda & Soporte</span>
+          <span className="hidden xs:inline font-bold">{isLoggedIn ? "Ayuda • Guía M.A.P.A." : "Ayuda & Soporte"}</span>
           <span className="xs:hidden font-bold">Ayuda</span>
         </button>
       )}
@@ -160,10 +171,10 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
                   </div>
                   <div>
                     <span className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-[#8A519E] block">
-                      CENTRO DE ASISTENCIA TÉCNICA
+                      {isLoggedIn ? "ACOMPAÑAMIENTO DE 7 DÍAS" : "CENTRO DE ASISTENCIA TÉCNICA"}
                     </span>
                     <h3 className="font-display font-extrabold text-base sm:text-lg text-[#3A185C] leading-snug">
-                      Soporte & Guías Rápidas
+                      {isLoggedIn ? "Guía de Uso del Programa M.A.P.A.™" : "Soporte & Guías Rápidas"}
                     </h3>
                   </div>
                 </div>
@@ -182,34 +193,63 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
               {/* SCROLLABLE BODY WITH SOFT LIGHT PASTEL CARDS */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-[#FDF9FC]">
                 
-                {/* MENTORA CLARA LUZ BANNER */}
-                <div className="bg-gradient-to-r from-[#FFF5FA] via-[#F9F0F8] to-[#FFF5FA] rounded-2xl p-5 border border-[#E36DB4]/30 shadow-xs relative overflow-hidden text-left">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="space-y-1.5 max-w-md">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#8A2B68] text-[10px] font-mono font-bold uppercase">
-                        <Heart className="w-3 h-3 text-[#E36DB4] fill-[#E36DB4]" />
-                        <span>Creadora, Fundadora y Mentora</span>
+                {/* BANNER: SHOW CLARA LUZ WHATSAPP BANNER ONLY WHEN NOT LOGGED IN, ELSE SHOW 7-DAY PROGRAM GUIDE */}
+                {!isLoggedIn ? (
+                  <div className="bg-gradient-to-r from-[#FFF5FA] via-[#F9F0F8] to-[#FFF5FA] rounded-2xl p-5 border border-[#E36DB4]/30 shadow-xs relative overflow-hidden text-left">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="space-y-1.5 max-w-md">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#8A2B68] text-[10px] font-mono font-bold uppercase">
+                          <Heart className="w-3 h-3 text-[#E36DB4] fill-[#E36DB4]" />
+                          <span>Creadora, Fundadora y Mentora</span>
+                        </div>
+                        <h4 className="font-display font-bold text-base text-[#3A185C]">
+                          Atención Directa con Clara Luz
+                        </h4>
+                        <p className="text-xs text-[#56346F] leading-relaxed">
+                          Nuestra Mentora Clara Luz te atenderá personalmente si necesitas ayuda con tu código de acceso, cuenta o programa M.A.P.A.™.
+                        </p>
                       </div>
-                      <h4 className="font-display font-bold text-base text-[#3A185C]">
-                        Atención Directa con Clara Luz
-                      </h4>
-                      <p className="text-xs text-[#56346F] leading-relaxed">
-                        Nuestra Mentora Clara Luz te atenderá personalmente si necesitas ayuda con tu código de acceso, cuenta o programa M.A.P.A.™.
-                      </p>
-                    </div>
 
-                    <a
-                      href={supportWhatsAppUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full sm:w-auto py-2.5 px-5 rounded-xl font-display font-bold text-xs bg-[#25D366] hover:bg-[#1EBE5D] text-white transition-all shadow-md flex items-center justify-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
-                    >
-                      <MessageCircle className="w-4 h-4 fill-white" />
-                      <span>Contactar en WhatsApp</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
+                      <a
+                        href={supportWhatsAppUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto py-2.5 px-5 rounded-xl font-display font-bold text-xs bg-[#25D366] hover:bg-[#1EBE5D] text-white transition-all shadow-md flex items-center justify-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+                      >
+                        <MessageCircle className="w-4 h-4 fill-white" />
+                        <span>Contactar en WhatsApp</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-gradient-to-r from-[#F5EBF8] via-[#FAF0FB] to-[#F5EBF8] rounded-2xl p-5 border border-[#6E488A]/30 shadow-xs text-left space-y-3">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#6E488A]/15 border border-[#6E488A]/30 text-[#56346F] text-[10px] font-mono font-bold uppercase">
+                      <Sparkles className="w-3 h-3 text-[#6E488A]" />
+                      <span>Guía de Uso del Programa M.A.P.A.™</span>
+                    </div>
+                    <h4 className="font-display font-extrabold text-base text-[#3A185C]">
+                      ¿Cómo realizar tu proceso del ciclo de 7 Días?
+                    </h4>
+                    <p className="text-xs text-[#56346F] leading-relaxed">
+                      M.A.P.A.™ Mujer es una experiencia guiada de autorregulación emocional diseñada para realizarse paso a paso durante 7 días:
+                    </p>
+                    <div className="space-y-2 pt-1 text-xs text-[#411F66]">
+                      <div className="flex items-start space-x-2.5 bg-white/90 p-2.5 rounded-xl border border-[#EAE0F0]">
+                        <div className="w-5 h-5 rounded-full bg-[#36C4D8] text-white font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</div>
+                        <p><strong className="text-[#3A185C]">Un Día a la Vez (24h de Descanso):</strong> Cada día habilita un nuevo pilar. Para permitir la asimilación neurológica de las técnicas, entre cada día deben transcurrir al menos 24 horas.</p>
+                      </div>
+                      <div className="flex items-start space-x-2.5 bg-white/90 p-2.5 rounded-xl border border-[#EAE0F0]">
+                        <div className="w-5 h-5 rounded-full bg-[#36C4D8] text-white font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</div>
+                        <p><strong className="text-[#3A185C]">Test y Evaluaciones Diarias:</strong> Completa las escalas de autoevaluación al inicio de cada pilar para monitorear tus métricas de calma y guardar tu avance.</p>
+                      </div>
+                      <div className="flex items-start space-x-2.5 bg-white/90 p-2.5 rounded-xl border border-[#EAE0F0]">
+                        <div className="w-5 h-5 rounded-full bg-[#36C4D8] text-white font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</div>
+                        <p><strong className="text-[#3A185C]">Sonidos Bicuanti™ & Pistas de Calma:</strong> Escucha los audios de regulación sonora integrados al completar tu test diario para relajar tu sistema nervioso.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* GUIDES / TUTORIALS */}
                 <div className="space-y-3 text-left">
