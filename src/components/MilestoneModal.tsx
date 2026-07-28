@@ -166,24 +166,31 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
           >
             {/* Glossy top lighting reflection */}
             <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            
-            {/* Top Close Button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 bg-white/5 hover:bg-white/10 rounded-full text-white/70 hover:text-white transition-all cursor-pointer border border-white/10"
-              title="Cerrar celebración"
-              id="close-milestone-btn"
-            >
-              <X className="w-4.5 h-4.5" />
-            </button>
 
             {/* Sparkles / Aura Glow Effect in Background */}
             <div className="absolute top-12 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full bg-gradient-to-r from-pink-500/10 via-[#411F66]/30 to-cyan-500/10 blur-3xl pointer-events-none" />
 
-            {/* Title Badge Indicator */}
-            <span className="inline-block text-[10px] font-mono font-black tracking-[0.25em] uppercase text-pink-400 bg-pink-500/10 px-3 py-1.5 rounded-full mb-5 border border-pink-500/20">
-              🎖️ LOGRO DESBLOQUEADO • DÍA {daysCount}
-            </span>
+            {/* Top Header Bar with Badge and Dedicated Close Button */}
+            <div className="flex items-center justify-between w-full mb-5 pb-3 border-b border-white/10 gap-2 relative z-20">
+              <div className="inline-flex items-center gap-1.5 bg-pink-500/10 border border-pink-500/20 px-3 py-1.5 rounded-full max-w-[82%] overflow-hidden">
+                <Sparkles className="w-3.5 h-3.5 text-pink-400 shrink-0 animate-pulse" />
+                <span className="text-[10px] font-mono font-black uppercase tracking-wider text-pink-300 truncate">
+                  LOGRO DESBLOQUEADO
+                </span>
+                <span className="bg-[#36C4D8]/20 text-[#36C4D8] border border-[#36C4D8]/40 px-2 py-0.5 rounded-full text-[10px] font-mono font-extrabold shrink-0">
+                  DÍA {daysCount}
+                </span>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="p-2 bg-white/10 hover:bg-white/20 text-white/80 hover:text-white rounded-full transition-all cursor-pointer border border-white/15 shrink-0"
+                title="Cerrar celebración"
+                id="close-milestone-btn"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
             {/* The Badge Graphic Container with rotating light effect */}
             <div className="relative flex justify-center mb-6">

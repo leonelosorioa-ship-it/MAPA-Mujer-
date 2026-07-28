@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Sparkles, Award, Trophy, X, Play, Pause, Volume2, Music, CheckCircle, Download, Share2, Save, Loader2, BookOpen, ExternalLink } from "lucide-react";
+import { Sparkles, Award, Trophy, X, Play, Pause, Volume2, Music, CheckCircle, Download, Share2, Save, Loader2, BookOpen, ExternalLink, VolumeX } from "lucide-react";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
+import { AudioWaveVisualizer } from "./AudioWaveVisualizer";
 
 interface RewardModalProps {
   isOpen: boolean;
@@ -341,13 +342,31 @@ export const RewardModal: React.FC<RewardModalProps> = ({
             />
             <div className="absolute -left-24 -bottom-24 w-48 h-48 bg-[#56346F]/45 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Close Button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all cursor-pointer border-none outline-none z-20"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            {/* Header Bar with Badge and Independent Close Button */}
+            <div className="flex items-center justify-between w-full mb-4 px-1 gap-2 border-b border-white/10 pb-3 relative z-20">
+              <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full overflow-hidden max-w-[80%]">
+                {isDay3 ? (
+                  <Trophy className="w-4 h-4 text-[#E86FA3] shrink-0 animate-bounce" />
+                ) : isDay5 ? (
+                  <Award className="w-4 h-4 text-[#36C4D8] shrink-0 animate-pulse" />
+                ) : isDay4 ? (
+                  <Sparkles className="w-4 h-4 text-[#72C7CF] shrink-0 animate-pulse" />
+                ) : (
+                  <Award className="w-4 h-4 text-[#36C4D8] shrink-0 animate-spin" />
+                )}
+                <span className="text-[10px] font-mono font-extrabold uppercase tracking-widest truncate" style={{ color: themeColor }}>
+                  {badge}
+                </span>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="p-2 text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer border border-white/10 shrink-0"
+                title="Cerrar modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
             {/* Hidden HTML5 Audio Element */}
             <audio
@@ -360,22 +379,6 @@ export const RewardModal: React.FC<RewardModalProps> = ({
             {/* Content Container */}
             <div className="space-y-6 text-center relative z-10">
               
-              {/* Header Badge */}
-              <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full">
-                {isDay3 ? (
-                  <Trophy className="w-4 h-4 text-[#E86FA3] animate-bounce" />
-                ) : isDay5 ? (
-                  <Award className="w-4 h-4 text-[#36C4D8] animate-pulse" />
-                ) : isDay4 ? (
-                  <Sparkles className="w-4 h-4 text-[#72C7CF] animate-pulse" />
-                ) : (
-                  <Award className="w-4 h-4 text-[#36C4D8] animate-spin" />
-                )}
-                <span className="text-[10px] font-mono font-extrabold uppercase tracking-widest" style={{ color: themeColor }}>
-                  {badge}
-                </span>
-              </div>
-
               {/* Avatar Illustration Section */}
               <div className="relative inline-flex items-center justify-center">
                 <div className="absolute inset-0 bg-[#EDE0F0]/15 rounded-full blur-xl scale-125 pointer-events-none" />
@@ -429,80 +432,57 @@ export const RewardModal: React.FC<RewardModalProps> = ({
                 <span className="absolute -bottom-7 -right-1 text-4xl text-white/10 font-serif">”</span>
               </div>
 
-              {/* Native HTML5 Customized Audio Player Container */}
-              <div className="bg-[#1A0A26] border border-white/10 rounded-2xl p-4 text-left space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10">
-                    <Music className="w-5 h-5" style={{ color: themeColor }} />
-                  </div>
-                  <div>
-                    <h4 className="font-display font-bold text-sm text-white">
-                      {audioTitle}
-                    </h4>
-                    <p className="text-[11px] text-white/60 font-sans italic">
-                      {audioSubtitle}
-                    </p>
-                  </div>
-                </div>
+              {/* Dynamic Interactive Audio Wave Visualizer Gift Player */}
+              <div className="bg-gradient-to-b from-[#1A0A26] to-[#0D0414] border border-white/15 rounded-3xl p-5 shadow-2xl relative overflow-hidden space-y-4">
+                <div 
+                  className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-2xl opacity-20 pointer-events-none"
+                  style={{ backgroundColor: themeColor }}
+                />
 
-                {/* Progress bar and time */}
-                <div className="space-y-1">
+                {/* Circular Wave Sound Visualizer */}
+                <AudioWaveVisualizer
+                  isPlaying={isPlaying}
+                  onTogglePlay={togglePlay}
+                  currentTime={currentTime}
+                  duration={duration || 180}
+                  onSeek={(val) => {
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = val;
+                      setCurrentTime(val);
+                    }
+                  }}
+                  title={audioTitle}
+                  subtitle={audioSubtitle}
+                  themeColor={themeColor}
+                />
+
+                {/* Secondary Volume Control */}
+                <div className="flex items-center justify-center space-x-3 pt-1 border-t border-white/10 text-xs text-white/60">
+                  <button
+                    onClick={toggleMute}
+                    className="hover:text-white transition-colors cursor-pointer bg-transparent border-none p-1 flex items-center gap-1 font-mono text-[11px]"
+                  >
+                    {isMuted ? (
+                      <>
+                        <VolumeX className="w-4 h-4 text-rose-400" />
+                        <span className="text-rose-400 font-bold">Silenciado</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-4 h-4 text-cyan-300" />
+                        <span>Volumen</span>
+                      </>
+                    )}
+                  </button>
                   <input
                     type="range"
                     min="0"
-                    max={duration || 100}
-                    value={currentTime}
-                    onChange={handleSeek}
-                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer transition-all outline-none"
-                    style={{
-                      background: `linear-gradient(to right, ${themeColor} 0%, ${themeColor} ${
-                        (currentTime / (duration || 1)) * 100
-                      }%, rgba(255, 255, 255, 0.1) ${
-                        (currentTime / (duration || 1)) * 100
-                      }%, rgba(255, 255, 255, 0.1) 100%)`
-                    }}
+                    max="1"
+                    step="0.05"
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="w-24 h-1.5 bg-white/15 rounded-lg appearance-none cursor-pointer accent-[#36C4D8]"
                   />
-                  <div className="flex justify-between text-[9px] font-mono text-white/40">
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(duration || 300)}</span>
-                  </div>
-                </div>
-
-                {/* Player Playback controls */}
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={togglePlay}
-                    className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-95 text-slate-950 shadow-md border-none outline-none"
-                    style={{ backgroundColor: themeColor }}
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-4 h-4 fill-current text-[#1A0A26]" />
-                    ) : (
-                      <Play className="w-4 h-4 fill-current text-[#1A0A26] ml-0.5" />
-                    )}
-                  </button>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={toggleMute}
-                      className="text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0"
-                    >
-                      {isMuted ? (
-                        <span className="text-[10px] font-mono font-bold text-red-400">MUTED</span>
-                      ) : (
-                        <Volume2 className="w-4 h-4" />
-                      )}
-                    </button>
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      value={isMuted ? 0 : volume}
-                      onChange={handleVolumeChange}
-                      className="w-16 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
-                    />
-                  </div>
                 </div>
               </div>
 
