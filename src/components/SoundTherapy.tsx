@@ -1039,7 +1039,7 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
           </div>
           
           <p className="text-sm text-[#411F66] leading-relaxed max-w-2xl font-medium relative z-10">
-            ¡Felicidades por tu inmensa dedicación! La <strong className="text-[#E86FA3] font-bold">Mentora Clara</strong> ha liberado de forma permanente estas sintonías y recursos especiales para ti. Utilízalos siempre que lo necesites para regular tu calma y recuperar tu centro. 🌸
+            ¡Felicidades por tu inmensa dedicación! <strong className="text-[#E86FA3] font-bold">Clara Luz • Mentora M.A.P.A.™ Mujer</strong> ha liberado de forma permanente estas sintonías y recursos especiales para ti. Utilízalos siempre que lo necesites para regular tu calma y recuperar tu centro. 🌸
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
             {unlockedAudios.includes("day3") && (

@@ -15,6 +15,7 @@ import {
   Heart,
   ArrowLeft
 } from "lucide-react";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 export interface TechnicalSupportDrawerProps {
   userEmail?: string;
@@ -197,17 +198,25 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
                 {!isLoggedIn ? (
                   <div className="bg-gradient-to-r from-[#FFF5FA] via-[#F9F0F8] to-[#FFF5FA] rounded-2xl p-5 border border-[#E36DB4]/30 shadow-xs relative overflow-hidden text-left">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      <div className="space-y-1.5 max-w-md">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#8A2B68] text-[10px] font-mono font-bold uppercase">
-                          <Heart className="w-3 h-3 text-[#E36DB4] fill-[#E36DB4]" />
-                          <span>Creadora, Fundadora y Mentora</span>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 max-w-md">
+                        <img
+                          src={CLARA_LUZ_PROFILE.image}
+                          alt={CLARA_LUZ_PROFILE.fullTitle}
+                          referrerPolicy="no-referrer"
+                          className="w-14 h-14 rounded-full border-2 border-[#E36DB4] shadow-md object-cover shrink-0"
+                        />
+                        <div className="space-y-1">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#8A2B68] text-[10px] font-mono font-bold uppercase">
+                            <Heart className="w-3 h-3 text-[#E36DB4] fill-[#E36DB4]" />
+                            <span>Creadora, Fundadora y Mentora</span>
+                          </div>
+                          <h4 className="font-display font-bold text-base text-[#3A185C]">
+                            Atención Directa con Clara Luz
+                          </h4>
+                          <p className="text-xs text-[#56346F] leading-relaxed">
+                            Clara Luz • Mentora M.A.P.A.™ Mujer te atenderá personalmente si necesitas ayuda con tu código de acceso, cuenta o programa.
+                          </p>
                         </div>
-                        <h4 className="font-display font-bold text-base text-[#3A185C]">
-                          Atención Directa con Clara Luz
-                        </h4>
-                        <p className="text-xs text-[#56346F] leading-relaxed">
-                          Nuestra Mentora Clara Luz te atenderá personalmente si necesitas ayuda con tu código de acceso, cuenta o programa M.A.P.A.™.
-                        </p>
                       </div>
 
                       <a
@@ -358,8 +367,8 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
                 <p className="text-[11px] font-mono font-bold text-[#3A185C]">
                   M.A.P.A.™ Mujer • Sistema de Autorregulación Emocional
                 </p>
-                <p className="text-[10px] text-[#6E488A] font-semibold">
-                  Clara Luz • Creadora, Fundadora y Mentora
+                <p className="text-[10px] text-[#6E488A] font-extrabold font-mono">
+                  Clara Luz • Mentora M.A.P.A.™ Mujer
                 </p>
               </div>
             </motion.div>

@@ -35,6 +35,7 @@ import { ShareCard } from "./ShareCard";
 import { AnimatedProgressNumber } from "./AnimatedProgressNumber";
 import { COACH_CATEGORIES, analyzeUserMessage, GENERIC_SUPPORT_RESPONSE } from "../data/coachData";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 import {
   LineChart,
   Line,
@@ -54,6 +55,7 @@ interface PremiumDashboardProps {
   currentDay?: number;
   completedDays?: number[];
   onTriggerMilestone?: (days: number) => void;
+  onOpenClaraProfile?: () => void;
 }
 
 interface ChatMessage {
@@ -271,7 +273,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   onAudioSelect,
   currentDay,
   completedDays,
-  onTriggerMilestone
+  onTriggerMilestone,
+  onOpenClaraProfile
 }) => {
   const { getShareText, shareToWhatsApp, shareWithFallback } = useWhatsAppShare();
 
@@ -286,7 +289,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
     coachHistory: [
       {
         role: "coach",
-        content: `Hola, querida ${userName || "amiga"}, bienvenida a tu espacio seguro de bienestar en M.A.P.A.™. Yo soy tu Mentora Clara, tu guía en este ecosistema By Tu Poder Mental Mujer. He analizado con detalle tu perfil emocional y estoy aquí con absoluto cariño para escucharte, protegerte y guiarte en cada paso de tu proceso de 7 días. Este es tu refugio sagrado, libre de todo juicio. ¿Cómo te sientes en este preciso instante, querida ${userName || "amiga"}?`,
+        content: `Hola, querida ${userName || "amiga"}, bienvenida a tu espacio seguro de bienestar en M.A.P.A.™. Yo soy Clara Luz • Mentora M.A.P.A.™ Mujer, creadora y fundadora de este gran proyecto para el beneficio de las mujeres. He analizado con detalle tu perfil emocional y estoy aquí con absoluto cariño para escucharte, protegerte y guiarte en cada paso de tu proceso de 7 días. Este es tu refugio sagrado, libre de todo juicio. ¿Cómo te sientes en este preciso instante, querida ${userName || "amiga"}?`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ],
@@ -997,6 +1000,57 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             </div>
           </div>
 
+          {/* 🌸 Clara Luz Profile & Founder Spotlight Banner */}
+          <div className="bg-gradient-to-r from-[#1E0938] via-[#331154] to-[#1E0938] rounded-3xl p-5 border-2 border-purple-500/30 text-white shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-5 text-left">
+            <div className="absolute -right-12 -top-12 w-48 h-48 bg-[#B5179E]/20 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="flex items-center space-x-4 relative z-10">
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#36C4D8] to-[#E86FA3] rounded-full blur-md opacity-80 animate-pulse" />
+                <img
+                  src={CLARA_LUZ_PROFILE.image}
+                  alt={CLARA_LUZ_PROFILE.fullTitle}
+                  referrerPolicy="no-referrer"
+                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-[#E86FA3] shadow-lg"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-200 text-[10px] font-mono font-bold uppercase">
+                  <Heart className="w-3 h-3 text-[#E86FA3] fill-[#E86FA3]" />
+                  <span>Creadora & Fundadora M.A.P.A.™ Mujer</span>
+                </div>
+                <h3 className="font-display font-black text-lg sm:text-xl text-white">
+                  {CLARA_LUZ_PROFILE.signature}
+                </h3>
+                <p className="text-xs text-purple-200/90 font-sans italic line-clamp-2 max-w-xl">
+                  "{CLARA_LUZ_PROFILE.founderMessage}"
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full sm:w-auto relative z-10">
+              {onOpenClaraProfile && (
+                <button
+                  onClick={onOpenClaraProfile}
+                  className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-100 font-mono font-bold text-xs transition-all cursor-pointer flex items-center justify-center space-x-2 active:scale-95"
+                >
+                  <User className="w-4 h-4 text-purple-300" />
+                  <span>Ver Perfil de Clara Luz 🌸</span>
+                </button>
+              )}
+              <a
+                href={`https://wa.me/573207739761?text=${encodeURIComponent("¡Hola, Clara Luz! 🌸\nSoy " + (userName || "usuaria de M.A.P.A.") + " y me gustaría conversar contigo.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#1fbe5b] text-white font-mono font-bold text-xs transition-all shadow-md cursor-pointer flex items-center justify-center space-x-2 active:scale-95"
+              >
+                <MessageSquare className="w-4 h-4 fill-white" />
+                <span>Mensaje a Clara Luz</span>
+              </a>
+            </div>
+          </div>
+
           {/* Gamificación: Sistema de Niveles */}
           <motion.div
             initial={{ opacity: 0, y: 15, scale: 0.98 }}
@@ -1148,9 +1202,9 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               {[
                 {
                   id: "coach",
-                  title: "MENTORA CLARA",
+                  title: "CLARA LUZ • MENTORA M.A.P.A.™ MUJER",
                   emoji: "🧠",
-                  desc: "Asistencia clínica interactiva con tu guía experta en tiempo real para autorregulación emocional.",
+                  desc: "Asistencia clínica interactiva con Clara Luz, Creadora y Mentora de M.A.P.A.™ para autorregulación emocional.",
                   icon: Brain,
                   bgColor: "from-[#EDE0F0] via-[#EDE0F0]/40 to-white",
                   borderColor: "border-[#6E488A]/35 hover:border-[#6E488A] hover:shadow-[0_12px_28px_rgba(110,72,138,0.15)]",
@@ -1158,7 +1212,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   iconColor: "text-[#6E488A]",
                   iconBg: "bg-[#6E488A]/10 border-[#6E488A]/20",
                   btnBg: "bg-[#6E488A] hover:bg-[#593973] text-white hover:scale-[1.03]",
-                  ctaText: "Conversar con Clara 💬",
+                  ctaText: "Conversar con Clara Luz 💬",
                   tag: "Soporte Clínico IA",
                   pulse: true
                 },

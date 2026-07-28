@@ -31,7 +31,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({
   let themeColor = "#6E488A"; // Lavender
   let audioSrc = "https://f005.backblazeb2.com/file/M.A.P.A/Audio+de+tranquilidad+por+Clara+Premio+tercer+dia.mp3";
   let audioTitle = "Audio de Tranquilidad";
-  let audioSubtitle = "Voz de nuestra mentora, Clara";
+  let audioSubtitle = "Voz de Clara Luz • Mentora M.A.P.A.™ Mujer";
 
   if (isDay3) {
     // Already set as defaults
@@ -41,21 +41,21 @@ export const RewardModal: React.FC<RewardModalProps> = ({
     themeColor = "#72C7CF";
     audioSrc = "https://f005.backblazeb2.com/file/M.A.P.A/Mi+psico%CC%81loga+me+dijo+-+Yulibeth+R.+G.+Katherine+Hoyer.mp3";
     audioTitle = "Audiolibro: Mi psicóloga me dijo";
-    audioSubtitle = "Un obsequio exclusivo a tu dedicación y constancia relacional";
+    audioSubtitle = "Un obsequio exclusivo de Clara Luz • Mentora M.A.P.A.™ Mujer a tu dedicación";
   } else if (isDay5) {
     title = "Premio a la Resiliencia";
     badge = "Centinela de la Calma • Día 5";
     themeColor = "#36C4D8"; // Turquoise
     audioSrc = "https://f005.backblazeb2.com/file/M.A.P.A/Centinela+de+la+Calma+-+Clara+Premio+quinto+d%C3%ADa.mp3";
     audioTitle = "Centinela de la Calma";
-    audioSubtitle = "Voz de nuestra mentora, Clara";
+    audioSubtitle = "Voz de Clara Luz • Mentora M.A.P.A.™ Mujer";
   } else if (isDay7) {
     title = "Paz Absoluta • Tu Graduación";
     badge = "Día 7 — Paz Absoluta (Tu Graduación) 🎓";
     themeColor = "#E36DB4";
     audioSrc = "https://f005.backblazeb2.com/file/M.A.P.A/El+Despertar+de+Tu+Calma+Victoria+y+Resiliencia+Sostenible.mp3";
     audioTitle = "El Despertar de Tu Calma: Victoria y Resiliencia Sostenible";
-    audioSubtitle = "Audio de Clara Mentora • Sintonía de integración y neuroplasticidad";
+    audioSubtitle = "Sintonía de Clara Luz • Mentora M.A.P.A.™ Mujer";
   }
 
   // HTML5 audio state management
@@ -399,7 +399,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({
                   {title}
                 </h3>
                 <p className="text-xs font-mono font-bold uppercase tracking-wider text-white/50">
-                  Mensaje Especial de Mentora Clara
+                  Mensaje Especial de Clara Luz • Mentora M.A.P.A.™ Mujer
                 </p>
                 <div className="h-0.5 w-16 mx-auto" style={{ backgroundColor: themeColor }} />
               </div>

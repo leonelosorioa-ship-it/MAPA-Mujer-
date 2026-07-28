@@ -58,6 +58,7 @@ import { AvatarPickerModal } from "./components/AvatarPickerModal";
 import { MilestoneModal } from "./components/MilestoneModal";
 import { WelcomeOnboardingModal } from "./components/WelcomeOnboardingModal";
 import { TechnicalSupportDrawer } from "./components/TechnicalSupportDrawer";
+import { ClaraLuzProfileModal } from "./components/ClaraLuzProfileModal";
 import { AnimatedProgressNumber } from "./components/AnimatedProgressNumber";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
 import { useAuthSynchronizer } from "./hooks/useAuthSynchronizer";
@@ -513,6 +514,7 @@ export default function App() {
   // Rewards states
   const [unlockedAudioModal, setUnlockedAudioModal] = useState<{ isOpen: boolean; type: "day3" | "day4" | "day5" | "day7" | null }>({ isOpen: false, type: null });
   const [milestoneModal, setMilestoneModal] = useState<{ isOpen: boolean; daysCount: number }>({ isOpen: false, daysCount: 3 });
+  const [isClaraProfileOpen, setIsClaraProfileOpen] = useState<boolean>(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState<boolean>(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState<boolean>(false);
   const [adminFormEmail, setAdminFormEmail] = useState<string>("contacto@tupodermental.club");
@@ -2258,7 +2260,7 @@ export default function App() {
         setLeadCaptured(true);
         playSuccessCue();
         
-        const successMsg = `Su Reporte está siendo compilado por la Mentora Clara y llegará en menos de 5 minutos a tu ${channel === "whatsapp" ? "WhatsApp" : "Email"}.`;
+        const successMsg = `Su Reporte está siendo compilado por Clara Luz • Mentora M.A.P.A.™ Mujer y llegará en menos de 5 minutos a tu ${channel === "whatsapp" ? "WhatsApp" : "Email"}.`;
         setLeadSubmitToast(successMsg);
         
         // Update local state to reflect captured lead and sync
@@ -3235,7 +3237,7 @@ export default function App() {
     </div>
 
     <div style="text-align: center; margin-top: 40px; font-size: 11px; color: #8a519e; font-weight: 600;">
-      Plataforma 100% Digital M.A.P.A.™ IA • Mentora Clara Luz • Administrado por soporte@podermentalia.club
+      Plataforma 100% Digital M.A.P.A.™ IA • Clara Luz • Mentora M.A.P.A.™ Mujer • Creadora y Fundadora • Administrado por soporte@podermentalia.club
     </div>
   </div>
 </body>
@@ -3292,9 +3294,9 @@ export default function App() {
   const getCBTAdvice = () => {
     const name = leadInfo.nombre || "Usuaria";
     if (currentQuestionIndex < 5) {
-      return `Querida ${name}, inicias este camino con mucha valentía. Yo, como tu Mentora Clara, te acompaño. Reconocer cómo reacciona tu cuerpo es el paso número uno para desactivar el radar de alerta.`;
+      return `Querida ${name}, inicias este camino con mucha valentía. Yo, Clara Luz • Mentora M.A.P.A.™ Mujer, te acompaño. Reconocer cómo reacciona tu cuerpo es el paso número uno para desactivar el radar de alerta.`;
     } else if (currentQuestionIndex < 10) {
-      return `¡Excelente nivel de introspección, ${name}! Tu Mentora Clara celebra este avance. Comprender tus desencadenantes enseña a tu amígdala que lo que vives no es un fallo tuyo, sino una respuesta de protección.`;
+      return `¡Excelente nivel de introspección, ${name}! Clara Luz • Mentora M.A.P.A.™ Mujer celebra este avance. Comprender tus desencadenantes enseña a tu amígdala que lo que vives no es un fallo tuyo, sino una respuesta de protección.`;
     } else if (currentQuestionIndex < 15) {
       return `Descubrir tus patrones rumiantes te permite liberarte, querida ${name}. Recuerda que no eres tus pensamientos ansiosos; eres la consciencia sabia que los observa, y yo estoy aquí para protegerte.`;
     } else {
@@ -4270,10 +4272,10 @@ export default function App() {
 
                 <div className="bg-[#FAF7FC] border-2 border-[#1C0630]/15 p-4 rounded-2xl space-y-3 text-center">
                   <p className="text-xs sm:text-sm text-[#1C0630] font-black leading-relaxed">
-                    Si eres compradora y tienes inconvenientes para iniciar sesión o conseguir tu código, no te preocupes. Clara te ayudará de inmediato.
+                    Si eres compradora y tienes inconvenientes para iniciar sesión o conseguir tu código, no te preocupes. Clara Luz • Mentora M.A.P.A.™ Mujer te ayudará de inmediato.
                   </p>
                   <a
-                    href={`https://wa.me/573207739761?text=${encodeURIComponent(`¡Hola, Clara! 🫶\nNecesito ayuda técnica con mi acceso a M.A.P.A.™ Mujer.\nMi correo de registro es: ${loginEmail || ""}`)}`}
+                    href={`https://wa.me/573207739761?text=${encodeURIComponent(`¡Hola, Clara Luz! 🫶\nNecesito ayuda técnica con mi acceso a M.A.P.A.™ Mujer.\nMi correo de registro es: ${loginEmail || ""}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 px-4 rounded-xl font-sans font-black text-xs sm:text-sm text-white bg-[#25D366] hover:bg-[#20BA56] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm no-underline"
@@ -5196,6 +5198,7 @@ export default function App() {
                   currentDay={programProgress.currentDay}
                   completedDays={programProgress.completedDays}
                   onTriggerMilestone={(days) => setMilestoneModal({ isOpen: true, daysCount: days })}
+                  onOpenClaraProfile={() => setIsClaraProfileOpen(true)}
                 />
               )}
 
@@ -5260,7 +5263,7 @@ export default function App() {
                         <Sparkles className="w-5 h-5 text-[#E36DB4]" />
                       </div>
                       <div className="space-y-1">
-                        <p className="text-[11px] sm:text-xs font-mono text-[#3A185C] uppercase tracking-wider font-black">Mentora Clara • Tu Guía Emocional</p>
+                        <p className="text-[11px] sm:text-xs font-mono text-[#3A185C] uppercase tracking-wider font-black">Clara Luz • Mentora M.A.P.A.™ Mujer</p>
                         <p className="text-xs sm:text-sm text-[#3A185C] leading-relaxed italic font-bold">
                           "{getCBTAdvice()}"
                         </p>
@@ -6284,7 +6287,7 @@ export default function App() {
                       Desbloquea tus 49 Marcadores Biológicos
                     </h3>
                     <p className="text-[#1C0630] text-sm sm:text-base leading-relaxed font-bold">
-                      La Mentora Clara ha compilado tu informe completo de 12 páginas con tus anclas cerebrales, análisis cognitivo-conductual de reactividad y el plan definitivo de descompresión simpática. Elige tu canal preferido para recibirlo de inmediato: <span className="text-[#E86FA3] font-black">Los datos se solicitan con el único fin de trazabilidad, guardar tu progreso y enviar tus informes personalizados. Si lo prefieres, puedes usar un nombre simbólico para proteger al máximo tu privacidad y total discreción.</span>
+                      Clara Luz • Mentora M.A.P.A.™ Mujer ha compilado tu informe completo de 12 páginas con tus anclas cerebrales, análisis cognitivo-conductual de reactividad y el plan definitivo de descompresión simpática. Elige tu canal preferido para recibirlo de inmediato: <span className="text-[#E86FA3] font-black">Los datos se solicitan con el único fin de trazabilidad, guardar tu progreso y enviar tus informes personalizados. Si lo prefieres, puedes usar un nombre simbólico para proteger al máximo tu privacidad y total discreción.</span>
                     </p>
                   </div>
 
@@ -6727,6 +6730,13 @@ export default function App() {
         userName={leadInfo.nombre || "Usuaria"}
         userEmail={currentUserEmail}
         onComplete={handleOnboardingComplete}
+      />
+
+      {/* CLARA LUZ PROFILE & MENTOR BIOGRAPHY MODAL */}
+      <ClaraLuzProfileModal
+        isOpen={isClaraProfileOpen}
+        onClose={() => setIsClaraProfileOpen(false)}
+        userFirstName={leadInfo?.nombre}
       />
 
       {/* TECHNICAL SUPPORT & ASSISTANCE DRAWER */}

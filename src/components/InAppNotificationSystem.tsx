@@ -140,11 +140,11 @@ export const InAppNotificationSystem: React.FC<InAppNotificationSystemProps> = (
       pool.push({
         id: "clara_luz_message",
         type: "clara_luz",
-        badge: "MENTORA CLARA LUZ",
+        badge: "CLARA LUZ • MENTORA M.A.P.A.™ MUJER",
         badgeColor: "bg-[#6E488A]/15 text-[#6E488A] border-[#6E488A]/30",
         title: `Mensaje de Clara Luz 💜`,
         message: `${cleanFirstName}, Clara Luz está aquí. Quiero recordarte lo orgullosa que estoy de tu valentía en este proceso. Eres muy importante para mí y para esta comunidad.`,
-        ctaText: "Enviar un Saludo a Clara 💬",
+        ctaText: "Enviar un Saludo a Clara Luz 💬",
         icon: MessageCircle,
         accentBorder: "border-l-4 border-l-[#6E488A] border-[#6E488A]/30",
         actionKey: "clara"

@@ -545,7 +545,7 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
           }).catch(() => {
             try {
               new Notification("🎯 Alertas de Paz Mental Activas", {
-                body: "Configuración exitosa. Recibirás apoyo de la Mentora Clara en tu pantalla.",
+                body: "Configuración exitosa. Recibirás apoyo de Clara Luz • Mentora M.A.P.A.™ Mujer en tu pantalla.",
                 icon: "/icon-512.png"
               });
             } catch (e) {
@@ -1081,7 +1081,7 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
                   Activar Alertas de Paz Mental
                 </h3>
                 <p className="text-[#56346F]/90 text-sm leading-relaxed font-medium">
-                  La Mentora Clara te enviará recordatorios diarios de bienestar, consejos sintonizados y guías rápidas de emergencia para la ansiedad directamente a tu pantalla (móvil, PC o tablet), incluso si tienes la aplicación cerrada o el dispositivo bloqueado.
+                  Clara Luz • Mentora M.A.P.A.™ Mujer te enviará recordatorios diarios de bienestar, consejos sintonizados y guías rápidas de emergencia para la ansiedad directamente a tu pantalla (móvil, PC o tablet), incluso si tienes la aplicación cerrada o el dispositivo bloqueado.
                 </p>
               </div>
 
