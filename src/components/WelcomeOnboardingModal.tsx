@@ -13,7 +13,7 @@ import {
   HelpCircle,
   Heart
 } from "lucide-react";
-import { AudioWaveVisualizer } from "./AudioWaveVisualizer";
+import { AudioWaveformVisualizer } from "./AudioWaveformVisualizer";
 
 interface WelcomeOnboardingModalProps {
   isOpen: boolean;
@@ -317,12 +317,12 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
 
             {/* Reactive Sound Wave Visualizer */}
             <div className="bg-[#140822] rounded-xl p-3 border border-purple-500/30">
-              <AudioWaveVisualizer
+              <AudioWaveformVisualizer
                 audioRef={audioRef}
                 isPlaying={isPlaying}
-                bars={32}
-                height={40}
-                colorTheme="gradient"
+                bars={28}
+                height={36}
+                themeColor="#E86FA3"
               />
             </div>
 

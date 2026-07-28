@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { AudioWaveformVisualizer } from "./AudioWaveformVisualizer";
 import { 
   Play, 
   Pause, 
@@ -274,6 +275,15 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
         </div>
         <div className="text-lg">🌸</div>
       </div>
+
+      {/* Reactive Audio Spectrum / Waveform Visualizer */}
+      <AudioWaveformVisualizer
+        isPlaying={isPlaying}
+        audioRef={audioRef}
+        height={36}
+        bars={28}
+        themeColor={themeColor}
+      />
 
       <div className="space-y-1">
         <input 
@@ -1154,11 +1164,20 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
                       <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping shrink-0" />
                     )}
                   </h3>
-                  <p className="text-[10px] font-mono text-[#36C4D8] font-bold tracking-wider uppercase mb-1.5">{track.subtitle}</p>
-                  <p className="text-xs text-[#56346F]/85 line-clamp-2 leading-relaxed font-medium">
-                    {track.objective}
-                  </p>
+                  <p className="text-[10px] font-mono text-[#36C4D8] font-bold tracking-wider uppercase mb-1">{track.subtitle}</p>
                 </div>
+
+                {/* Espectrograma de Forma de Onda en Tiempo Real */}
+                <AudioWaveformVisualizer
+                  isPlaying={isCurrentPlaying}
+                  bars={22}
+                  height={28}
+                  themeColor={isCurrentPlaying ? "#10B981" : "#36C4D8"}
+                />
+
+                <p className="text-xs text-[#56346F]/85 line-clamp-1 leading-relaxed font-medium">
+                  {track.objective}
+                </p>
               </div>
 
               {/* Emotional Affirmation Badge Footer with custom interactive Escuchar button */}

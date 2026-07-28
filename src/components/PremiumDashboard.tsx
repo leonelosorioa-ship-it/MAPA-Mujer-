@@ -1001,29 +1001,29 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
           </div>
 
           {/* 🌸 Clara Luz Profile & Founder Spotlight Banner */}
-          <div className="bg-gradient-to-r from-[#1E0938] via-[#331154] to-[#1E0938] rounded-3xl p-5 border-2 border-purple-500/30 text-white shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-5 text-left">
-            <div className="absolute -right-12 -top-12 w-48 h-48 bg-[#B5179E]/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="bg-gradient-to-r from-[#FFF5FA] via-[#FAF0FB] to-[#FFF5FA] rounded-3xl p-5 border-2 border-[#E36DB4]/30 text-[#1C0630] shadow-sm relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-5 text-left">
+            <div className="absolute -right-12 -top-12 w-48 h-48 bg-[#E86FA3]/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="flex items-center space-x-4 relative z-10">
               <div className="relative shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#36C4D8] to-[#E86FA3] rounded-full blur-md opacity-80 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#36C4D8] via-[#E86FA3] to-[#6E488A] rounded-full blur-sm opacity-50 animate-pulse" />
                 <img
                   src={CLARA_LUZ_PROFILE.image}
                   alt={CLARA_LUZ_PROFILE.fullTitle}
                   referrerPolicy="no-referrer"
-                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-[#E86FA3] shadow-lg"
+                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-white shadow-md"
                 />
               </div>
 
               <div className="space-y-1">
-                <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-200 text-[10px] font-mono font-bold uppercase">
+                <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#E36DB4] text-[10px] font-mono font-bold uppercase">
                   <Heart className="w-3 h-3 text-[#E86FA3] fill-[#E86FA3]" />
                   <span>Creadora & Fundadora M.A.P.A.™ Mujer</span>
                 </div>
-                <h3 className="font-display font-black text-lg sm:text-xl text-white">
+                <h3 className="font-display font-black text-lg sm:text-xl text-[#3A185C]">
                   {CLARA_LUZ_PROFILE.signature}
                 </h3>
-                <p className="text-xs text-purple-200/90 font-sans italic line-clamp-2 max-w-xl">
+                <p className="text-xs text-[#56346F] font-sans italic line-clamp-2 max-w-xl font-medium">
                   "{CLARA_LUZ_PROFILE.founderMessage}"
                 </p>
               </div>
@@ -1033,9 +1033,9 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               {onOpenClaraProfile && (
                 <button
                   onClick={onOpenClaraProfile}
-                  className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-100 font-mono font-bold text-xs transition-all cursor-pointer flex items-center justify-center space-x-2 active:scale-95"
+                  className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-white hover:bg-[#FFF0F7] border border-[#E36DB4]/40 text-[#6E488A] font-mono font-bold text-xs transition-all cursor-pointer flex items-center justify-center space-x-2 active:scale-95 shadow-2xs"
                 >
-                  <User className="w-4 h-4 text-purple-300" />
+                  <User className="w-4 h-4 text-[#8A519E]" />
                   <span>Ver Perfil de Clara Luz 🌸</span>
                 </button>
               )}
