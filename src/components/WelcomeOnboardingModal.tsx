@@ -13,6 +13,7 @@ import {
   HelpCircle,
   Heart
 } from "lucide-react";
+import { AudioWaveVisualizer } from "./AudioWaveVisualizer";
 
 interface WelcomeOnboardingModalProps {
   isOpen: boolean;
@@ -294,7 +295,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                 </div>
                 <div>
                   <h4 className="font-sans font-bold text-xs sm:text-sm text-slate-900 leading-tight">
-                    Audio de Clara • Bienvenida Oficial
+                    Audio de Clara Luz • Bienvenida Oficial
                   </h4>
                   <p className="font-mono text-[10px] text-slate-500 font-bold">
                     M.A.P.A.™ Guía Esencial de Inicio
@@ -312,6 +313,17 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                   <span className="text-slate-400">Pausado</span>
                 )}
               </div>
+            </div>
+
+            {/* Reactive Sound Wave Visualizer */}
+            <div className="bg-[#140822] rounded-xl p-3 border border-purple-500/30">
+              <AudioWaveVisualizer
+                audioRef={audioRef}
+                isPlaying={isPlaying}
+                bars={32}
+                height={40}
+                colorTheme="gradient"
+              />
             </div>
 
             {/* Play progress bar */}
