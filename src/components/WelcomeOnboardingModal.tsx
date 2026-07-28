@@ -316,7 +316,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
             </div>
 
             {/* Reactive Sound Wave Visualizer */}
-            <div className="bg-[#140822] rounded-xl p-3 border border-purple-500/30">
+            <div className="bg-[#FAF4FC] rounded-xl p-3 border border-[#E36DB4]/30 shadow-2xs">
               <AudioWaveformVisualizer
                 audioRef={audioRef}
                 isPlaying={isPlaying}

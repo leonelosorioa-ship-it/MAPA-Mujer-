@@ -433,7 +433,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({
               </div>
 
               {/* Dynamic Interactive Audio Wave Visualizer Gift Player */}
-              <div className="bg-gradient-to-b from-[#1A0A26] to-[#0D0414] border border-white/15 rounded-3xl p-5 shadow-2xl relative overflow-hidden space-y-4">
+              <div className="bg-gradient-to-b from-[#FFF5FA] to-[#FAF2FB] border border-[#E36DB4]/30 rounded-3xl p-5 shadow-md relative overflow-hidden space-y-4">
                 <div 
                   className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-2xl opacity-20 pointer-events-none"
                   style={{ backgroundColor: themeColor }}

@@ -53,9 +53,9 @@ export const AudioWaveVisualizer: React.FC<AudioWaveVisualizerProps> = ({
 
       // Draw background ambient radial gradient inside circle
       const bgGlow = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, radius + 20);
-      bgGlow.addColorStop(0, "rgba(54, 196, 216, 0.15)");
-      bgGlow.addColorStop(0.6, "rgba(181, 23, 158, 0.1)");
-      bgGlow.addColorStop(1, "rgba(11, 5, 21, 0.8)");
+      bgGlow.addColorStop(0, "rgba(232, 111, 163, 0.12)");
+      bgGlow.addColorStop(0.6, "rgba(54, 196, 216, 0.1)");
+      bgGlow.addColorStop(1, "rgba(249, 243, 252, 0.95)");
       ctx.fillStyle = bgGlow;
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius + 15, 0, Math.PI * 2);
@@ -189,9 +189,9 @@ export const AudioWaveVisualizer: React.FC<AudioWaveVisualizerProps> = ({
         )}
 
         {/* Main Gradient Frame Ring */}
-        <div className="relative w-52 h-52 sm:w-60 sm:h-60 rounded-full p-[3px] bg-gradient-to-tr from-[#36C4D8] via-[#B5179E] to-[#E86FA3] shadow-[0_0_30px_rgba(54,196,216,0.35)] flex items-center justify-center overflow-hidden">
-          {/* Inner Dark Canvas Container */}
-          <div className="w-full h-full rounded-full bg-[#0D0414] relative flex items-center justify-center overflow-hidden border border-white/10">
+        <div className="relative w-52 h-52 sm:w-60 sm:h-60 rounded-full p-[3px] bg-gradient-to-tr from-[#36C4D8] via-[#B5179E] to-[#E86FA3] shadow-[0_0_20px_rgba(54,196,216,0.2)] flex items-center justify-center overflow-hidden">
+          {/* Inner Light Canvas Container */}
+          <div className="w-full h-full rounded-full bg-[#FAF3FC] relative flex items-center justify-center overflow-hidden border border-[#E36DB4]/30">
             {/* Real-time reactive sound wave canvas */}
             <canvas ref={canvasRef} className="w-full h-full block" />
 
@@ -219,11 +219,11 @@ export const AudioWaveVisualizer: React.FC<AudioWaveVisualizerProps> = ({
       {/* Audio Title & Subtitle */}
       {title && (
         <div className="space-y-1 max-w-sm px-2">
-          <h4 className="font-display font-black text-lg sm:text-xl text-white tracking-tight leading-snug">
+          <h4 className="font-display font-black text-lg sm:text-xl text-[#3A185C] tracking-tight leading-snug">
             {title}
           </h4>
           {subtitle && (
-            <p className="text-xs text-cyan-200/80 font-sans italic font-medium">
+            <p className="text-xs text-[#8A519E] font-sans italic font-medium">
               {subtitle}
             </p>
           )}
@@ -238,18 +238,18 @@ export const AudioWaveVisualizer: React.FC<AudioWaveVisualizerProps> = ({
           max={duration || 100}
           value={currentTime}
           onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
-          className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer transition-all outline-none accent-[#36C4D8]"
+          className="w-full h-2 bg-purple-200/40 rounded-lg appearance-none cursor-pointer transition-all outline-none accent-[#36C4D8]"
           style={{
             background: `linear-gradient(to right, ${themeColor} 0%, ${themeColor} ${
               ((currentTime || 0) / (duration || 1)) * 100
-            }%, rgba(255, 255, 255, 0.1) ${
+            }%, rgba(138, 81, 158, 0.2) ${
               ((currentTime || 0) / (duration || 1)) * 100
-            }%, rgba(255, 255, 255, 0.1) 100%)`,
+            }%, rgba(138, 81, 158, 0.2) 100%)`,
           }}
         />
-        <div className="flex justify-between text-[10px] font-mono font-bold text-white/50">
+        <div className="flex justify-between text-[10px] font-mono font-bold text-[#56346F]">
           <span>{formatTime(currentTime)}</span>
-          <span className="text-cyan-300 font-extrabold">
+          <span className="text-[#36C4D8] font-extrabold">
             {formatTime(duration)}
           </span>
         </div>

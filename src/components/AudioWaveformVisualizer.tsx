@@ -72,17 +72,17 @@ export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = (
 
         const yTop = centerY - barH / 2;
 
-        // Color palette matching corporate identity (Púrpura, Magenta, Turquesa)
+        // Color palette matching corporate identity (Púrpura, Magenta, Turquesa) on light background
         const gradient = ctx.createLinearGradient(0, yTop, 0, yTop + barH);
         if (i % 3 === 0) {
-          gradient.addColorStop(0, "#36C4D8"); // Cyan / Turquesa
-          gradient.addColorStop(1, "#E86FA3"); // Soft Magenta
+          gradient.addColorStop(0, "#28B0C4"); // Vibrant Turquoise
+          gradient.addColorStop(1, "#E85F99"); // Magenta
         } else if (i % 3 === 1) {
-          gradient.addColorStop(0, "#E86FA3"); // Magenta
-          gradient.addColorStop(1, "#6E488A"); // Corporate Purple
+          gradient.addColorStop(0, "#E85F99"); // Magenta
+          gradient.addColorStop(1, "#6E488A"); // Corporate Deep Purple
         } else {
-          gradient.addColorStop(0, "#72C7CF"); // Light Turquoise
-          gradient.addColorStop(1, "#E36DB4"); // Bright Pink
+          gradient.addColorStop(0, "#36C4D8"); // Light Turquoise
+          gradient.addColorStop(1, "#D84B98"); // Bright Pink
         }
 
         ctx.fillStyle = gradient;
@@ -98,8 +98,8 @@ export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = (
 
         // Glow effect when active
         if (isPlaying && showGlow && i % 3 === 0) {
-          ctx.shadowBlur = 6;
-          ctx.shadowColor = themeColor;
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = "#E85F99";
         } else {
           ctx.shadowBlur = 0;
         }
@@ -111,9 +111,9 @@ export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = (
       ctx.beginPath();
       ctx.lineWidth = 1.5;
       const lineGradient = ctx.createLinearGradient(0, 0, canvasWidth, 0);
-      lineGradient.addColorStop(0, "rgba(54, 196, 216, 0.4)");
-      lineGradient.addColorStop(0.5, "rgba(232, 111, 163, 0.8)");
-      lineGradient.addColorStop(1, "rgba(110, 72, 138, 0.4)");
+      lineGradient.addColorStop(0, "rgba(40, 176, 196, 0.75)");
+      lineGradient.addColorStop(0.5, "rgba(232, 95, 153, 0.9)");
+      lineGradient.addColorStop(1, "rgba(110, 72, 138, 0.75)");
       ctx.strokeStyle = lineGradient;
 
       const waveSpan = canvasWidth - 20;
@@ -147,7 +147,7 @@ export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = (
 
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-1 my-1">
-      <div className="w-full relative flex items-center justify-center overflow-hidden rounded-xl bg-[#120624]/90 p-2 border border-purple-500/25 shadow-inner">
+      <div className="w-full relative flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-[#FAF4FC] via-[#F5ECF8] to-[#FAF4FC] p-2 border border-[#E36DB4]/30 shadow-2xs">
         <canvas
           ref={canvasRef}
           style={{ width: "100%", height: `${height}px` }}
@@ -156,10 +156,10 @@ export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = (
         <div className="absolute top-1 left-2 flex items-center gap-1.5 pointer-events-none">
           <span
             className={`w-2 h-2 rounded-full ${
-              isPlaying ? "bg-[#36C4D8] animate-ping" : "bg-purple-300/40"
+              isPlaying ? "bg-[#28B0C4] animate-ping" : "bg-[#8A519E]/50"
             }`}
           />
-          <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-purple-200/80">
+          <span className="text-[9px] font-mono font-black uppercase tracking-widest text-[#56346F]">
             {isPlaying ? "Espectrograma de Frecuencia Activo" : "Onda de Sonido • En Reposo"}
           </span>
         </div>
