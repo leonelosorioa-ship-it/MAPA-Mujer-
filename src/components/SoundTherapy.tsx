@@ -1128,7 +1128,7 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
       )}
 
       {/* Grid of the 6 Audio Experiences */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="audio_experiences_grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="audio_experiences_grid">
         {BIBLIOTECA_SONIDOS.map((track) => {
           const isSelected = selectedTrack.id === track.id;
           const isCurrentPlaying = isSelected && isPlaying;
@@ -1136,35 +1136,35 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
             <motion.div
               key={track.id}
               onClick={() => handleTrackSelect(track)}
-              whileHover={{ y: -2, scale: 1.01 }}
-              className={`p-5 rounded-2xl text-left flex flex-col justify-between h-56 transition-all cursor-pointer relative overflow-hidden group select-none ${
+              whileHover={{ y: -3, scale: 1.01 }}
+              className={`p-5 rounded-2xl text-left flex flex-col justify-between min-h-[270px] h-auto transition-all cursor-pointer relative overflow-hidden group select-none ${
                 isSelected 
-                  ? "bg-white border-2 border-[#36C4D8] border-b-4 border-b-[#36C4D8] shadow-[0_8px_20px_rgba(54,196,216,0.15)] text-[#56346F]" 
-                  : "bg-[#FAF7F9] hover:bg-white border border-[#6E488A]/15 hover:border-[#6E488A]/35 border-b-4 hover:border-b-4 hover:border-b-[#EDE0F0]/70 border-b-[#EDE0F0]/30 shadow-sm text-[#56346F]"
+                  ? "bg-white border-2 border-[#36C4D8] border-b-4 border-b-[#36C4D8] shadow-[0_8px_24px_rgba(54,196,216,0.18)] text-[#56346F]" 
+                  : "bg-[#FAF7F9] hover:bg-white border border-[#6E488A]/15 hover:border-[#6E488A]/35 border-b-4 hover:border-b-4 hover:border-b-[#EDE0F0]/70 border-b-[#EDE0F0]/30 shadow-xs text-[#56346F]"
               }`}
               id={`track_card_${track.id}`}
             >
               {isSelected && (
-                <div className="absolute top-0 right-0 w-24 h-24 bg-[#36C4D8]/10 rounded-full blur-xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-28 h-28 bg-[#36C4D8]/10 rounded-full blur-2xl pointer-events-none" />
               )}
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex justify-between items-start">
                   <div className="text-2xl">{track.emoji}</div>
-                  <div className="inline-flex items-center space-x-1 px-2.5 py-1 bg-[#EDE0F0]/50 border border-[#6E488A]/10 rounded-lg text-[9px] font-mono font-bold text-[#56346F]/80">
+                  <div className="inline-flex items-center space-x-1 px-2.5 py-1 bg-[#EDE0F0]/50 border border-[#6E488A]/10 rounded-lg text-[9.5px] font-mono font-bold text-[#56346F]/80">
                     <Clock className="w-3 h-3 text-[#6E488A]" />
                     <span>{track.duration}</span>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-display font-extrabold text-base text-[#6E488A] flex items-center gap-1.5">
+                  <h3 className="font-display font-extrabold text-base text-[#6E488A] flex items-center gap-1.5 leading-snug">
                     {track.title}
                     {isCurrentPlaying && (
                       <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping shrink-0" />
                     )}
                   </h3>
-                  <p className="text-[10px] font-mono text-[#36C4D8] font-bold tracking-wider uppercase mb-1">{track.subtitle}</p>
+                  <p className="text-[10px] font-mono text-[#36C4D8] font-bold tracking-wider uppercase mt-0.5">{track.subtitle}</p>
                 </div>
 
                 {/* Espectrograma de Forma de Onda en Tiempo Real */}
@@ -1172,17 +1172,18 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
                   isPlaying={isCurrentPlaying}
                   bars={22}
                   height={28}
+                  showLabel={true}
                   themeColor={isCurrentPlaying ? "#10B981" : "#36C4D8"}
                 />
 
-                <p className="text-xs text-[#56346F]/85 line-clamp-1 leading-relaxed font-medium">
+                <p className="text-xs text-[#56346F]/85 line-clamp-2 leading-relaxed font-medium">
                   {track.objective}
                 </p>
               </div>
 
               {/* Emotional Affirmation Badge Footer with custom interactive Escuchar button */}
-              <div className="border-t border-[#6E488A]/10 pt-2.5 mt-2 flex justify-between items-center w-full gap-2">
-                <div className="text-[10.5px] text-[#56346F]/90 font-bold italic truncate max-w-[55%]">
+              <div className="border-t border-[#6E488A]/15 pt-3 mt-3 flex justify-between items-center w-full gap-2">
+                <div className="text-[10.5px] text-[#56346F]/90 font-bold italic truncate max-w-[55%]" title={track.emotion}>
                   "{track.emotion}"
                 </div>
                 
@@ -1192,12 +1193,12 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
                     e.stopPropagation(); // Avoid double call from parent div onClick
                     handleTrackSelect(track);
                   }}
-                  className={`px-3 py-1.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider transition-all duration-300 shadow-sm border cursor-pointer flex items-center gap-1 shrink-0 ${
+                  className={`px-3.5 py-1.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider transition-all duration-300 shadow-xs border cursor-pointer flex items-center gap-1.5 shrink-0 ${
                     isCurrentPlaying
                       ? "bg-[#10B981] hover:bg-emerald-600 text-white border-emerald-400 shadow-emerald-500/20 scale-[1.03]"
                       : isSelected
-                      ? "bg-[#36C4D8]/10 hover:bg-[#36C4D8]/20 text-[#36C4D8] border-[#36C4D8]/30 hover:border-[#36C4D8]/50"
-                      : "bg-[#6E488A]/10 hover:bg-[#6E488A]/20 text-[#6E488A] border-[#6E488A]/20 hover:border-[#6E488A]/35"
+                      ? "bg-[#36C4D8] hover:bg-[#28B0C4] text-white border-[#28B0C4] shadow-xs"
+                      : "bg-white hover:bg-[#FDF7FA] text-[#6E488A] border-[#6E488A]/25 hover:border-[#6E488A]/45 shadow-2xs"
                   }`}
                   id={`escuchar_btn_${track.id}`}
                 >

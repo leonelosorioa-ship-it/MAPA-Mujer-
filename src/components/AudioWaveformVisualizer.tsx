@@ -8,6 +8,7 @@ interface AudioWaveformVisualizerProps {
   themeColor?: string; // e.g., "#E86FA3", "#36C4D8", "#6E488A"
   variant?: "gradient" | "bars" | "spectrum";
   showGlow?: boolean;
+  showLabel?: boolean;
 }
 
 export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = ({
@@ -18,6 +19,7 @@ export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = (
   themeColor = "#E86FA3",
   variant = "spectrum",
   showGlow = true,
+  showLabel = true,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
@@ -146,23 +148,28 @@ export const AudioWaveformVisualizer: React.FC<AudioWaveformVisualizerProps> = (
   }, [isPlaying, height, bars, themeColor, showGlow]);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center space-y-1 my-1">
+    <div className="w-full flex flex-col space-y-1 my-0.5">
+      {showLabel && (
+        <div className="flex items-center justify-between px-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-[#6E488A]">
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isPlaying ? "bg-[#28B0C4] animate-ping" : "bg-[#8A519E]/50"
+              }`}
+            />
+            <span>{isPlaying ? "Espectrograma Activo" : "Onda de Sonido • Reposo"}</span>
+          </div>
+          {isPlaying && (
+            <span className="text-[9px] font-bold text-[#28B0C4] animate-pulse">● Sonando</span>
+          )}
+        </div>
+      )}
       <div className="w-full relative flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-[#FAF4FC] via-[#F5ECF8] to-[#FAF4FC] p-2 border border-[#E36DB4]/30 shadow-2xs">
         <canvas
           ref={canvasRef}
           style={{ width: "100%", height: `${height}px` }}
           className="block"
         />
-        <div className="absolute top-1 left-2 flex items-center gap-1.5 pointer-events-none">
-          <span
-            className={`w-2 h-2 rounded-full ${
-              isPlaying ? "bg-[#28B0C4] animate-ping" : "bg-[#8A519E]/50"
-            }`}
-          />
-          <span className="text-[9px] font-mono font-black uppercase tracking-widest text-[#56346F]">
-            {isPlaying ? "Espectrograma de Frecuencia Activo" : "Onda de Sonido • En Reposo"}
-          </span>
-        </div>
       </div>
     </div>
   );
