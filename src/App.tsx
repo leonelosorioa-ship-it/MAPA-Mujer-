@@ -5558,23 +5558,28 @@ export default function App() {
 
               {/* Progress visual percent container */}
               <div className="space-y-2">
-                <div className="h-2 w-full bg-[#EDE0F0] rounded-full overflow-hidden">
+                <div className="h-2.5 w-full bg-[#EDE0F0] rounded-full overflow-hidden shadow-inner">
                   <div 
-                    className="h-full bg-gradient-to-r from-[#36C4D8] to-[#E36DB4] transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-[#36C4D8] via-[#E86FA3] to-[#E36DB4] transition-all duration-500 rounded-full"
                     style={{ width: `${loadingProgress}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-xs font-mono text-[#56346F]/50">
-                  <span>Petición al servidor</span>
-                  <span>{loadingProgress}%</span>
+                <div className="flex items-center justify-between text-xs font-medium text-[#56346F]/70">
+                  <span>Generando análisis M.A.P.A.™</span>
+                  <span className="font-mono font-bold text-[#6E488A]">{loadingProgress}%</span>
                 </div>
               </div>
 
-              {/* Dynamic status stream logger */}
-              <div className="bg-[#FAF7F9] border border-[#6E488A]/12 p-4 rounded-xl font-mono text-[10px] text-left text-[#56346F]/70 space-y-1 h-20 overflow-y-auto">
-                <p className="text-[#36C4D8]">[info] {loadingStepText}</p>
-                <p className="text-[#56346F]/50">[logs] Analizando respuestas de los {userResponses.length} pilares psicológicos...</p>
-                <p className="text-[#56346F]/50">[core] Breakpoint ties resolved correctly...</p>
+              {/* Reassuring status messages */}
+              <div className="bg-[#FAF4FC] border border-[#E36DB4]/25 p-4 rounded-2xl text-left text-[#56346F] space-y-2 shadow-2xs">
+                <div className="flex items-center space-x-2 text-xs font-semibold text-[#6E488A]">
+                  <span className="w-2 h-2 rounded-full bg-[#36C4D8] animate-ping shrink-0" />
+                  <span>{loadingStepText || "Sintetizando información del perfil..."}</span>
+                </div>
+                <div className="text-[11.5px] font-sans text-[#56346F]/80 space-y-1 pl-4 border-l-2 border-[#E36DB4]/30">
+                  <p>• Analizando respuestas de los pilares psicológicos M.A.P.A.™</p>
+                  <p>• Calibrando tu informe de regulación y bienestar emocional</p>
+                </div>
               </div>
             </motion.div>
           )}
