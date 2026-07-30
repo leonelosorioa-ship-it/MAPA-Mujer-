@@ -2498,7 +2498,9 @@ app.post("/api/register-user", (req, res) => {
       dailyConclusionText: user.dailyConclusionText || {},
       hasDownloadedApp: !!user.hasDownloadedApp,
       unlockedAudios: user.unlockedAudios || [],
-      onboardingCompletado: !!user.onboardingCompletado
+      onboardingCompletado: !!user.onboardingCompletado,
+      profilePicture: user.profilePicture || (user.customAvatar?.type === "image" ? user.customAvatar.value : null),
+      customAvatar: user.customAvatar || (user.profilePicture ? { type: "image", value: user.profilePicture } : null)
     };
 
     return res.json({
@@ -2560,6 +2562,15 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
       if (programProgress.unlockedAudios) {
         db[userIndex].unlockedAudios = programProgress.unlockedAudios;
       }
+      if (programProgress.customAvatar) {
+        db[userIndex].customAvatar = programProgress.customAvatar;
+        if (programProgress.customAvatar.type === "image") {
+          db[userIndex].profilePicture = programProgress.customAvatar.value;
+        }
+      }
+      if (programProgress.profilePicture) {
+        db[userIndex].profilePicture = programProgress.profilePicture;
+      }
 
       writeUsersDB(db);
       return res.json({ success: true, message: "Avance guardado de forma persistente." });
@@ -2580,7 +2591,9 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
         initialScanResults: null,
         isCompleted: programProgress.completedDays ? programProgress.completedDays.length === 7 : false,
         hasDownloadedApp: !!programProgress.hasDownloadedApp,
-        onboardingCompletado: !!programProgress.onboardingCompletado
+        onboardingCompletado: !!programProgress.onboardingCompletado,
+        customAvatar: programProgress.customAvatar || null,
+        profilePicture: programProgress.profilePicture || (programProgress.customAvatar?.type === "image" ? programProgress.customAvatar.value : null)
       };
       db.push(newUser);
       writeUsersDB(db);
@@ -2590,6 +2603,94 @@ app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
     console.error("Error updating user progress:", error);
     return res.status(500).json({ error: "Error en sincronización en la nube." });
   }
+});
+
+// ==========================================
+// PERSISTENCIA: ACTUALIZAR FOTO DE PERFIL / AVATAR
+// ==========================================
+app.post("/api/user/update-profile-picture", authenticateJWT, (req: any, res: any) => {
+  try {
+    const { email, profilePicture, customAvatar } = req.body;
+    const cleanEmail = (email || req.user?.email || "").toLowerCase().trim();
+
+    if (!cleanEmail) {
+      return res.status(400).json({ error: "Email requerido para actualizar foto de perfil." });
+    }
+
+    if (req.user?.email && req.user.email.toLowerCase().trim() !== cleanEmail) {
+      return res.status(403).json({ error: "No autorizado para modificar el perfil de otro usuario." });
+    }
+
+    const db = readUsersDB();
+    const userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
+
+    if (userIndex === -1) {
+      return res.status(404).json({ error: "Usuario no encontrado para actualizar foto de perfil." });
+    }
+
+    if (db[userIndex].disabled) {
+      return res.status(403).json({ error: "Tu acceso ha sido inhabilitado por el administrador del sistema." });
+    }
+
+    const pictureVal = profilePicture || (customAvatar?.type === "image" ? customAvatar.value : null);
+    
+    db[userIndex].profilePicture = pictureVal;
+    if (customAvatar) {
+      db[userIndex].customAvatar = customAvatar;
+    } else if (pictureVal) {
+      db[userIndex].customAvatar = { type: "image", value: pictureVal };
+    }
+
+    db[userIndex].lastActive = new Date().toISOString();
+
+    writeUsersDB(db);
+
+    console.log(`📸 [Profile] Updated profile picture for user ${cleanEmail}`);
+
+    return res.json({
+      success: true,
+      message: "Foto de perfil actualizada con éxito en el servidor.",
+      profilePicture: db[userIndex].profilePicture,
+      customAvatar: db[userIndex].customAvatar
+    });
+  } catch (error) {
+    console.error("Error updating profile picture:", error);
+    return res.status(500).json({ error: "Error en el servidor al guardar la foto de perfil." });
+  }
+});
+
+app.patch("/api/user/update-profile-picture", authenticateJWT, (req: any, res: any) => {
+  // Same logic for PATCH
+  const { email, profilePicture, customAvatar } = req.body;
+  const cleanEmail = (email || req.user?.email || "").toLowerCase().trim();
+
+  if (!cleanEmail) {
+    return res.status(400).json({ error: "Email requerido para actualizar foto de perfil." });
+  }
+
+  const db = readUsersDB();
+  const userIndex = db.findIndex((u: any) => (u.email || "").toLowerCase().trim() === cleanEmail);
+
+  if (userIndex === -1) {
+    return res.status(404).json({ error: "Usuario no encontrado para actualizar foto de perfil." });
+  }
+
+  const pictureVal = profilePicture || (customAvatar?.type === "image" ? customAvatar.value : null);
+  db[userIndex].profilePicture = pictureVal;
+  if (customAvatar) {
+    db[userIndex].customAvatar = customAvatar;
+  } else if (pictureVal) {
+    db[userIndex].customAvatar = { type: "image", value: pictureVal };
+  }
+
+  writeUsersDB(db);
+
+  return res.json({
+    success: true,
+    message: "Foto de perfil actualizada con éxito.",
+    profilePicture: db[userIndex].profilePicture,
+    customAvatar: db[userIndex].customAvatar
+  });
 });
 
 // ==========================================
@@ -2618,7 +2719,9 @@ app.get("/api/get-user-progress", authenticateJWT, (req, res) => {
       dailyConclusionText: user.dailyConclusionText || {},
       hasDownloadedApp: !!user.hasDownloadedApp,
       unlockedAudios: user.unlockedAudios || [],
-      onboardingCompletado: !!user.onboardingCompletado
+      onboardingCompletado: !!user.onboardingCompletado,
+      profilePicture: user.profilePicture || (user.customAvatar?.type === "image" ? user.customAvatar.value : null),
+      customAvatar: user.customAvatar || (user.profilePicture ? { type: "image", value: user.profilePicture } : null)
     };
 
     return res.json({ success: true, userProgress });

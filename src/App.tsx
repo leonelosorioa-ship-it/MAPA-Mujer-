@@ -55,6 +55,7 @@ import { PremiumDashboard } from "./components/PremiumDashboard";
 import { PWAInstallBanner } from "./components/PWAInstallBanner";
 import { RewardModal } from "./components/RewardModal";
 import { AvatarPickerModal } from "./components/AvatarPickerModal";
+import { ProfileSettings } from "./components/ProfileSettings";
 import { MilestoneModal } from "./components/MilestoneModal";
 import { WelcomeOnboardingModal } from "./components/WelcomeOnboardingModal";
 import { TechnicalSupportDrawer } from "./components/TechnicalSupportDrawer";
@@ -516,6 +517,7 @@ export default function App() {
   const [milestoneModal, setMilestoneModal] = useState<{ isOpen: boolean; daysCount: number }>({ isOpen: false, daysCount: 3 });
   const [isClaraProfileOpen, setIsClaraProfileOpen] = useState<boolean>(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState<boolean>(false);
+  const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState<boolean>(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState<boolean>(false);
   const [adminFormEmail, setAdminFormEmail] = useState<string>("contacto@tupodermental.club");
   const [adminFormPass, setAdminFormPass] = useState<string>("");
@@ -5635,9 +5637,9 @@ export default function App() {
                     <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#E36DB4] to-[#36C4D8] opacity-20 blur-md group-hover:opacity-40 group-hover:blur-lg transition-all duration-500" />
                     
                     <div 
-                      onClick={() => setIsAvatarModalOpen(true)}
+                      onClick={() => setIsProfileSettingsOpen(true)}
                       className="relative w-40 h-40 md:w-44 md:h-44 rounded-3xl bg-gradient-to-tr from-[#EDE0F0] to-[#FAF7F9] border-2 border-[#E36DB4] flex items-center justify-center text-7xl shadow-md overflow-hidden cursor-pointer transition-all duration-500 hover:border-[#36C4D8] hover:shadow-xl active:scale-95 group"
-                      title="Personalizar tu foto o emoji de avatar"
+                      title="Configuración de Perfil - Cambiar foto o avatar"
                     >
                       {programProgress.customAvatar?.type === "image" ? (
                         <img 
@@ -5668,9 +5670,9 @@ export default function App() {
                     
                     {/* Tiny Edit helper trigger badge for mobile devices without hover */}
                     <button 
-                      onClick={() => setIsAvatarModalOpen(true)}
+                      onClick={() => setIsProfileSettingsOpen(true)}
                       className="absolute -top-2 -right-2 bg-white text-[#6E488A] border border-[#6E488A]/20 p-2 rounded-full shadow-md hover:bg-[#EDE0F0] transition-colors md:hidden"
-                      aria-label="Cambiar avatar"
+                      aria-label="Configuración de Perfil"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -5682,6 +5684,16 @@ export default function App() {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs text-[#E36DB4] tracking-widest uppercase font-bold">PERFIL EMOCIONAL REVELADO</span>
                       <span className="bg-[#EDE0F0]/50 border border-[#6E488A]/10 text-[#56346F]/70 py-0.5 px-2.5 rounded-full text-[10px] font-mono">ID: {evaluationResult.id}</span>
+                      <button
+                        onClick={() => setIsProfileSettingsOpen(true)}
+                        className="ml-auto bg-[#6E488A]/10 hover:bg-[#6E488A]/20 text-[#6E488A] text-xs font-semibold py-1 px-3 rounded-full border border-[#6E488A]/20 transition-all flex items-center gap-1 cursor-pointer"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>Configuración de Perfil</span>
+                      </button>
                     </div>
 
                     <h2 className="font-display font-bold text-3xl sm:text-4xl text-[#6E488A] tracking-tight">
@@ -6622,6 +6634,23 @@ export default function App() {
         onSave={saveCustomAvatar}
         currentAvatar={programProgress.customAvatar}
         defaultEmoji={evaluationResult?.avatar || "🧘"}
+      />
+
+      {/* PROFILE SETTINGS MODAL */}
+      <ProfileSettings
+        isOpen={isProfileSettingsOpen}
+        onClose={() => setIsProfileSettingsOpen(false)}
+        userEmail={currentUserEmail}
+        userName={leadInfo.nombre || "Usuaria M.A.P.A.™"}
+        currentProfilePicture={programProgress.customAvatar?.type === "image" ? programProgress.customAvatar.value : undefined}
+        customAvatar={programProgress.customAvatar}
+        defaultEmoji={evaluationResult?.avatar || "🧘"}
+        onProfileUpdated={(data) => {
+          if (data.customAvatar) {
+            saveCustomAvatar(data.customAvatar);
+          }
+        }}
+        onLogout={handleUserLogout}
       />
 
       {/* ADMIN MASTER LOGIN MODAL */}
