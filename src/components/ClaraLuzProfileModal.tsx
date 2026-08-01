@@ -57,12 +57,16 @@ export const ClaraLuzProfileModal: React.FC<ClaraLuzProfileModalProps> = ({
             <div className="relative inline-flex items-center justify-center">
               <div className="absolute inset-0 bg-gradient-to-r from-[#36C4D8] via-[#E86FA3] to-[#6E488A] rounded-full blur-lg opacity-40 animate-pulse" />
               
-              <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full p-1 bg-gradient-to-tr from-[#36C4D8] via-[#E86FA3] to-[#6E488A] shadow-md">
+              <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full p-1 bg-gradient-to-tr from-[#36C4D8] via-[#E86FA3] to-[#6E488A] shadow-md overflow-hidden">
                 <img
                   src={CLARA_LUZ_PROFILE.image}
                   alt={CLARA_LUZ_PROFILE.fullTitle}
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover rounded-full border-2 border-white shadow-sm"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "/clara_luz.jpg";
+                  }}
+                  className="w-full h-full object-cover object-center rounded-full border-2 border-white shadow-sm"
                 />
               </div>
 

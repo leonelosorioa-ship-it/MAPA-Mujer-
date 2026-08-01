@@ -1005,13 +1005,17 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             <div className="absolute -right-12 -top-12 w-48 h-48 bg-[#E86FA3]/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="flex items-center space-x-4 relative z-10">
-              <div className="relative shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#36C4D8] via-[#E86FA3] to-[#6E488A] rounded-full blur-sm opacity-50 animate-pulse" />
+              <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md bg-[#FAF0FB]">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#36C4D8] via-[#E86FA3] to-[#6E488A] rounded-full blur-sm opacity-30 animate-pulse pointer-events-none" />
                 <img
                   src={CLARA_LUZ_PROFILE.image}
                   alt={CLARA_LUZ_PROFILE.fullTitle}
                   referrerPolicy="no-referrer"
-                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-white shadow-md"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "/clara_luz.jpg";
+                  }}
+                  className="relative w-full h-full object-cover object-center rounded-full"
                 />
               </div>
 

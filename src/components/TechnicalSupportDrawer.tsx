@@ -199,12 +199,18 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
                   <div className="bg-gradient-to-r from-[#FFF5FA] via-[#F9F0F8] to-[#FFF5FA] rounded-2xl p-5 border border-[#E36DB4]/30 shadow-xs relative overflow-hidden text-left">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 max-w-md">
-                        <img
-                          src={CLARA_LUZ_PROFILE.image}
-                          alt={CLARA_LUZ_PROFILE.fullTitle}
-                          referrerPolicy="no-referrer"
-                          className="w-14 h-14 rounded-full border-2 border-[#E36DB4] shadow-md object-cover shrink-0"
-                        />
+                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-[#FAF0FB] relative">
+                          <img
+                            src={CLARA_LUZ_PROFILE.image}
+                            alt={CLARA_LUZ_PROFILE.fullTitle}
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "/assets/clara-luz-profile.jpg";
+                            }}
+                            className="w-full h-full object-cover object-center rounded-full"
+                          />
+                        </div>
                         <div className="space-y-1">
                           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#8A2B68] text-[10px] font-mono font-bold uppercase">
                             <Heart className="w-3 h-3 text-[#E36DB4] fill-[#E36DB4]" />
