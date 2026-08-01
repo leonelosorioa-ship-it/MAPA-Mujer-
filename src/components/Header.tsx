@@ -1,19 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
-  Bell, 
-  Search, 
+  Menu,
   Camera, 
   User, 
-  Settings, 
-  Headphones, 
-  LogOut, 
-  Shield, 
-  Check, 
   X, 
   Compass, 
   Sparkles,
-  Edit2
+  Home,
+  Calendar,
+  Layers,
+  Heart,
+  ChevronRight,
+  Shield,
+  Edit2,
+  Check
 } from "lucide-react";
 
 export interface HeaderProps {
@@ -40,41 +41,34 @@ export const Header: React.FC<HeaderProps> = ({
   leadInfo,
   programProgress,
   saveCustomAvatar,
-  setIsProfileSettingsOpen,
   setIsSupportDrawerOpen,
-  onOpenNotifications,
-  handleUserLogout,
   setPhase,
   setLoginEmail,
   setLeadInfo,
   setProgramProgress
 }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState<boolean>(false);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [tempName, setTempName] = useState<string>(leadInfo?.nombre || "");
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadSuccessToast, setUploadSuccessToast] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Sync tempName when leadInfo changes
   useEffect(() => {
     if (leadInfo?.nombre) {
       setTempName(leadInfo.nombre);
     }
   }, [leadInfo?.nombre]);
+
+  // Helper to trigger tab change in Dashboard
+  const triggerTabChange = (tab: "home" | "program" | "tools" | "profile") => {
+    if (setPhase) {
+      setPhase("DASHBOARD");
+    }
+    window.dispatchEvent(new CustomEvent("mapa_nav_tab", { detail: tab }));
+    setIsSideMenuOpen(false);
+  };
 
   // Handle image upload and compression (PNG, JPG, WEBP <= 5MB)
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const TARGET_SIZE = 360; // Clean crisp square avatar
+        const TARGET_SIZE = 360;
         canvas.width = TARGET_SIZE;
         canvas.height = TARGET_SIZE;
 
@@ -109,7 +103,6 @@ export const Header: React.FC<HeaderProps> = ({
           const startX = (img.width - minDim) / 2;
           const startY = (img.height - minDim) / 2;
 
-          // Crop center square
           ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, TARGET_SIZE, TARGET_SIZE);
           const compressedBase64 = canvas.toDataURL("image/jpeg", 0.88);
 
@@ -128,7 +121,6 @@ export const Header: React.FC<HeaderProps> = ({
               customAvatar: { type: "image", value: compressedBase64 }
             };
 
-            // Call PATCH endpoint as specified
             fetch("/api/user/profile-picture", {
               method: "PATCH",
               headers,
@@ -139,7 +131,6 @@ export const Header: React.FC<HeaderProps> = ({
               console.log("📸 [Header] Profile picture synced successfully via PATCH:", data);
             })
             .catch(() => {
-              // Fallback to POST if needed
               fetch("/api/user/update-profile-picture", {
                 method: "POST",
                 headers,
@@ -150,7 +141,6 @@ export const Header: React.FC<HeaderProps> = ({
 
           setUploading(false);
           setUploadSuccessToast(true);
-          setIsDropdownOpen(false);
 
           setTimeout(() => {
             setUploadSuccessToast(false);
@@ -161,7 +151,6 @@ export const Header: React.FC<HeaderProps> = ({
     };
     reader.readAsDataURL(file);
 
-    // Reset file input
     e.target.value = "";
   };
 
@@ -187,139 +176,231 @@ export const Header: React.FC<HeaderProps> = ({
   const isAdmin = currentUserEmail?.toLowerCase() === "contacto@tupodermental.club";
 
   return (
-    <header 
-      id="app_header" 
-      className="relative z-30 w-full border-b border-[#6E488A]/20 bg-gradient-to-r from-[#E86FA3] via-[#E36DB4] to-[#8A2B68] shadow-lg shadow-[#8A2B68]/15 px-4 py-3 sm:px-6 sm:py-4 transition-all"
-    >
-      {/* HIDDEN INPUT FOR PROFILE PICTURE UPLOAD */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleImageFileChange}
-        accept="image/png, image/jpeg, image/jpg, image/webp"
-        className="hidden"
-      />
+    <>
+      {/* FIXED / STICKY HEADER WITH ROSA/MAGENTA COLOR (#E86FA3) MATCHING SCREENSHOT */}
+      <header 
+        id="app_header" 
+        className="sticky top-0 z-40 w-full bg-[#E86FA3] text-white shadow-xl border-b border-white/20 px-3 py-4 sm:px-6 sm:py-5 transition-all"
+      >
+        {/* HIDDEN INPUT FOR PROFILE PICTURE UPLOAD */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleImageFileChange}
+          accept="image/png, image/jpeg, image/jpg, image/webp"
+          className="hidden"
+        />
 
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-        {/* LEFT: BRAND & LOGO */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          <div 
-            onClick={() => setPhase?.("DASHBOARD")}
-            className="flex items-center gap-2.5 cursor-pointer group"
-          >
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-              <Compass className="w-6 h-6 sm:w-7 sm:h-7 text-white animate-spin" style={{ animationDuration: "16s" }} />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-display font-black text-xl sm:text-2xl tracking-wider text-white drop-shadow-sm">
-                  M.A.P.A.™
-                </span>
-                <span className="bg-white/20 text-white font-black text-[10px] sm:text-xs px-2 py-0.5 rounded-full backdrop-blur-sm border border-white/30 tracking-wider uppercase">
-                  Mujer
-                </span>
-              </div>
-              <span className="text-[9px] sm:text-[11px] text-white/85 font-mono font-medium tracking-wide hidden xs:block">
-                Mapa de Activación y Protección Emocional
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT: TOP BAR ACTIONS (NOTIFICATIONS, SEARCH, AVATAR WITH ACTIVE STATUS BADGE) */}
-        <div className="flex items-center gap-2 sm:gap-3.5 relative" ref={dropdownRef}>
+        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-center relative">
           
-          {/* SEARCH / COMPASS QUICK ICON */}
+          {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER) */}
           <button
             type="button"
-            onClick={() => setIsSupportDrawerOpen?.(true)}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 border border-white/25 flex items-center justify-center text-white transition-all shadow-sm cursor-pointer"
-            title="Soporte y Guías de Ayuda"
+            onClick={() => setIsSideMenuOpen(true)}
+            className="absolute left-0 top-0 w-10 h-10 rounded-2xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-sm cursor-pointer focus:outline-none z-10"
+            title="Abrir Menú Principal M.A.P.A.™"
+            aria-label="Abrir Menú de Navegación"
           >
-            <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+            <Menu className="w-5 h-5 text-white stroke-[2.5]" />
           </button>
 
-          {/* NOTIFICATION BELL ICON */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenNotifications) {
-                onOpenNotifications();
-              } else {
-                setIsSupportDrawerOpen?.(true);
-              }
-            }}
-            className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 border border-white/25 flex items-center justify-center text-white transition-all shadow-sm cursor-pointer"
-            title="Notificaciones y Avisos de Sintonía"
+          {/* TOP CENTER ANIMATED COMPASS LOGO */}
+          <motion.div 
+            onClick={() => setPhase?.("DASHBOARD")}
+            className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/15 cursor-pointer mb-2.5 group select-none shrink-0"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            title="M.A.P.A.™ Mujer"
           >
-            <Bell className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#36C4D8] ring-2 ring-[#8A2B68] animate-ping" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#36C4D8] ring-2 ring-[#8A2B68]" />
-          </button>
+            {/* Outer Spinning Ring */}
+            <div className="absolute inset-0.5 rounded-full border-2 border-dashed border-[#36C4D8]/60 animate-spin" style={{ animationDuration: '14s' }} />
+            {/* Inner Reverse Spinning Ring */}
+            <div className="absolute inset-1.5 rounded-full border border-dotted border-[#E86FA3]/50 animate-spin" style={{ animationDuration: '8s', animationDirection: 'reverse' }} />
+            
+            {/* Center Compass Icon */}
+            <Compass className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 text-[#36C4D8] animate-pulse group-hover:scale-110 transition-transform" />
+          </motion.div>
 
-          {/* INTERACTIVE AVATAR CONTAINER WITH ONLINE ACTIVE GREEN BADGE */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                if (!currentUserEmail) {
-                  setLoginEmail?.("");
-                  setPhase?.("LOGIN");
-                } else {
-                  setIsDropdownOpen(!isDropdownOpen);
-                }
-              }}
-              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white/90 bg-gradient-to-tr from-[#EDE0F0] via-white to-[#36C4D8]/30 flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer overflow-hidden group shrink-0 focus:outline-none"
-              title={currentUserEmail ? `Cuenta de ${userName} • Haz clic para opciones` : "Iniciar Sesión"}
-            >
-              {currentUserEmail && programProgress?.customAvatar?.type === "image" ? (
-                <img
-                  src={programProgress.customAvatar.value}
-                  alt={`Perfil de ${userName}`}
-                  className="w-full h-full object-cover object-center rounded-full transition-transform duration-300 group-hover:scale-110"
-                />
-              ) : currentUserEmail && programProgress?.customAvatar?.type === "emoji" ? (
-                <span className="text-lg sm:text-xl select-none transition-transform group-hover:scale-110">
-                  {programProgress.customAvatar.value}
-                </span>
-              ) : currentUserEmail ? (
-                <span className="font-display font-black text-xs sm:text-sm text-[#6E488A] tracking-wider uppercase">
-                  {userInitials}
-                </span>
+          {/* MAIN BRAND TITLE */}
+          <div className="flex items-center justify-center gap-2 mb-0.5">
+            <h1 className="font-display font-black text-2xl sm:text-3xl md:text-4xl tracking-wider text-white drop-shadow-sm">
+              M.A.P.A. <span className="text-[#3E1B5A] font-extrabold">Mujer</span>
+            </h1>
+          </div>
+
+          {/* SUBTITLE LEYENDA */}
+          <span className="block text-[10px] sm:text-xs text-white/95 font-mono tracking-widest uppercase font-black mb-3 drop-shadow-xs">
+            MAPA DE ACTIVACIÓN Y PROTECCIÓN EMOCIONAL
+          </span>
+
+          {/* BOTTOM INTERACTIVE PILLS RAIL */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 w-full max-w-xl">
+            
+            {/* PILL 1: USER PROFILE & PHOTO AVATAR BADGE */}
+            <div className="inline-flex items-center gap-2 bg-white text-[#411F66] rounded-full py-1.5 px-3 sm:px-4 text-xs font-bold shadow-md border border-white/60">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Usuaria Activa" />
+              
+              {isEditingName ? (
+                <form onSubmit={handleSaveName} className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    className="border-b border-[#E86FA3] text-[#411F66] bg-transparent font-sans font-black text-xs focus:outline-none max-w-[100px] px-1 py-0"
+                    autoFocus
+                    maxLength={30}
+                  />
+                  <button type="submit" className="text-emerald-600 font-bold text-xs p-0.5">
+                    <Check className="w-3.5 h-3.5" />
+                  </button>
+                  <button type="button" onClick={() => setIsEditingName(false)} className="text-red-500 font-bold text-xs p-0.5">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </form>
               ) : (
-                <User className="w-5 h-5 text-[#36C4D8]" />
-              )}
+                <div className="flex items-center gap-1.5">
+                  <span 
+                    onClick={() => {
+                      setTempName(userName);
+                      setIsEditingName(true);
+                    }}
+                    className="font-black text-xs sm:text-sm text-[#411F66] truncate max-w-[110px] sm:max-w-[160px] cursor-pointer hover:underline flex items-center gap-1"
+                    title="Haz clic para editar tu nombre"
+                  >
+                    <span>{userName}</span>
+                    <Edit2 className="w-3 h-3 text-[#E86FA3] opacity-75 shrink-0" />
+                  </span>
 
-              {/* OVERLAY ON HOVER FOR LOGGED IN USER */}
-              {currentUserEmail && (
-                <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center text-white">
-                  <Camera className="w-3.5 h-3.5 text-white drop-shadow" />
+                  {/* Completed days badge */}
+                  <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-2 py-0.5 rounded-full font-mono text-[10px] font-black flex items-center gap-0.5 shrink-0" title="Días completados">
+                    <span>{completedCount}</span>
+                    <span>✓</span>
+                  </span>
                 </div>
               )}
-            </button>
 
-            {/* GREEN ACTIVE STATUS BADGE ("Usuaria Activa / En Sintonía") */}
-            <span 
-              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full ring-2 ring-white shadow-sm pointer-events-none z-10" 
-              title="Usuaria Activa / En Sintonía"
-            >
-              <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
-            </span>
-          </div>
-
-          {/* FLOATING DROPDOWN POPOVER MENU */}
-          <AnimatePresence>
-            {isDropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
-                className="absolute right-0 top-12 sm:top-13 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-[#6E488A]/15 p-4 z-50 text-left overflow-hidden"
+              {/* ANCHORED USER PROFILE AVATAR PHOTO BUTTON */}
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[#E86FA3] bg-[#FFF0F5] flex items-center justify-center cursor-pointer overflow-hidden group shrink-0 ml-0.5 shadow-xs"
+                title="Haz clic para cambiar tu foto de perfil"
               >
-                {/* USER PROFILE HEADER IN DROPDOWN */}
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#FFF0F5] to-[#F3E8F5] border border-[#E86FA3]/20 mb-3">
-                  <div className="relative w-12 h-12 rounded-full border-2 border-[#E36DB4] shadow-sm shrink-0 bg-white overflow-hidden flex items-center justify-center">
+                {currentUserEmail && programProgress?.customAvatar?.type === "image" ? (
+                  <img
+                    src={programProgress.customAvatar.value}
+                    alt={`Foto de ${userName}`}
+                    className="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform"
+                  />
+                ) : currentUserEmail && programProgress?.customAvatar?.type === "emoji" ? (
+                  <span className="text-sm select-none group-hover:scale-110 transition-transform">
+                    {programProgress.customAvatar.value}
+                  </span>
+                ) : (
+                  <span className="font-display font-black text-[10px] text-[#E86FA3] uppercase">
+                    {userInitials}
+                  </span>
+                )}
+
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                  <Camera className="w-3 h-3 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* PILL 2: ANIMATED "SISTEMA ACTIVO" BADGE */}
+            <motion.span 
+              animate={{ 
+                boxShadow: [
+                  "0px 2px 8px rgba(255,255,255,0.4), 0 0 0 1px rgba(255,255,255,0.3)",
+                  "0px 6px 20px rgba(255,255,255,0.85), 0 0 0 3px rgba(255,255,255,0.5)",
+                  "0px 2px 8px rgba(255,255,255,0.4), 0 0 0 1px rgba(255,255,255,0.3)"
+                ],
+                scale: [1, 1.03, 1]
+              }}
+              transition={{ 
+                duration: 2.5, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              }}
+              whileHover={{ 
+                scale: 1.06, 
+                backgroundColor: "rgba(255, 255, 255, 1)",
+                boxShadow: "0px 8px 24px rgba(255,255,255,0.95), 0 0 0 4px rgba(255,255,255,0.6)"
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center space-x-1.5 bg-white text-[#411F66] rounded-full py-1.5 px-3.5 sm:px-4 text-xs font-mono font-black shadow-md border border-white/60 cursor-pointer select-none transition-all shrink-0"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-80" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              </span>
+              <span className="tracking-widest uppercase font-black text-[11px] sm:text-xs">
+                SISTEMA ACTIVO
+              </span>
+            </motion.span>
+
+          </div>
+        </div>
+      </header>
+
+      {/* COMPACT LEFT SIDE MENU DRAWER (SLIDE-OUT FROM LEFT) */}
+      <AnimatePresence>
+        {isSideMenuOpen && (
+          <div className="fixed inset-0 z-50 overflow-hidden flex">
+            {/* BACKDROP OVERLAY */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSideMenuOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            />
+
+            {/* SIDE DRAWER CONTENT PANEL */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              className="relative w-80 max-w-[85vw] bg-white text-[#411F66] h-full shadow-2xl flex flex-col z-10 overflow-y-auto"
+            >
+              {/* DRAWER HEADER WITH #E86FA3 COLOR */}
+              <div className="bg-[#E86FA3] p-5 text-white flex items-center justify-between border-b border-white/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
+                    <Compass className="w-6 h-6 text-white animate-spin" style={{ animationDuration: "16s" }} />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-display font-black text-xl tracking-wider text-white">
+                      M.A.P.A.™
+                    </span>
+                    <span className="text-[10px] text-white/90 font-mono font-bold tracking-widest uppercase">
+                      Navegación Principal
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsSideMenuOpen(false)}
+                  className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* USER PROFILE SUMMARY CARD IN DRAWER */}
+              {currentUserEmail && (
+                <div 
+                  onClick={() => {
+                    setIsSideMenuOpen(false);
+                    fileInputRef.current?.click();
+                  }}
+                  className="p-4 mx-4 mt-4 rounded-2xl bg-gradient-to-br from-[#FFF0F5] via-[#FAF0FB] to-[#F0FBFC] border border-[#E86FA3]/30 shadow-xs flex items-center gap-3 cursor-pointer hover:border-[#E86FA3] transition-colors group"
+                  title="Haz clic para cambiar tu foto de perfil"
+                >
+                  <div className="relative w-12 h-12 rounded-full border-2 border-[#E86FA3] shrink-0 bg-white overflow-hidden flex items-center justify-center">
                     {programProgress?.customAvatar?.type === "image" ? (
                       <img
                         src={programProgress.customAvatar.value}
@@ -329,179 +410,195 @@ export const Header: React.FC<HeaderProps> = ({
                     ) : programProgress?.customAvatar?.type === "emoji" ? (
                       <span className="text-2xl">{programProgress.customAvatar.value}</span>
                     ) : (
-                      <span className="font-display font-black text-base text-[#6E488A] uppercase">
+                      <span className="font-display font-black text-base text-[#E86FA3] uppercase">
                         {userInitials}
                       </span>
                     )}
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <Camera className="w-4 h-4 text-white" />
+                    </div>
                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full ring-1 ring-white" />
                   </div>
 
-                  <div className="flex flex-col min-w-0 flex-1">
-                    {isEditingName ? (
-                      <form onSubmit={handleSaveName} className="flex items-center gap-1">
-                        <input
-                          type="text"
-                          value={tempName}
-                          onChange={(e) => setTempName(e.target.value)}
-                          className="w-full text-xs font-bold text-[#6E488A] bg-white border border-[#E86FA3] rounded px-1.5 py-0.5 focus:outline-none"
-                          autoFocus
-                          maxLength={30}
-                        />
-                        <button type="submit" className="text-emerald-600 font-bold text-xs p-1">
-                          <Check className="w-3.5 h-3.5" />
-                        </button>
-                        <button type="button" onClick={() => setIsEditingName(false)} className="text-red-500 font-bold text-xs p-1">
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </form>
-                    ) : (
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-black text-sm text-[#411F66] truncate">
-                          {userName}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setTempName(userName);
-                            setIsEditingName(true);
-                          }}
-                          className="text-[#E86FA3] hover:text-[#8A2B68] p-0.5 cursor-pointer"
-                          title="Editar nombre"
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-
-                    <span className="text-[11px] text-[#6E488A]/80 font-mono truncate">
+                  <div className="flex flex-col min-w-0 flex-1 text-left">
+                    <span className="font-black text-sm text-[#411F66] truncate">
+                      {userName}
+                    </span>
+                    <span className="text-[11px] text-[#56346F]/80 font-mono truncate">
                       {currentUserEmail}
                     </span>
-
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        En Sintonía
-                      </span>
-                      <span className="text-[10px] font-mono text-[#6E488A] bg-white/80 px-1.5 py-0.5 rounded border border-[#6E488A]/10 font-bold">
-                        {completedCount} Días ✓
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wide">
+                        Usuaria Activa
                       </span>
                     </div>
                   </div>
                 </div>
+              )}
 
-                {/* DROPDOWN MENU OPTIONS */}
-                <div className="space-y-1">
-                  {/* OPTION 1: CHANGE PROFILE PICTURE */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      fileInputRef.current?.click();
-                    }}
-                    disabled={uploading}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
-                  >
+              {/* MAIN NAVIGATION LINKS */}
+              <div className="p-4 space-y-1.5 flex-1 text-left">
+                <span className="text-[10px] font-mono font-bold text-[#E86FA3] uppercase tracking-wider px-3 mb-1 block">
+                  Secciones del Sistema
+                </span>
+
+                {/* 1. INICIO (HOME) */}
+                <button
+                  type="button"
+                  onClick={() => triggerTabChange("home")}
+                  className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#FFF0F5] text-[#E86FA3] group-hover:bg-[#E86FA3] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
+                      <Home className="w-4 h-4" />
+                    </div>
+                    <span>Inicio / Panel Principal</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#E86FA3] transition-colors" />
+                </button>
+
+                {/* 2. PROGRAMA DE 7 DIAS */}
+                <button
+                  type="button"
+                  onClick={() => triggerTabChange("program")}
+                  className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#FFF0F5] text-[#E86FA3] group-hover:bg-[#E86FA3] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span>Programa de 7 Días</span>
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        Ruta Diaria de Regulación
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#E86FA3] transition-colors" />
+                </button>
+
+                {/* 3. HERRAMIENTAS Y AUDIOS DE SINTONIA */}
+                <button
+                  type="button"
+                  onClick={() => triggerTabChange("tools")}
+                  className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold text-[#411F66] hover:bg-[#F0FBFC] hover:text-[#27A1B2] transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#F0FBFC] text-[#27A1B2] group-hover:bg-[#27A1B2] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
+                      <Layers className="w-4 h-4" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span>Herramientas & Audios</span>
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        Batería de Descompresión
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#27A1B2] transition-colors" />
+                </button>
+
+                {/* 4. CAMBIAR FOTO DE PERFIL */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSideMenuOpen(false);
+                    fileInputRef.current?.click();
+                  }}
+                  className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-[#FFF0F5] text-[#E86FA3] group-hover:bg-[#E86FA3] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
                       <Camera className="w-4 h-4" />
                     </div>
-                    <div className="flex flex-col">
-                      <span>Cambiar foto de perfil</span>
-                      <span className="text-[10px] text-[#6E488A]/70 font-normal">PNG, JPG o WEBP (Máx 5MB)</span>
+                    <div className="flex flex-col text-left">
+                      <span>Cambiar Foto de Perfil</span>
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        Subir imagen PNG, JPG o WEBP
+                      </span>
                     </div>
-                  </button>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#E86FA3] transition-colors" />
+                </button>
 
-                  {/* OPTION 2: ACCOUNT SETTINGS */}
+                <div className="my-3 border-t border-slate-100" />
+
+                <span className="text-[10px] font-mono font-bold text-[#E86FA3] uppercase tracking-wider px-3 mb-1 block">
+                  Acompañamiento & Ayuda
+                </span>
+
+                {/* 5. MENTORA CLARA LUZ & SOPORTE */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSideMenuOpen(false);
+                    setIsSupportDrawerOpen?.(true);
+                  }}
+                  className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#FFF0F5] text-[#E86FA3] group-hover:bg-[#E86FA3] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
+                      <Heart className="w-4 h-4 fill-current" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span>Mentora Clara Luz & Soporte</span>
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        Guías, Mensajes y WhatsApp Directo
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#E86FA3] transition-colors" />
+                </button>
+
+                {/* ADMIN PANEL BUTTON IF ADMIN */}
+                {isAdmin && (
                   <button
                     type="button"
                     onClick={() => {
-                      setIsDropdownOpen(false);
-                      setIsProfileSettingsOpen?.(true);
+                      setIsSideMenuOpen(false);
+                      setPhase?.("ADMIN");
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
+                    className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold text-[#27A1B2] bg-[#36C4D8]/10 hover:bg-[#36C4D8]/20 transition-colors cursor-pointer mt-2"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#F3E8F5] text-[#6E488A] group-hover:bg-[#6E488A] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
-                      <Settings className="w-4 h-4" />
+                    <div className="flex items-center gap-3">
+                      <Shield className="w-4 h-4 text-[#27A1B2]" />
+                      <span>Panel de Administrador</span>
                     </div>
-                    <div className="flex flex-col">
-                      <span>Configuración de mi cuenta</span>
-                      <span className="text-[10px] text-[#6E488A]/70 font-normal">Avatar, datos y preferencias</span>
-                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#27A1B2]" />
                   </button>
+                )}
+              </div>
 
-                  {/* OPTION 3: DIRECT ATTENTION / MENTOR SUPPORT */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      setIsSupportDrawerOpen?.(true);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#36C4D8]/15 text-[#27A1B2] group-hover:bg-[#27A1B2] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
-                      <Headphones className="w-4 h-4" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span>Atención Directa & Soporte</span>
-                      <span className="text-[10px] text-[#6E488A]/70 font-normal">Guías y contacto con Clara Luz</span>
-                    </div>
-                  </button>
-
-                  {/* ADMIN PANEL IF APPLICABLE */}
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsDropdownOpen(false);
-                        setPhase?.("ADMIN");
-                      }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs font-bold text-[#36C4D8] hover:bg-[#36C4D8]/10 transition-colors cursor-pointer"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-[#36C4D8]/20 text-[#27A1B2] flex items-center justify-center shrink-0">
-                        <Shield className="w-4 h-4" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span>Panel de Administrador</span>
-                        <span className="text-[10px] text-[#27A1B2]/80 font-normal">Gestión global de usuarias</span>
-                      </div>
-                    </button>
-                  )}
-
-                  <div className="my-1 border-t border-[#6E488A]/10" />
-
-                  {/* LOGOUT BUTTON */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      if (handleUserLogout) {
-                        handleUserLogout();
-                      }
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-xs font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4 text-red-500" />
-                    <span>Cerrar sesión</span>
-                  </button>
+              {/* DRAWER FOOTER */}
+              <div className="p-4 border-t border-slate-100 bg-slate-50 space-y-2">
+                <div className="text-center pt-1">
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    M.A.P.A.™ Mujer v2.5 • PWA
+                  </p>
+                  <p className="text-[9px] text-slate-400/80 font-sans">
+                    Creador: Leonel Osorio Andrade
+                  </p>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
-      {/* TOAST NOTIFICATION ON UPLOAD SUCCESS */}
+      {/* SUCCESS TOAST ON UPLOAD */}
       <AnimatePresence>
         {uploadSuccessToast && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2 z-50 border border-emerald-400"
+            className="fixed left-1/2 -translate-x-1/2 top-20 bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 z-50 border border-emerald-400"
           >
             <Sparkles className="w-4 h-4 text-emerald-200 animate-pulse" />
             <span>¡Foto de perfil actualizada con éxito!</span>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 };

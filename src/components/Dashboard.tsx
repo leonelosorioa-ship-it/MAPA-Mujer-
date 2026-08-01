@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Compass, 
   Sparkles, 
@@ -94,6 +94,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   const [activeNavTab, setActiveNavTab] = useState<NavTab>("home");
   const [activeToolModal, setActiveToolModal] = useState<string | null>(null);
+
+  // Listen for navigation events from top-left compact menu
+  useEffect(() => {
+    const handleNavEvent = (e: any) => {
+      if (e.detail) {
+        if (e.detail === "profile") {
+          setIsProfileSettingsOpen(true);
+        } else {
+          setActiveNavTab(e.detail as NavTab);
+        }
+      }
+    };
+    window.addEventListener("mapa_nav_tab", handleNavEvent);
+    return () => window.removeEventListener("mapa_nav_tab", handleNavEvent);
+  }, [setIsProfileSettingsOpen]);
 
   const userShortName = getUserShortName(leadInfo);
   const archetypeSlug = getUserArchetypeSlug();
@@ -527,15 +542,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* PINNED BOTTOM NAVIGATION BAR */}
-      <BottomNav
-        activeTab={activeNavTab}
-        onTabChange={(tab) => setActiveNavTab(tab)}
-        isAudioPlaying={isAudioPlaying}
-        onToggleAudioPlay={onToggleAudioPlay}
-        activeAudioTitle={activeAudioTitle}
-      />
     </div>
   );
 };
