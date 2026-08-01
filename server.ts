@@ -6,6 +6,9 @@ import dotenv from "dotenv";
 import fs from "fs";
 import webPush from "web-push";
 import jwt from "jsonwebtoken";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { QUESTIONS } from "./src/questions.js";
 import { EmotionalProfile, QuizResponse } from "./src/types.js";
 import { initializeApp } from "firebase/app";
@@ -15,6 +18,16 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "mapa_secret_default_key_777";
 
+// Atomic Write File Helper to prevent JSON DB corruption on concurrent requests or server restarts
+function atomicWriteFileSync(filePath: string, content: string) {
+  try {
+    const tempPath = `${filePath}.${Date.now()}.${Math.random().toString(36).substring(2, 8)}.tmp`;
+    fs.writeFileSync(tempPath, content, "utf-8");
+    fs.renameSync(tempPath, filePath);
+  } catch (err) {
+    fs.writeFileSync(filePath, content, "utf-8");
+  }
+}
 
 // Load or generate VAPID keys
 const VAPID_KEYS_PATH = path.join(process.cwd(), "vapid-keys.json");
@@ -25,7 +38,7 @@ try {
     vapidKeys = JSON.parse(fs.readFileSync(VAPID_KEYS_PATH, "utf-8"));
   } else {
     vapidKeys = webPush.generateVAPIDKeys();
-    fs.writeFileSync(VAPID_KEYS_PATH, JSON.stringify(vapidKeys, null, 2));
+    atomicWriteFileSync(VAPID_KEYS_PATH, JSON.stringify(vapidKeys, null, 2));
   }
   webPush.setVapidDetails(
     "mailto:mapa@podermentalia.club",
@@ -38,7 +51,109 @@ try {
 }
 
 const app = express();
-app.use(express.json());
+
+// 🛡️ TRUST PROXY: Permite que express-rate-limit lea las cabeceras X-Forwarded-For en Cloud Run / Nginx
+app.set("trust proxy", 1);
+
+// 🛡️ CIBERSEGURIDAD Y BLINDAJE: Helmet Security Headers
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Evita interferir con HMR/Vite y permite iFrames de previsualización
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    frameguard: false // Permite la previsualización en iframe dentro de Cloud Run y AI Studio
+  })
+);
+
+// 🛡️ CIBERSEGURIDAD Y BLINDAJE: Configuración de CORS Estricta
+const allowedOrigins = [
+  'https://m-a-p-a-mapa-de-activaci-n-y-protecci-n-emocional-208545059674.us-east1.run.app',
+  'https://mapa.tupodermental.club',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.run.app') ||
+        origin.endsWith('.tupodermental.club') ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1')
+      ) {
+        callback(null, true);
+      } else {
+        console.warn(`⚠️ [CORS Bloqueado] Intento de acceso no autorizado desde: "${origin}"`);
+        callback(new Error('Acceso bloqueado por política de seguridad CORS'));
+      }
+    },
+    credentials: true
+  })
+);
+
+// 🛡️ CIBERSEGURIDAD: Límite de tamaño en cuerpo de peticiones para prevenir ataques DDoS / Payload Bomb
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 🛡️ CIBERSEGURIDAD: Sanitización de datos de entrada contra ataques XSS e inyecciones maliciosas
+function sanitizeValue(value: any): any {
+  if (typeof value === 'string') {
+    return value
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/onerror\s*=/gi, '');
+  }
+  if (Array.isArray(value)) {
+    return value.map(sanitizeValue);
+  }
+  if (value !== null && typeof value === 'object') {
+    const cleaned: Record<string, any> = {};
+    for (const key of Object.keys(value)) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+      cleaned[key] = sanitizeValue(value[key]);
+    }
+    return cleaned;
+  }
+  return value;
+}
+
+app.use((req, res, next) => {
+  if (req.body) req.body = sanitizeValue(req.body);
+  if (req.query) req.query = sanitizeValue(req.query);
+  if (req.params) req.params = sanitizeValue(req.params);
+  next();
+});
+
+// 🛡️ CIBERSEGURIDAD: Rate Limiting (Protección Anti-Baneo y Anti-Spam)
+const globalApiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minuto
+  max: 60, // Máximo 60 peticiones por minuto por IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Demasiadas peticiones desde esta dirección IP. Por favor reintenta en un minuto.",
+    status: 429
+  }
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 30, // Máximo 30 intentos por IP cada 15 minutos
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Demasiados intentos de acceso o validación. Por favor espera unos minutos.",
+    status: 429
+  }
+});
+
+// Aplicar Rate Limiters a rutas sensibles
+app.use('/api/', globalApiLimiter);
+app.use('/api/admin/login', authLimiter);
+app.use('/api/verify-code', authLimiter);
+app.use('/api/register-lead', authLimiter);
 
 const PORT = 3000;
 const USERS_DB_PATH = path.join(process.cwd(), "data_users.json");
@@ -117,7 +232,7 @@ async function hydrateLocalDBFromFirestore() {
         // Warm up our in-memory cache to prevent writing this doc immediately on first write
         lastSyncedUsersMap.set(cleanEmail, JSON.stringify(cu));
       });
-      fs.writeFileSync(USERS_DB_PATH, JSON.stringify(localUsers, null, 2));
+      atomicWriteFileSync(USERS_DB_PATH, JSON.stringify(localUsers, null, 2));
     }
     
     // Also hydrate invite codes
@@ -145,7 +260,7 @@ async function hydrateLocalDBFromFirestore() {
         }
         lastSyncedCodesMap.set((cc.code || "").toUpperCase().trim(), JSON.stringify(cc));
       });
-      fs.writeFileSync(INVITE_CODES_PATH, JSON.stringify(localCodes, null, 2));
+      atomicWriteFileSync(INVITE_CODES_PATH, JSON.stringify(localCodes, null, 2));
     }
 
     // Also hydrate Hotmart logs
@@ -175,7 +290,7 @@ async function hydrateLocalDBFromFirestore() {
         lastSyncedLogsMap.set(logKey, JSON.stringify(cl));
       });
       const truncated = localLogs.slice(-100);
-      fs.writeFileSync(HOTMART_LOGS_PATH, JSON.stringify(truncated, null, 2));
+      atomicWriteFileSync(HOTMART_LOGS_PATH, JSON.stringify(truncated, null, 2));
     }
     
     console.log("✅ [Hydration] All data hydrated successfully from cloud Firestore!");
@@ -189,7 +304,7 @@ function readUsersDB() {
   try {
     let list: any[] = [];
     if (!fs.existsSync(USERS_DB_PATH)) {
-      fs.writeFileSync(USERS_DB_PATH, JSON.stringify([], null, 2));
+      atomicWriteFileSync(USERS_DB_PATH, JSON.stringify([], null, 2));
       list = [];
     } else {
       const raw = fs.readFileSync(USERS_DB_PATH, "utf-8");
@@ -223,7 +338,7 @@ function readUsersDB() {
         origin: "Pruebas Autorizadas Leonel"
       };
       users.push(testUser);
-      fs.writeFileSync(USERS_DB_PATH, JSON.stringify(users, null, 2));
+      atomicWriteFileSync(USERS_DB_PATH, JSON.stringify(users, null, 2));
     } else {
       let updated = false;
       if (users[testIndex].accessCode !== "LEO777") {
@@ -239,7 +354,7 @@ function readUsersDB() {
         updated = true;
       }
       if (updated) {
-        fs.writeFileSync(USERS_DB_PATH, JSON.stringify(users, null, 2));
+        atomicWriteFileSync(USERS_DB_PATH, JSON.stringify(users, null, 2));
       }
     }
 
@@ -252,7 +367,7 @@ function readUsersDB() {
 
 function writeUsersDB(data: any) {
   try {
-    fs.writeFileSync(USERS_DB_PATH, JSON.stringify(data, null, 2));
+    atomicWriteFileSync(USERS_DB_PATH, JSON.stringify(data, null, 2));
     
     // Save to Firestore with smart change detection
     if (dbFirestore && Array.isArray(data)) {
@@ -278,7 +393,7 @@ function writeUsersDB(data: any) {
 function readHotmartLogs() {
   try {
     if (!fs.existsSync(HOTMART_LOGS_PATH)) {
-      fs.writeFileSync(HOTMART_LOGS_PATH, JSON.stringify([], null, 2));
+      atomicWriteFileSync(HOTMART_LOGS_PATH, JSON.stringify([], null, 2));
       return [];
     }
     const raw = fs.readFileSync(HOTMART_LOGS_PATH, "utf-8");
@@ -294,7 +409,7 @@ function writeHotmartLogs(logs: any[]) {
   try {
     // Keep only the last 100 entries to prevent infinite growth
     const truncated = logs.slice(-100);
-    fs.writeFileSync(HOTMART_LOGS_PATH, JSON.stringify(truncated, null, 2));
+    atomicWriteFileSync(HOTMART_LOGS_PATH, JSON.stringify(truncated, null, 2));
     
     if (dbFirestore && Array.isArray(truncated)) {
       truncated.forEach((log: any) => {
@@ -334,7 +449,7 @@ function readInviteCodes() {
         { code: "823617", type: "pregenerated", used: false, usedBy: null, usedAt: null },
         { code: "907451", type: "pregenerated", used: false, usedBy: null, usedAt: null }
       ];
-      fs.writeFileSync(INVITE_CODES_PATH, JSON.stringify(initialCodes, null, 2));
+      atomicWriteFileSync(INVITE_CODES_PATH, JSON.stringify(initialCodes, null, 2));
       return initialCodes;
     }
     const raw = fs.readFileSync(INVITE_CODES_PATH, "utf-8");
@@ -348,7 +463,7 @@ function readInviteCodes() {
 
 function writeInviteCodes(codes: any[]) {
   try {
-    fs.writeFileSync(INVITE_CODES_PATH, JSON.stringify(codes, null, 2));
+    atomicWriteFileSync(INVITE_CODES_PATH, JSON.stringify(codes, null, 2));
     
     if (dbFirestore && Array.isArray(codes)) {
       codes.forEach((codeObj: any) => {
@@ -1448,7 +1563,7 @@ function readCommentsDB() {
           createdAt: new Date(Date.now() - 3600000 * 24).toISOString() // 1d ago
         }
       ];
-      fs.writeFileSync(COMMENTS_DB_PATH, JSON.stringify(defaultTestimonies, null, 2));
+      atomicWriteFileSync(COMMENTS_DB_PATH, JSON.stringify(defaultTestimonies, null, 2));
       return defaultTestimonies;
     }
     const raw = fs.readFileSync(COMMENTS_DB_PATH, "utf-8");
@@ -1463,7 +1578,7 @@ function readCommentsDB() {
 function writeCommentsDB(data: any) {
   try {
     const curatedData = Array.isArray(data) ? data.map(curateComment) : [];
-    fs.writeFileSync(COMMENTS_DB_PATH, JSON.stringify(curatedData, null, 2));
+    atomicWriteFileSync(COMMENTS_DB_PATH, JSON.stringify(curatedData, null, 2));
   } catch (err) {
     console.error("Error writing comments db:", err);
   }
