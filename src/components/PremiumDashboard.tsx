@@ -2579,9 +2579,9 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#56346F]/30 backdrop-blur-xl z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-[#3E1B5A]/85 backdrop-blur-2xl z-[9999] flex flex-col items-center justify-center p-3 sm:p-6 overflow-y-auto"
           >
-            <div className="max-w-2xl w-full bg-white border-2 border-red-500/30 border-b-8 border-b-red-500 rounded-3xl p-6 md:p-8 text-center space-y-6 relative overflow-hidden shadow-[0_25px_60px_-15px_rgba(220,38,38,0.25)]">
+            <div className="max-w-2xl w-full my-auto bg-white border-2 border-red-500/30 border-b-8 border-b-red-500 rounded-3xl p-5 sm:p-8 text-center space-y-5 sm:space-y-6 relative overflow-hidden shadow-[0_25px_60px_-15px_rgba(220,38,38,0.35)] shrink-0">
               
               {/* Decorative SOS warning circle glow */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-500/5 rounded-full blur-3xl -z-10 pointer-events-none" />

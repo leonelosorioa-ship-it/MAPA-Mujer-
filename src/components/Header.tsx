@@ -55,11 +55,27 @@ export const Header: React.FC<HeaderProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+
   useEffect(() => {
     if (leadInfo?.nombre) {
       setTempName(leadInfo.nombre);
     }
   }, [leadInfo?.nombre]);
+
+  // Track window scroll position to shrink/expand header interactively
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 30) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Helper to trigger tab change in Dashboard
   const triggerTabChange = (tab: "home" | "program" | "tools" | "profile") => {
@@ -177,10 +193,12 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* FIXED / STICKY HEADER WITH FLAT #fa9ddd COLOR - GENEROUS HEIGHT & PADDING */}
+      {/* FIXED / STICKY INTERACTIVE HEADER WITH FLAT #da5ef2 COLOR - DYNAMICALLY COLLAPSIBLE ON SCROLL */}
       <header 
         id="app_header" 
-        className="sticky top-0 z-50 w-full bg-[#fa9ddd] text-white shadow-md border-b border-white/30 px-4 py-3.5 sm:px-6 sm:py-4.5 transition-all"
+        className={`sticky top-0 z-50 w-full bg-[#da5ef2] text-white shadow-md border-b border-white/30 transition-all duration-300 ${
+          isScrolled ? "px-3 py-1.5 sm:px-5 sm:py-2" : "px-4 py-3.5 sm:px-6 sm:py-4.5"
+        }`}
       >
         {/* HIDDEN INPUT FOR PROFILE PICTURE UPLOAD */}
         <input
@@ -193,15 +211,17 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="max-w-3xl mx-auto flex flex-col items-center justify-center text-center relative">
           
-          {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER WITH COMFORTABLE MARGINS) */}
+          {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER) */}
           <button
             type="button"
             onClick={() => setIsSideMenuOpen(true)}
-            className="absolute left-0 top-1 sm:top-1.5 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-xs cursor-pointer focus:outline-none z-10"
+            className={`absolute left-0 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-xs cursor-pointer focus:outline-none z-10 ${
+              isScrolled ? "top-0.5 w-8 h-8" : "top-1 sm:top-1.5 w-9 h-9 sm:w-10 sm:h-10"
+            }`}
             title="Abrir Menú Principal M.A.P.A.™"
             aria-label="Abrir Menú de Navegación"
           >
-            <Menu className="w-5 h-5 text-white stroke-[2.5]" />
+            <Menu className={isScrolled ? "w-4 h-4 text-white stroke-[2.5]" : "w-5 h-5 text-white stroke-[2.5]"} />
           </button>
 
           {/* TOP CENTER MAIN HERO USER PROFILE PHOTO (PROTAGONIST AVATAR WITH DOUBLE ANIMATED RINGS & BREATHING ROOM) */}
@@ -214,7 +234,11 @@ export const Header: React.FC<HeaderProps> = ({
                 fileInputRef.current?.click();
               }
             }}
-            className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white flex items-center justify-center shadow-md shadow-black/15 cursor-pointer mt-0.5 mb-2 group select-none shrink-0"
+            className={`relative rounded-full bg-white flex items-center justify-center shadow-md shadow-black/15 cursor-pointer group select-none shrink-0 transition-all duration-300 ${
+              isScrolled 
+                ? "w-8 h-8 sm:w-9 sm:h-9 my-0" 
+                : "w-14 h-14 sm:w-16 sm:h-16 mt-0.5 mb-2"
+            }`}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
@@ -234,43 +258,47 @@ export const Header: React.FC<HeaderProps> = ({
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
               ) : programProgress?.customAvatar?.type === "emoji" && programProgress.customAvatar.value ? (
-                <span className="text-2xl sm:text-3xl select-none group-hover:scale-110 transition-transform">
+                <span className={isScrolled ? "text-base sm:text-lg select-none" : "text-2xl sm:text-3xl select-none group-hover:scale-110 transition-transform"}>
                   {programProgress.customAvatar.value}
                 </span>
               ) : (
                 /* DEFAULT UNCHANGED AVATAR: PRETTY WOMAN EMOJI 👩🏻 */
-                <span className="text-2xl sm:text-3xl select-none group-hover:scale-110 transition-transform leading-none" role="img" aria-label="Usuaria M.A.P.A.">
+                <span className={isScrolled ? "text-base sm:text-lg select-none leading-none" : "text-2xl sm:text-3xl select-none group-hover:scale-110 transition-transform leading-none"} role="img" aria-label="Usuaria M.A.P.A.">
                   👩🏻
                 </span>
               )}
 
               {/* Camera Hover Overlay */}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center text-white">
-                <Camera className="w-4 h-4 text-white drop-shadow" />
+                <Camera className={isScrolled ? "w-3 h-3 text-white drop-shadow" : "w-4 h-4 text-white drop-shadow"} />
               </div>
             </div>
 
             {/* Active Dot indicator */}
-            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-white shadow-xs z-10" title="Usuaria Activa">
+            <span className={`absolute bottom-0 right-0 bg-emerald-500 rounded-full ring-2 ring-white shadow-xs z-10 ${isScrolled ? "w-2.5 h-2.5" : "w-3.5 h-3.5"}`} title="Usuaria Activa">
               <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
             </span>
           </motion.div>
 
-          {/* MAIN BRAND TITLE & SUBTITLE WITH SPACIOUS MARGINS */}
-          <div className="flex flex-col items-center justify-center my-1">
-            <h1 className="font-display font-black text-lg sm:text-xl md:text-2xl tracking-wider text-white drop-shadow-xs leading-none">
+          {/* MAIN BRAND TITLE & SUBTITLE */}
+          <div className={isScrolled ? "flex items-center justify-center gap-2 my-0.5" : "flex flex-col items-center justify-center my-1"}>
+            <h1 className={isScrolled ? "font-display font-black text-sm sm:text-base tracking-wider text-white drop-shadow-xs leading-none" : "font-display font-black text-lg sm:text-xl md:text-2xl tracking-wider text-white drop-shadow-xs leading-none"}>
               M.A.P.A. <span className="text-[#3E1B5A] font-extrabold">Mujer</span>
             </h1>
-            <span className="text-[9px] sm:text-[10px] text-white/95 font-mono tracking-widest uppercase font-black drop-shadow-xs mt-1">
-              MAPA DE ACTIVACIÓN Y PROTECCIÓN EMOCIONAL
-            </span>
+            {!isScrolled && (
+              <span className="text-[9px] sm:text-[10px] text-white/95 font-mono tracking-widest uppercase font-black drop-shadow-xs mt-1">
+                MAPA DE ACTIVACIÓN Y PROTECCIÓN EMOCIONAL
+              </span>
+            )}
           </div>
 
-          {/* BOTTOM INTERACTIVE PILLS RAIL WITH ELEGANT VERTICAL BREATHING ROOM */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 w-full max-w-lg mt-1.5 pb-0.5">
+          {/* BOTTOM INTERACTIVE PILLS RAIL */}
+          <div className={isScrolled ? "flex flex-wrap items-center justify-center gap-1.5 w-full max-w-lg mt-0.5" : "flex flex-wrap items-center justify-center gap-2.5 w-full max-w-lg mt-1.5 pb-0.5"}>
             
             {/* PILL 1: USER NAME & COMPASS BADGE */}
-            <div className="inline-flex items-center gap-1.5 bg-white text-[#411F66] rounded-full py-1 px-3 text-xs font-bold shadow-sm border border-white/60">
+            <div className={`inline-flex items-center gap-1.5 bg-white text-[#411F66] rounded-full font-bold shadow-sm border border-white/60 ${
+              isScrolled ? "py-0.5 px-2.5 text-[10px] sm:text-xs" : "py-1 px-3 text-xs"
+            }`}>
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Usuaria Activa" />
               
               {isEditingName ? (
@@ -279,7 +307,7 @@ export const Header: React.FC<HeaderProps> = ({
                     type="text"
                     value={tempName}
                     onChange={(e) => setTempName(e.target.value)}
-                    className="border-b border-[#E86FA3] text-[#411F66] bg-transparent font-sans font-black text-xs focus:outline-none max-w-[90px] px-0.5 py-0"
+                    className="border-b border-[#da5ef2] text-[#411F66] bg-transparent font-sans font-black text-xs focus:outline-none max-w-[90px] px-0.5 py-0"
                     autoFocus
                     maxLength={30}
                   />
@@ -297,11 +325,13 @@ export const Header: React.FC<HeaderProps> = ({
                       setTempName(userName);
                       setIsEditingName(true);
                     }}
-                    className="font-black text-xs text-[#411F66] truncate max-w-[100px] sm:max-w-[140px] cursor-pointer hover:underline flex items-center gap-0.5"
+                    className={`font-black text-[#411F66] truncate max-w-[90px] sm:max-w-[130px] cursor-pointer hover:underline flex items-center gap-0.5 ${
+                      isScrolled ? "text-[10px] sm:text-xs" : "text-xs"
+                    }`}
                     title="Haz clic para editar tu nombre"
                   >
                     <span>{userName}</span>
-                    <Edit2 className="w-2.5 h-2.5 text-[#E86FA3] opacity-75 shrink-0" />
+                    <Edit2 className="w-2.5 h-2.5 text-[#da5ef2] opacity-75 shrink-0" />
                   </span>
 
                   {/* Completed days badge */}
@@ -315,10 +345,10 @@ export const Header: React.FC<HeaderProps> = ({
               {/* INTERACTIVE COMPASS AVATAR BADGE IN PILL */}
               <div 
                 onClick={() => setPhase?.("DASHBOARD")}
-                className="w-5 h-5 rounded-full bg-[#36C4D8]/20 flex items-center justify-center cursor-pointer text-[#27A1B2] hover:bg-[#36C4D8]/30 transition-colors shrink-0 ml-0.5"
+                className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#36C4D8]/20 flex items-center justify-center cursor-pointer text-[#27A1B2] hover:bg-[#36C4D8]/30 transition-colors shrink-0 ml-0.5"
                 title="Brújula M.A.P.A.™"
               >
-                <Compass className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
+                <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
               </div>
             </div>
 
@@ -343,13 +373,15 @@ export const Header: React.FC<HeaderProps> = ({
                 boxShadow: "0px 6px 18px rgba(255,255,255,0.95), 0 0 0 3px rgba(255,255,255,0.6)"
               }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center space-x-1.5 bg-white text-[#411F66] rounded-full py-1 px-3 text-[10px] sm:text-xs font-mono font-black shadow-sm border border-white/60 cursor-pointer select-none transition-all shrink-0"
+              className={`inline-flex items-center space-x-1.5 bg-white text-[#411F66] rounded-full font-mono font-black shadow-sm border border-white/60 cursor-pointer select-none transition-all shrink-0 ${
+                isScrolled ? "py-0.5 px-2.5 text-[9px] sm:text-[10px]" : "py-1 px-3 text-[10px] sm:text-xs"
+              }`}
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-80" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span className="tracking-widest uppercase font-black text-[10px] sm:text-[11px]">
+              <span className="tracking-widest uppercase font-black">
                 SISTEMA ACTIVO
               </span>
             </motion.span>
@@ -379,8 +411,8 @@ export const Header: React.FC<HeaderProps> = ({
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
               className="relative w-80 max-w-[85vw] bg-white text-[#411F66] h-full shadow-2xl flex flex-col z-10 overflow-y-auto"
             >
-              {/* DRAWER HEADER WITH FLAT #fa9ddd COLOR */}
-              <div className="bg-[#fa9ddd] p-5 text-white flex items-center justify-between border-b border-white/20">
+              {/* DRAWER HEADER WITH FLAT #da5ef2 COLOR */}
+              <div className="bg-[#da5ef2] p-5 text-white flex items-center justify-between border-b border-white/20">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
                     <Compass className="w-6 h-6 text-white animate-spin" style={{ animationDuration: "16s" }} />
