@@ -194,50 +194,55 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
               {/* SCROLLABLE BODY WITH SOFT LIGHT PASTEL CARDS */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-[#FDF9FC]">
                 
-                {/* BANNER: SHOW CLARA LUZ WHATSAPP BANNER ONLY WHEN NOT LOGGED IN, ELSE SHOW 7-DAY PROGRAM GUIDE */}
-                {!isLoggedIn ? (
-                  <div className="bg-gradient-to-r from-[#FFF5FA] via-[#F9F0F8] to-[#FFF5FA] rounded-2xl p-5 border border-[#E36DB4]/30 shadow-xs relative overflow-hidden text-left">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 max-w-md">
-                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-[#FAF0FB] relative">
-                          <img
-                            src={CLARA_LUZ_PROFILE.image}
-                            alt={CLARA_LUZ_PROFILE.fullTitle}
-                            referrerPolicy="no-referrer"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = "/assets/clara-luz-profile.jpg";
-                            }}
-                            className="w-full h-full object-cover object-center rounded-full"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#8A2B68] text-[10px] font-mono font-bold uppercase">
-                            <Heart className="w-3 h-3 text-[#E36DB4] fill-[#E36DB4]" />
-                            <span>Creadora, Fundadora y Mentora</span>
-                          </div>
-                          <h4 className="font-display font-bold text-base text-[#3A185C]">
-                            Atención Directa con Clara Luz
-                          </h4>
-                          <p className="text-xs text-[#56346F] leading-relaxed">
-                            Clara Luz • Mentora M.A.P.A.™ Mujer te atenderá personalmente si necesitas ayuda con tu código de acceso, cuenta o programa.
-                          </p>
-                        </div>
+                {/* BANNER: CLARA LUZ WHATSAPP SUPPORT BANNER (ALWAYS SHOWN AT TOP OF SUPPORT) */}
+                <div className="bg-gradient-to-r from-[#FFF5FA] via-[#F9F0F8] to-[#FFF5FA] rounded-2xl p-5 border border-[#E36DB4]/30 shadow-xs relative overflow-hidden text-left">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 max-w-md">
+                      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-[#FAF0FB] relative">
+                        <img
+                          src={CLARA_LUZ_PROFILE.image}
+                          alt={CLARA_LUZ_PROFILE.fullTitle}
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (target.src.includes('/clara_luz.jpg')) {
+                              target.src = '/clara-luz-profile.jpg';
+                            } else if (target.src.includes('/clara-luz-profile.jpg')) {
+                              target.src = '/assets/clara-luz-profile.jpg';
+                            }
+                          }}
+                          className="w-full h-full object-cover object-center rounded-full"
+                        />
                       </div>
-
-                      <a
-                        href={supportWhatsAppUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full sm:w-auto py-2.5 px-5 rounded-xl font-display font-bold text-xs bg-[#25D366] hover:bg-[#1EBE5D] text-white transition-all shadow-md flex items-center justify-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
-                      >
-                        <MessageCircle className="w-4 h-4 fill-white" />
-                        <span>Contactar en WhatsApp</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
+                      <div className="space-y-1">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E36DB4]/15 border border-[#E36DB4]/30 text-[#8A2B68] text-[10px] font-mono font-bold uppercase">
+                          <Heart className="w-3 h-3 text-[#E36DB4] fill-[#E36DB4]" />
+                          <span>Creadora, Fundadora y Mentora</span>
+                        </div>
+                        <h4 className="font-display font-bold text-base text-[#3A185C]">
+                          Atención Directa con Clara Luz
+                        </h4>
+                        <p className="text-xs text-[#56346F] leading-relaxed">
+                          Clara Luz • Mentora M.A.P.A.™ Mujer te atenderá personalmente si necesitas ayuda con tu código de acceso, cuenta o programa.
+                        </p>
+                      </div>
                     </div>
+
+                    <a
+                      href={supportWhatsAppUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto py-2.5 px-5 rounded-xl font-display font-bold text-xs bg-[#25D366] hover:bg-[#1EBE5D] text-white transition-all shadow-md flex items-center justify-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-white" />
+                      <span>Contactar en WhatsApp</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
                   </div>
-                ) : (
+                </div>
+
+                {/* 7-DAY PROGRAM GUIDE WHEN LOGGED IN */}
+                {isLoggedIn && (
                   <div className="bg-gradient-to-r from-[#F5EBF8] via-[#FAF0FB] to-[#F5EBF8] rounded-2xl p-5 border border-[#6E488A]/30 shadow-xs text-left space-y-3">
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#6E488A]/15 border border-[#6E488A]/30 text-[#56346F] text-[10px] font-mono font-bold uppercase">
                       <Sparkles className="w-3 h-3 text-[#6E488A]" />

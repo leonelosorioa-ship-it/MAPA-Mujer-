@@ -177,10 +177,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* FIXED / STICKY HEADER WITH ROSA/MAGENTA COLOR (#E86FA3) MATCHING SCREENSHOT - HALF HEIGHT */}
+      {/* FIXED / STICKY HEADER WITH FLAT #fa9ddd COLOR - GENEROUS HEIGHT & PADDING */}
       <header 
         id="app_header" 
-        className="sticky top-0 z-50 w-full bg-[#E86FA3] text-white shadow-lg border-b border-white/20 px-3 py-2 sm:px-5 sm:py-2.5 transition-all"
+        className="sticky top-0 z-50 w-full bg-[#fa9ddd] text-white shadow-md border-b border-white/30 px-4 py-3.5 sm:px-6 sm:py-4.5 transition-all"
       >
         {/* HIDDEN INPUT FOR PROFILE PICTURE UPLOAD */}
         <input
@@ -193,18 +193,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="max-w-3xl mx-auto flex flex-col items-center justify-center text-center relative">
           
-          {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER) */}
+          {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER WITH COMFORTABLE MARGINS) */}
           <button
             type="button"
             onClick={() => setIsSideMenuOpen(true)}
-            className="absolute left-0 top-0.5 w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-xs cursor-pointer focus:outline-none z-10"
+            className="absolute left-0 top-1 sm:top-1.5 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-xs cursor-pointer focus:outline-none z-10"
             title="Abrir Menú Principal M.A.P.A.™"
             aria-label="Abrir Menú de Navegación"
           >
-            <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.5]" />
+            <Menu className="w-5 h-5 text-white stroke-[2.5]" />
           </button>
 
-          {/* TOP CENTER MAIN HERO USER PROFILE PHOTO (PROTAGONIST AVATAR WITH DOUBLE ANIMATED RINGS) */}
+          {/* TOP CENTER MAIN HERO USER PROFILE PHOTO (PROTAGONIST AVATAR WITH DOUBLE ANIMATED RINGS & BREATHING ROOM) */}
           <motion.div 
             onClick={() => {
               if (!currentUserEmail) {
@@ -214,32 +214,33 @@ export const Header: React.FC<HeaderProps> = ({
                 fileInputRef.current?.click();
               }
             }}
-            className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-md shadow-black/15 cursor-pointer mb-1 group select-none shrink-0"
+            className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white flex items-center justify-center shadow-md shadow-black/15 cursor-pointer mt-0.5 mb-2 group select-none shrink-0"
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
             title="Haz clic para cambiar tu foto de perfil de usuaria"
           >
             {/* Outer Spinning Ring */}
-            <div className="absolute -inset-1 rounded-full border-2 border-dashed border-white/80 animate-spin" style={{ animationDuration: '14s' }} />
+            <div className="absolute -inset-1 rounded-full border-2 border-dashed border-white/90 animate-spin" style={{ animationDuration: '14s' }} />
             {/* Inner Reverse Spinning Ring */}
             <div className="absolute -inset-0.5 rounded-full border border-dotted border-[#36C4D8] animate-spin" style={{ animationDuration: '8s', animationDirection: 'reverse' }} />
 
-            {/* USER PHOTO / EMOJI / INITIALS */}
+            {/* USER PHOTO / EMOJI / PRETTY WOMAN DEFAULT EMOJI */}
             <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-[#FFF0F5] relative">
-              {currentUserEmail && programProgress?.customAvatar?.type === "image" ? (
+              {programProgress?.customAvatar?.type === "image" && programProgress.customAvatar.value ? (
                 <img
                   src={programProgress.customAvatar.value}
                   alt={`Foto de ${userName}`}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
-              ) : currentUserEmail && programProgress?.customAvatar?.type === "emoji" ? (
-                <span className="text-xl sm:text-2xl select-none group-hover:scale-110 transition-transform">
+              ) : programProgress?.customAvatar?.type === "emoji" && programProgress.customAvatar.value ? (
+                <span className="text-2xl sm:text-3xl select-none group-hover:scale-110 transition-transform">
                   {programProgress.customAvatar.value}
                 </span>
               ) : (
-                <span className="font-display font-black text-sm sm:text-base text-[#E86FA3] uppercase">
-                  {userInitials}
+                /* DEFAULT UNCHANGED AVATAR: PRETTY WOMAN EMOJI 👩🏻 */
+                <span className="text-2xl sm:text-3xl select-none group-hover:scale-110 transition-transform leading-none" role="img" aria-label="Usuaria M.A.P.A.">
+                  👩🏻
                 </span>
               )}
 
@@ -255,18 +256,18 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </motion.div>
 
-          {/* MAIN BRAND TITLE & SUBTITLE */}
-          <div className="flex flex-col items-center justify-center mb-1.5">
+          {/* MAIN BRAND TITLE & SUBTITLE WITH SPACIOUS MARGINS */}
+          <div className="flex flex-col items-center justify-center my-1">
             <h1 className="font-display font-black text-lg sm:text-xl md:text-2xl tracking-wider text-white drop-shadow-xs leading-none">
               M.A.P.A. <span className="text-[#3E1B5A] font-extrabold">Mujer</span>
             </h1>
-            <span className="text-[9px] sm:text-[10px] text-white/95 font-mono tracking-widest uppercase font-black drop-shadow-xs mt-0.5">
+            <span className="text-[9px] sm:text-[10px] text-white/95 font-mono tracking-widest uppercase font-black drop-shadow-xs mt-1">
               MAPA DE ACTIVACIÓN Y PROTECCIÓN EMOCIONAL
             </span>
           </div>
 
-          {/* BOTTOM INTERACTIVE PILLS RAIL */}
-          <div className="flex flex-wrap items-center justify-center gap-2 w-full max-w-lg">
+          {/* BOTTOM INTERACTIVE PILLS RAIL WITH ELEGANT VERTICAL BREATHING ROOM */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 w-full max-w-lg mt-1.5 pb-0.5">
             
             {/* PILL 1: USER NAME & COMPASS BADGE */}
             <div className="inline-flex items-center gap-1.5 bg-white text-[#411F66] rounded-full py-1 px-3 text-xs font-bold shadow-sm border border-white/60">
@@ -378,8 +379,8 @@ export const Header: React.FC<HeaderProps> = ({
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
               className="relative w-80 max-w-[85vw] bg-white text-[#411F66] h-full shadow-2xl flex flex-col z-10 overflow-y-auto"
             >
-              {/* DRAWER HEADER WITH #E86FA3 COLOR */}
-              <div className="bg-[#E86FA3] p-5 text-white flex items-center justify-between border-b border-white/20">
+              {/* DRAWER HEADER WITH FLAT #fa9ddd COLOR */}
+              <div className="bg-[#fa9ddd] p-5 text-white flex items-center justify-between border-b border-white/20">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
                     <Compass className="w-6 h-6 text-white animate-spin" style={{ animationDuration: "16s" }} />

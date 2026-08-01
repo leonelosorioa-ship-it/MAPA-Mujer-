@@ -63,8 +63,12 @@ export const ClaraLuzProfileModal: React.FC<ClaraLuzProfileModalProps> = ({
                   alt={CLARA_LUZ_PROFILE.fullTitle}
                   referrerPolicy="no-referrer"
                   onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = "/clara_luz.jpg";
+                    const target = e.currentTarget;
+                    if (target.src.includes('/clara_luz.jpg')) {
+                      target.src = '/clara-luz-profile.jpg';
+                    } else if (target.src.includes('/clara-luz-profile.jpg')) {
+                      target.src = '/assets/clara-luz-profile.jpg';
+                    }
                   }}
                   className="w-full h-full object-cover object-center rounded-full border-2 border-white shadow-sm"
                 />
