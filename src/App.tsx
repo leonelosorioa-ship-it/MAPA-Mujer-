@@ -64,6 +64,7 @@ import { MilestoneModal } from "./components/MilestoneModal";
 import { WelcomeOnboardingModal } from "./components/WelcomeOnboardingModal";
 import { TechnicalSupportDrawer } from "./components/TechnicalSupportDrawer";
 import { ClaraLuzProfileModal } from "./components/ClaraLuzProfileModal";
+import { Header } from "./components/Header";
 import { AnimatedProgressNumber } from "./components/AnimatedProgressNumber";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
 import { useAuthSynchronizer } from "./hooks/useAuthSynchronizer";
@@ -3401,221 +3402,22 @@ export default function App() {
         />
       )}
 
-      {/* HEADER LOGO RAIL */}
+      {/* HEADER LOGO RAIL WITH TOP RIGHT AVATAR AND ACTIVE DOT */}
       {!(focusMode && phase === "DASHBOARD") && (
-        <header id="app_header" className="relative z-10 w-full border-b-2 border-[#6E488A]/15 bg-[#E86FA3] shadow-[0_4px_20px_rgba(232,111,163,0.15)] px-4 py-4 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
-            {/* HIDDEN INPUT FOR DIRECT HEADER PHOTO UPLOAD */}
-            <input 
-              type="file" 
-              ref={headerFileInputRef} 
-              onChange={handleHeaderFileChange} 
-              accept="image/png, image/jpeg, image/jpg, image/webp" 
-              className="hidden" 
-            />
-
-            {/* INTERACTIVE HEADER AVATAR / PROFILE PICTURE */}
-            <motion.div 
-              onClick={() => {
-                if (!currentUserEmail) {
-                  setLoginEmail("");
-                  setPhase("LOGIN");
-                } else {
-                  setIsProfileSettingsOpen(true);
-                }
-              }}
-              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-3 border-white bg-gradient-to-tr from-[#EDE0F0] via-white to-[#36C4D8]/20 flex items-center justify-center shadow-xl shadow-black/15 cursor-pointer overflow-hidden group select-none shrink-0"
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.94 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              title={currentUserEmail ? "Haz clic para cambiar tu foto de perfil o avatar" : "Identificación M.A.P.A."}
-            >
-              {currentUserEmail && programProgress.customAvatar?.type === "image" ? (
-                <img 
-                  src={programProgress.customAvatar.value} 
-                  alt="Foto de Perfil de Usuaria" 
-                  className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
-                />
-              ) : currentUserEmail && programProgress.customAvatar?.type === "emoji" ? (
-                <span className="text-3xl sm:text-4xl transition-transform duration-300 group-hover:scale-110 select-none">
-                  {programProgress.customAvatar.value}
-                </span>
-              ) : currentUserEmail ? (
-                <div className="flex flex-col items-center justify-center text-[#6E488A]">
-                  <span className="font-display font-black text-xl sm:text-2xl tracking-wider uppercase">
-                    {(leadInfo.nombre || "Usuaria").slice(0, 2).toUpperCase()}
-                  </span>
-                </div>
-              ) : (
-                <>
-                  {/* Compass default for unauthenticated */}
-                  <div className="absolute inset-1 rounded-full border border-dashed border-[#36C4D8]/40 animate-spin" style={{ animationDuration: '10s' }} />
-                  <div className="absolute inset-2 rounded-full border border-dotted border-[#E36DB4]/30 animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
-                  <Compass className="relative z-10 w-7 h-7 text-[#36C4D8] animate-pulse group-hover:scale-110 transition-transform" />
-                </>
-              )}
-
-              {/* Camera Badge overlay for logged in user */}
-              {currentUserEmail && (
-                <>
-                  {/* Hover dark overlay with camera text */}
-                  <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-white text-[9px] sm:text-[10px] font-black gap-0.5 rounded-full">
-                    <Camera className="w-4 h-4 animate-bounce text-[#36C4D8]" />
-                    <span>Cambiar</span>
-                  </div>
-
-                  {/* Floating corner Camera badge icon */}
-                  <div 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      headerFileInputRef.current?.click();
-                    }}
-                    className="absolute bottom-0 right-0 bg-gradient-to-r from-[#6E488A] to-[#E86FA3] text-white p-1.5 rounded-full border-2 border-white shadow-md hover:scale-115 transition-transform cursor-pointer"
-                    title="Subir nueva foto directamente"
-                  >
-                    <Camera className="w-3.5 h-3.5" />
-                  </div>
-                </>
-              )}
-            </motion.div>
-            <div className="flex flex-col items-center sm:items-start">
-              <span className="font-display font-black text-2xl sm:text-3xl tracking-wider text-white block">
-                M.A.P.A. <span className="text-[#411F66] text-lg sm:text-xl font-black">Mujer</span>
-              </span>
-              <span className="block text-[9px] sm:text-xs text-[#FFF0F5] font-mono tracking-wide uppercase font-black">
-                Mapa de Activación y Protección Emocional
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
-            {currentUserEmail ? (
-              <div className="flex items-center gap-2 sm:gap-3 bg-white border border-[#6E488A]/12 py-1.5 px-3 rounded-xl text-xs sm:text-sm shadow-md">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                
-                {isEditingName ? (
-                  <form 
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const cleanName = tempName.trim();
-                      if (cleanName) {
-                        const updatedLead = { ...leadInfo, nombre: cleanName };
-                        setLeadInfo(updatedLead);
-                        setProgramProgress((prev: any) => ({
-                          ...prev,
-                          leadInfo: updatedLead
-                        }));
-                      }
-                      setIsEditingName(false);
-                    }}
-                    className="flex items-center gap-1"
-                  >
-                    <input
-                      type="text"
-                      value={tempName}
-                      onChange={(e) => setTempName(e.target.value)}
-                      className="border-b border-[#6E488A] text-[#6E488A] bg-transparent font-sans font-black text-xs sm:text-sm focus:outline-none max-w-[100px] xs:max-w-[120px] px-1 py-0"
-                      autoFocus
-                      maxLength={30}
-                    />
-                    <button 
-                      type="submit" 
-                      className="text-emerald-600 hover:text-emerald-700 font-bold text-xs p-0.5 bg-transparent border-none cursor-pointer"
-                      title="Guardar"
-                    >
-                      ✓
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => setIsEditingName(false)} 
-                      className="text-red-500 hover:text-red-600 font-bold text-xs p-0.5 bg-transparent border-none cursor-pointer"
-                      title="Cancelar"
-                    >
-                      ✗
-                    </button>
-                  </form>
-                ) : (
-                  <div className="flex items-center gap-1.5">
-                    <span 
-                      onClick={() => {
-                        setTempName(leadInfo.nombre || "");
-                        setIsEditingName(true);
-                      }}
-                      className="text-[#6E488A] font-sans font-black text-xs sm:text-sm max-w-[110px] xs:max-w-[155px] sm:max-w-none truncate whitespace-nowrap cursor-pointer hover:underline flex items-center gap-1"
-                      title="Haz clic para cambiar tu nombre"
-                    >
-                      <span>{leadInfo.nombre || "Usuaria"}</span>
-                      <span className="text-[10px] text-[#6E488A]/60 opacity-75 hover:opacity-100 shrink-0">✏️</span>
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsProfileSettingsOpen(true)}
-                      className="text-[#E86FA3] hover:text-[#6E488A] bg-[#EDE0F0]/60 p-1 rounded-full transition-all cursor-pointer hover:scale-110 shrink-0 border border-[#6E488A]/10"
-                      title="Configurar Foto de Perfil y Avatar"
-                    >
-                      <Camera className="w-3 h-3" />
-                    </button>
-                  </div>
-                )}
-
-                <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-1.5 py-0.5 rounded-lg font-mono text-[9px] font-black flex items-center space-x-0.5 shrink-0" title="Sesiones de regulación completadas">
-                  <span>{programProgress.completedDays?.length || 0}</span>
-                  <span className="text-[8px]">✓</span>
-                </span>
-                <span className="text-[#56346F]/70 font-mono text-[10px] hidden md:inline shrink-0">
-                  ({currentUserEmail})
-                </span>
-                {currentUserEmail.toLowerCase() === "contacto@tupodermental.club" ? (
-                  <>
-                    <button
-                      onClick={() => setPhase("ADMIN")}
-                      className="text-[#36C4D8] hover:text-[#27A1B2] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black uppercase shrink-0"
-                      title="Panel de Control de Administrador"
-                    >
-                      ⚙️ Admin
-                    </button>
-                    <button
-                      onClick={handleUserLogout}
-                      className="text-[#E36DB4] hover:text-[#F58BC8] font-mono text-[10px] ml-1 pl-1 border-l border-[#6E488A]/12 transition-colors cursor-pointer bg-transparent border-none py-0 font-black shrink-0"
-                      title="Cerrar sesión"
-                    >
-                      Salir
-                    </button>
-                  </>
-                ) : null}
-              </div>
-            ) : null}
-
-            <motion.span 
-              animate={{ 
-                boxShadow: [
-                  "0px 2px 8px rgba(255,255,255,0.3), 0 0 0 1px rgba(255,255,255,0.2)",
-                  "0px 6px 18px rgba(255,255,255,0.7), 0 0 0 3px rgba(255,255,255,0.4)",
-                  "0px 2px 8px rgba(255,255,255,0.3), 0 0 0 1px rgba(255,255,255,0.2)"
-                ],
-                scale: [1, 1.03, 1]
-              }}
-              transition={{ 
-                duration: 2.5, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              whileHover={{ 
-                scale: 1.06, 
-                backgroundColor: "rgba(255, 255, 255, 1)",
-                boxShadow: "0px 8px 24px rgba(255,255,255,0.9), 0 0 0 4px rgba(255,255,255,0.5)"
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center space-x-1.5 bg-white/95 border-2 border-white text-[#411F66] rounded-full py-1 px-2.5 sm:px-3 text-[9px] sm:text-[10px] font-mono font-black shadow-md cursor-pointer select-none transition-all shrink-0"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-80" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span className="tracking-widest uppercase font-black">SISTEMA ACTIVO</span>
-            </motion.span>
-          </div>
-        </header>
+        <Header
+          currentUserEmail={currentUserEmail}
+          leadInfo={leadInfo}
+          programProgress={programProgress}
+          saveCustomAvatar={saveCustomAvatar}
+          setIsProfileSettingsOpen={setIsProfileSettingsOpen}
+          setIsSupportDrawerOpen={setIsClaraProfileOpen}
+          onOpenNotifications={() => setIsProfileSettingsOpen(true)}
+          handleUserLogout={handleUserLogout}
+          setPhase={setPhase}
+          setLoginEmail={setLoginEmail}
+          setLeadInfo={setLeadInfo}
+          setProgramProgress={setProgramProgress}
+        />
       )}
 
       {/* MAIN CONTAINER */}
