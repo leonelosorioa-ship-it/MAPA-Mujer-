@@ -180,7 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* FIXED / STICKY HEADER WITH ROSA/MAGENTA COLOR (#E86FA3) MATCHING SCREENSHOT */}
       <header 
         id="app_header" 
-        className="sticky top-0 z-40 w-full bg-[#E86FA3] text-white shadow-xl border-b border-white/20 px-3 py-4 sm:px-6 sm:py-5 transition-all"
+        className="sticky top-0 z-50 w-full bg-[#E86FA3] text-white shadow-xl border-b border-white/20 px-3 py-4 sm:px-6 sm:py-5 transition-all"
       >
         {/* HIDDEN INPUT FOR PROFILE PICTURE UPLOAD */}
         <input

@@ -3375,7 +3375,7 @@ export default function App() {
 
   if (phase === "ADMIN") {
     return (
-      <div id="app_root_admin" className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#36C4D8]/30 selection:text-[#0F172A] relative overflow-x-hidden">
+      <div id="app_root_admin" className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#36C4D8]/30 selection:text-[#0F172A] relative overflow-x-clip">
         <AdminPanel
           onLogoutAdmin={() => {
             localStorage.removeItem("MAPA_CURRENT_USER_EMAIL");
@@ -3388,7 +3388,7 @@ export default function App() {
   }
 
   return (
-    <div id="app_root" className="min-h-screen bg-[#FAF7F9] text-[#56346F] flex flex-col font-sans selection:bg-[#36C4D8]/30 selection:text-[#6E488A] relative overflow-x-hidden">
+    <div id="app_root" className="min-h-screen bg-[#FAF7F9] text-[#56346F] flex flex-col font-sans selection:bg-[#36C4D8]/30 selection:text-[#6E488A] relative overflow-x-clip">
       
       {/* Decorative top ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-gradient-to-b from-[#EDE0F0]/50 via-transparent to-transparent blur-3xl pointer-events-none z-0" />
