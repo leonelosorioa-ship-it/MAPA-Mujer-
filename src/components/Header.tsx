@@ -588,8 +588,8 @@ export const Header: React.FC<HeaderProps> = ({
                   <p className="text-[10px] text-slate-400 font-mono">
                     M.A.P.A.™ Mujer v2.5 • PWA
                   </p>
-                  <p className="text-[9px] text-slate-400/80 font-sans">
-                    Creador: Leonel Osorio Andrade
+                  <p className="text-[10px] text-[#E86FA3] font-sans font-bold">
+                    Clara Luz: Creadora, Fundadora y Mentora de M.A.P.A.™
                   </p>
                 </div>
               </div>

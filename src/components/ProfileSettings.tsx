@@ -385,8 +385,8 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded-xl space-y-0.5">
-                  <span className="text-slate-400 font-medium">Creador del Sistema:</span>
-                  <p className="font-medium text-slate-600">Leonel Osorio Andrade</p>
+                  <span className="text-slate-400 font-medium">Creadora & Mentora del Sistema:</span>
+                  <p className="font-semibold text-[#E86FA3]">Clara Luz: Creadora, Fundadora y Mentora de M.A.P.A.™</p>
                 </div>
               </div>
             </div>
