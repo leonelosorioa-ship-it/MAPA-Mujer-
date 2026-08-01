@@ -8,9 +8,8 @@ import webPush from "web-push";
 import jwt from "jsonwebtoken";
 import { QUESTIONS } from "./src/questions.js";
 import { EmotionalProfile, QuizResponse } from "./src/types.js";
-import admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
-import { getApp } from "firebase-admin/app";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, doc, getDocs, setDoc } from "firebase/firestore";
 
 dotenv.config();
 
@@ -46,29 +45,26 @@ const USERS_DB_PATH = path.join(process.cwd(), "data_users.json");
 const HOTMART_LOGS_PATH = path.join(process.cwd(), "data_hotmart_logs.json");
 const INVITE_CODES_PATH = path.join(process.cwd(), "data_invite_codes.json");
 
-// Safe Firestore initialization
+// Safe Firestore initialization using Firebase Client SDK (uses API Key & Firestore rules)
 let dbFirestore: any = null;
 
 try {
   const firebaseConfigPath = path.join(process.cwd(), "firebase-applet-config.json");
   if (fs.existsSync(firebaseConfigPath)) {
     const config = JSON.parse(fs.readFileSync(firebaseConfigPath, "utf-8"));
-    if (config.projectId) {
-      admin.initializeApp({
-        projectId: config.projectId
-      });
-      // Handle custom firestore database ID if defined
+    if (config.projectId && config.apiKey) {
+      const firebaseApp = initializeApp(config);
       const dbId = config.firestoreDatabaseId || "(default)";
       if (dbId && dbId !== "(default)") {
-        dbFirestore = getFirestore(getApp(), dbId);
+        dbFirestore = getFirestore(firebaseApp, dbId);
       } else {
-        dbFirestore = getFirestore();
+        dbFirestore = getFirestore(firebaseApp);
       }
-      console.log(`🔥 [Firebase Admin] Initialized successfully. Project: ${config.projectId}, Database ID: ${dbId}`);
+      console.log(`🔥 [Firebase Client SDK] Initialized successfully. Project: ${config.projectId}, Database ID: ${dbId}`);
     }
   }
 } catch (err: any) {
-  console.warn("⚠️ [Firebase Admin] Initialization warning:", err.message);
+  console.warn("⚠️ [Firebase Client SDK] Initialization warning:", err.message);
 }
 
 // Memory caches to prevent duplicate redundant Firestore writes
@@ -93,10 +89,10 @@ async function hydrateLocalDBFromFirestore() {
 
   try {
     console.log("🔄 [Hydration] Loading user profiles from Firestore...");
-    const userSnap = await withTimeout(dbFirestore.collection("users").get()) as any;
+    const userSnap = await withTimeout(getDocs(collection(dbFirestore, "users"))) as any;
     const cloudUsers: any[] = [];
-    userSnap.forEach((doc: any) => {
-      cloudUsers.push(doc.data());
+    userSnap.forEach((docSnap: any) => {
+      cloudUsers.push(docSnap.data());
     });
     
     if (cloudUsers.length > 0) {
@@ -126,10 +122,10 @@ async function hydrateLocalDBFromFirestore() {
     
     // Also hydrate invite codes
     console.log("🔄 [Hydration] Loading invite codes from Firestore...");
-    const inviteSnap = await withTimeout(dbFirestore.collection("invite_codes").get()) as any;
+    const inviteSnap = await withTimeout(getDocs(collection(dbFirestore, "invite_codes"))) as any;
     const cloudCodes: any[] = [];
-    inviteSnap.forEach((doc: any) => {
-      cloudCodes.push(doc.data());
+    inviteSnap.forEach((docSnap: any) => {
+      cloudCodes.push(docSnap.data());
     });
     if (cloudCodes.length > 0) {
       let localCodes: any[] = [];
@@ -154,10 +150,10 @@ async function hydrateLocalDBFromFirestore() {
 
     // Also hydrate Hotmart logs
     console.log("🔄 [Hydration] Loading Hotmart logs from Firestore...");
-    const logSnap = await withTimeout(dbFirestore.collection("hotmart_logs").get()) as any;
+    const logSnap = await withTimeout(getDocs(collection(dbFirestore, "hotmart_logs"))) as any;
     const cloudLogs: any[] = [];
-    logSnap.forEach((doc: any) => {
-      cloudLogs.push(doc.data());
+    logSnap.forEach((docSnap: any) => {
+      cloudLogs.push(docSnap.data());
     });
     if (cloudLogs.length > 0) {
       let localLogs: any[] = [];
@@ -267,7 +263,7 @@ function writeUsersDB(data: any) {
         const serialized = JSON.stringify(user);
         if (lastSyncedUsersMap.get(cleanEmail) !== serialized) {
           lastSyncedUsersMap.set(cleanEmail, serialized);
-          dbFirestore!.collection("users").doc(cleanEmail).set(user, { merge: true })
+          setDoc(doc(dbFirestore, "users", cleanEmail), user, { merge: true })
             .catch((err: any) => {
               console.error(`❌ [Firestore Sync] Error saving user ${cleanEmail}:`, err.message);
             });
@@ -306,7 +302,7 @@ function writeHotmartLogs(logs: any[]) {
         const serialized = JSON.stringify(log);
         if (lastSyncedLogsMap.get(logKey) !== serialized) {
           lastSyncedLogsMap.set(logKey, serialized);
-          dbFirestore!.collection("hotmart_logs").doc(logKey).set(log, { merge: true })
+          setDoc(doc(dbFirestore, "hotmart_logs", logKey), log, { merge: true })
             .catch((err: any) => {
               console.error(`❌ [Firestore Sync] Error saving Hotmart log ${logKey}:`, err.message);
             });
@@ -362,7 +358,7 @@ function writeInviteCodes(codes: any[]) {
         const serialized = JSON.stringify(codeObj);
         if (lastSyncedCodesMap.get(codeKey) !== serialized) {
           lastSyncedCodesMap.set(codeKey, serialized);
-          dbFirestore!.collection("invite_codes").doc(codeKey).set(codeObj, { merge: true })
+          setDoc(doc(dbFirestore, "invite_codes", codeKey), codeObj, { merge: true })
             .catch((err: any) => {
               console.error(`❌ [Firestore Sync] Error saving code ${codeKey}:`, err.message);
             });
