@@ -148,10 +148,21 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
             }
             aria-label={isLoggedIn ? "Abrir guía de uso del programa M.A.P.A." : "Abrir centro de ayuda técnica y soporte"}
           >
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
-              isLoggedIn ? "bg-white/20 text-white" : "bg-[#6E488A]/10 text-[#6E488A] group-hover:bg-white/20 group-hover:text-white"
-            }`}>
-              <LifeBuoy className="w-3.5 h-3.5" />
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden border border-white/90 shadow-xs shrink-0 bg-white relative">
+              <img
+                src={CLARA_LUZ_PROFILE.image}
+                alt="Clara Luz Mentora"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (target.src.includes('/clara_luz.jpg')) {
+                    target.src = '/clara-luz-profile.jpg';
+                  } else if (target.src.includes('/clara-luz-profile.jpg')) {
+                    target.src = '/assets/clara-luz-profile.jpg';
+                  }
+                }}
+                className="w-full h-full object-cover object-center rounded-full"
+              />
             </div>
             <span className="font-bold text-xs">Ayuda</span>
           </button>
