@@ -92,27 +92,32 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
   const progressPercent = Math.round((totalCompleted / 7) * 100);
 
   return (
-    <div className="space-y-3 sm:space-y-4 text-left w-full max-w-full overflow-hidden">
+    <div className="space-y-3 sm:space-y-4 text-left w-full min-w-0 max-w-full">
       {/* ROADMAP TIMELINE HORIZONTAL CONTAINER */}
-      <div className="bg-white border-2 border-[#6E488A]/12 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-sm relative overflow-hidden">
+      <div className="bg-white border-2 border-[#6E488A]/12 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm relative w-full min-w-0">
         {/* HEADER & PROGRESS BAR */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-0.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-0.5 w-full min-w-0">
           <div className="min-w-0 flex-1">
             <span className="text-[9px] sm:text-[10px] font-mono uppercase font-black text-[#E86FA3] tracking-wider block">
               SECUENCIA DEL PROGRAMA • 7 DÍAS
             </span>
-            <h3 className="font-display font-bold text-base sm:text-xl text-[#6E488A] truncate">
+            <h3 className="font-display font-bold text-sm sm:text-xl text-[#6E488A] leading-snug break-words">
               Tu Ruta de Regulación Emocional
             </h3>
           </div>
-          <div className="bg-[#EDE0F0] text-[#6E488A] px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-mono font-bold border border-[#6E488A]/15 shrink-0">
-            {progressPercent}% Completo
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] font-mono text-[#56346F]/60 sm:hidden flex items-center gap-1 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
+              Desliza <ArrowRight className="w-3 h-3 text-[#E86FA3] animate-pulse" />
+            </span>
+            <div className="bg-[#EDE0F0] text-[#6E488A] px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold border border-[#6E488A]/15 shrink-0">
+              {progressPercent}% Completo
+            </div>
           </div>
         </div>
 
         {/* Horizontal Node Track - Touch & Mobile Optimized with Snap */}
-        <div className="overflow-x-auto pb-2 pt-1 no-scrollbar snap-x snap-mandatory scroll-smooth">
-          <div className="flex items-center space-x-2 sm:space-x-3 min-w-max px-0.5">
+        <div className="overflow-x-auto pb-2 pt-1 no-scrollbar snap-x snap-mandatory scroll-smooth touch-pan-x w-full min-w-0">
+          <div className="flex items-center space-x-2 sm:space-x-3 w-max px-0.5">
             {DAYS_PROGRAM_DATA.map((item, idx) => {
               const isCompleted = completedDays.includes(item.day);
               const isActive = item.day === currentDay;
@@ -122,10 +127,10 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
                 <div key={item.day} className="flex items-center snap-center shrink-0">
                   {/* Day Node Card */}
                   <motion.button
-                    whileHover={{ scale: 1.04 }}
+                    whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => onSelectDay(item.day)}
-                    className={`relative flex flex-col items-center justify-between p-2 sm:p-3 rounded-xl sm:rounded-2xl w-20 sm:w-26 h-22 sm:h-26 border-2 transition-all cursor-pointer select-none ${
+                    className={`relative flex flex-col items-center justify-between p-2 sm:p-3 rounded-xl sm:rounded-2xl w-18 sm:w-26 h-20 sm:h-26 border-2 transition-all cursor-pointer select-none touch-manipulation ${
                       isSelected
                         ? "border-[#36C4D8] bg-gradient-to-b from-[#36C4D8]/15 to-white shadow-md ring-2 ring-[#36C4D8]/30"
                         : isCompleted
@@ -141,16 +146,16 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
 
                     <div className="my-0.5 flex items-center justify-center">
                       {isCompleted ? (
-                        <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500 fill-emerald-100" />
+                        <CheckCircle2 className="w-5 h-5 sm:w-7 sm:h-7 text-emerald-500 fill-emerald-100" />
                       ) : isActive ? (
                         <div className="relative flex items-center justify-center">
-                          <span className="absolute w-7 h-7 bg-[#E86FA3]/30 rounded-full animate-ping" />
-                          <span className="w-6 h-6 sm:w-7 sm:h-7 bg-[#E86FA3] text-white rounded-full flex items-center justify-center font-black text-xs shadow-xs">
+                          <span className="absolute w-6 h-6 bg-[#E86FA3]/30 rounded-full animate-ping" />
+                          <span className="w-5 h-5 sm:w-7 sm:h-7 bg-[#E86FA3] text-white rounded-full flex items-center justify-center font-black text-xs shadow-xs">
                             {item.day}
                           </span>
                         </div>
                       ) : (
-                        <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+                        <Lock className="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" />
                       )}
                     </div>
 
@@ -167,7 +172,7 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
                   {/* Connecting Line */}
                   {idx < DAYS_PROGRAM_DATA.length - 1 && (
                     <div
-                      className={`w-2.5 sm:w-4 h-1 rounded-full mx-1 shrink-0 ${
+                      className={`w-2 sm:w-4 h-1 rounded-full mx-1 shrink-0 ${
                         completedDays.includes(item.day) ? "bg-emerald-300" : "bg-gray-200"
                       }`}
                     />
@@ -185,45 +190,45 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="bg-white border-2 border-[#6E488A]/12 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm text-left relative overflow-hidden space-y-3.5 w-full"
+        className="bg-white border-2 border-[#6E488A]/12 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 shadow-sm text-left relative w-full min-w-0 space-y-3 sm:space-y-4"
       >
         {/* TOP BADGES ROW */}
-        <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-[#6E488A]/10 pb-2.5">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="bg-[#EDE0F0] text-[#6E488A] font-mono font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full border border-[#6E488A]/15">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-[#6E488A]/10 pb-2.5 w-full min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+            <span className="bg-[#EDE0F0] text-[#6E488A] font-mono font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full border border-[#6E488A]/15 shrink-0">
               DÍA {activeDayData.day} DE 7
             </span>
             {isSelectedCompleted ? (
-              <span className="bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <span className="bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
                 Completado
               </span>
             ) : isSelectedActive && isLocked ? (
-              <span className="bg-amber-100 text-amber-800 text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <Clock className="w-3 h-3 text-amber-600 animate-spin" />
+              <span className="bg-amber-100 text-amber-800 text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                <Clock className="w-3 h-3 text-amber-600 animate-spin shrink-0" />
                 Asimilación Activa
               </span>
             ) : isSelectedActive ? (
-              <span className="bg-[#E86FA3]/15 text-[#E86FA3] text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
-                <Sparkles className="w-3 h-3 text-[#E86FA3]" />
+              <span className="bg-[#E86FA3]/15 text-[#E86FA3] text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 animate-pulse shrink-0">
+                <Sparkles className="w-3 h-3 text-[#E86FA3] shrink-0" />
                 Disponible Ahora
               </span>
             ) : (
-              <span className="bg-gray-100 text-gray-500 text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <Lock className="w-3 h-3" />
+              <span className="bg-gray-100 text-gray-500 text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                <Lock className="w-3 h-3 shrink-0" />
                 Próximamente
               </span>
             )}
           </div>
 
-          <span className="text-[10px] sm:text-xs font-mono text-[#56346F]/60">
+          <span className="text-[10px] sm:text-xs font-mono text-[#56346F]/60 shrink-0">
             M.A.P.A.™ Mujer
           </span>
         </div>
 
         {/* TITLE & DESCRIPTION */}
-        <div className="space-y-1">
-          <h3 className="font-display font-bold text-lg sm:text-2xl text-[#6E488A] leading-tight break-words">
+        <div className="space-y-1 w-full min-w-0">
+          <h3 className="font-display font-bold text-base sm:text-xl md:text-2xl text-[#6E488A] leading-tight break-words">
             {activeDayData.title}
           </h3>
           <p className="text-xs sm:text-sm text-[#56346F]/85 leading-relaxed font-sans break-words">
@@ -232,8 +237,8 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
         </div>
 
         {/* MARCADORES & HERRAMIENTA GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 pt-1">
-          <div className="bg-[#FAF7F9] border border-[#6E488A]/10 p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 pt-1 w-full min-w-0">
+          <div className="bg-[#FAF7F9] border border-[#6E488A]/10 p-3 sm:p-4 rounded-xl sm:rounded-2xl w-full min-w-0">
             <span className="text-[9px] sm:text-[10px] font-mono font-bold text-[#E86FA3] uppercase tracking-wider block mb-1">
               MARCADORES BIOLÓGICOS
             </span>
@@ -242,7 +247,7 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
             </p>
           </div>
 
-          <div className="bg-[#36C4D8]/10 border border-[#36C4D8]/20 p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+          <div className="bg-[#36C4D8]/10 border border-[#36C4D8]/20 p-3 sm:p-4 rounded-xl sm:rounded-2xl w-full min-w-0">
             <span className="text-[9px] sm:text-[10px] font-mono font-bold text-[#27A1B2] uppercase tracking-wider block mb-1">
               HERRAMIENTA CLAVE
             </span>
@@ -253,23 +258,23 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
         </div>
 
         {/* RESPONSIVE ACTION BUTTON OR STATUS BANNER */}
-        <div className="pt-2">
+        <div className="pt-2 w-full min-w-0">
           {isSelectedActive && !isLocked ? (
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onStartDayTest(selectedDay)}
-              className="w-full bg-gradient-to-r from-[#E86FA3] via-[#6E488A] to-[#36C4D8] text-white font-sans font-bold py-3 px-4 sm:py-3.5 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs sm:text-base cursor-pointer text-center whitespace-normal leading-snug"
+              className="w-full bg-gradient-to-r from-[#E86FA3] via-[#6E488A] to-[#36C4D8] text-white font-sans font-bold py-3 px-3.5 sm:py-3.5 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs sm:text-base cursor-pointer text-center whitespace-normal leading-snug min-h-[48px] touch-manipulation"
             >
               <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current shrink-0" />
-              <span>Iniciar Test Breve de 7 Preguntas • Día {selectedDay}</span>
+              <span className="break-words">Iniciar Test Breve de 7 Preguntas • Día {selectedDay}</span>
             </motion.button>
           ) : isSelectedActive && isLocked ? (
-            <div className="bg-amber-50 border border-amber-200/80 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1">
+            <div className="bg-amber-50 border border-amber-200/80 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">
               <span className="text-xs font-mono font-bold text-amber-800 block">
                 ⏳ Periodo de Asimilación Neuro-Emocional Activo
               </span>
-              <p className="text-xs text-amber-900/80 leading-tight">
+              <p className="text-xs text-amber-900/80 leading-tight break-words">
                 Tu sistema nervioso requiere consolidar la sesión anterior. El siguiente test se habilitará en:
               </p>
               <span className="font-mono font-black text-base sm:text-lg text-amber-900 block pt-0.5">
@@ -277,22 +282,22 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
               </span>
             </div>
           ) : isSelectedCompleted ? (
-            <div className="bg-emerald-50 border border-emerald-200/80 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1">
+            <div className="bg-emerald-50 border border-emerald-200/80 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">
               <span className="text-xs font-mono font-bold text-emerald-800 flex items-center justify-center gap-1">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 ¡Excelente trabajo, {userShortName}!
               </span>
-              <p className="text-xs text-emerald-900/80 leading-tight">
+              <p className="text-xs text-emerald-900/80 leading-tight break-words">
                 Has completado la evaluación del Día {selectedDay}. Los resultados se han integrado en tu expediente M.A.P.A.™
               </p>
             </div>
           ) : (
-            <div className="bg-gray-50 border border-gray-200 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1">
+            <div className="bg-gray-50 border border-gray-200 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">
               <span className="text-xs font-mono font-bold text-gray-600 flex items-center justify-center gap-1">
                 <Lock className="w-4 h-4 text-gray-400 shrink-0" />
                 Día Bloqueado
               </span>
-              <p className="text-xs text-gray-500 leading-tight">
+              <p className="text-xs text-gray-500 leading-tight break-words">
                 Se desbloqueará secuencialmente tras completar el Día {selectedDay - 1}.
               </p>
             </div>

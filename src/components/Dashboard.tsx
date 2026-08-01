@@ -136,7 +136,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto pb-24 text-left animate-fadeIn space-y-6">
+    <div className="w-full max-w-4xl mx-auto pb-20 sm:pb-24 text-left animate-fadeIn space-y-4 sm:space-y-6 min-w-0 max-w-full">
       {/* NOTICES AND NOTIFICATION SHIELDS */}
       {dashboardNotice && (
         <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-4 text-xs font-medium flex items-center space-x-2">
@@ -383,7 +383,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6 w-full min-w-0 max-w-full"
           >
             <SevenDaysRoadmap
               currentDay={programProgress.currentDay}

@@ -3421,7 +3421,7 @@ export default function App() {
       )}
 
       {/* MAIN CONTAINER */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 md:py-12 relative z-10 flex flex-col justify-center">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8 md:py-12 relative z-10 flex flex-col justify-start min-w-0 max-w-full">
         
         <AnimatePresence mode="wait">
           {phase === "LANDING" && (
@@ -4221,7 +4221,7 @@ export default function App() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="max-w-4xl mx-auto animate-fadeIn"
+              className="w-full max-w-4xl mx-auto animate-fadeIn min-w-0 max-w-full"
             >
               <Dashboard
                 userEmail={currentUserEmail}
