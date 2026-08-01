@@ -5954,15 +5954,15 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* FLOATING ACTION UTILITIES CONTAINER */}
+      {/* FLOATING ACTION UTILITIES CONTAINER (BOTTOM RIGHT - COMPACT & COLLISION-FREE) */}
       {!(focusMode && phase === "DASHBOARD") && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[999] flex items-center gap-2 sm:gap-3">
+        <div className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-[999] flex items-center gap-1.5 sm:gap-2">
           {/* Floating Ambient Music Control Button */}
           <motion.button
             onClick={toggleAmbientAudio}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className={`p-2 sm:p-3 rounded-full border-2 border-white shadow-xl text-white flex items-center justify-center cursor-pointer transition-all ${
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white shadow-lg text-white flex items-center justify-center cursor-pointer transition-all shrink-0 ${
               isAmbientPlaying 
                 ? "bg-[#9D4EDD] hover:bg-[#7b2cbf]" 
                 : "bg-slate-600 hover:bg-slate-700"
@@ -5985,7 +5985,7 @@ export default function App() {
             }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="p-2 sm:p-3 rounded-full bg-[#25D366] text-white border-2 border-white shadow-xl hover:bg-[#20ba5a] transition-all cursor-pointer flex items-center justify-center"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] text-white border-2 border-white shadow-lg hover:bg-[#20ba5a] transition-all cursor-pointer flex items-center justify-center shrink-0"
             title="Compartir M.A.P.A.™ Mujer en WhatsApp"
           >
             <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 fill-current text-white" />
@@ -5996,7 +5996,7 @@ export default function App() {
             onClick={() => setAlarmPanelOpen(!alarmPanelOpen)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className={`p-2 sm:p-3 rounded-full border-2 border-white shadow-xl text-white flex items-center justify-center cursor-pointer transition-all ${
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white shadow-lg text-white flex items-center justify-center cursor-pointer transition-all shrink-0 ${
               activeTaskAlarm && activeTaskAlarm.isRunning 
                 ? "bg-emerald-500 hover:bg-emerald-600 animate-pulse" 
                 : "bg-[#411F66] hover:bg-[#522b7d]"
@@ -6024,7 +6024,7 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: 20 }}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="p-2 sm:p-3 rounded-full bg-[#E86FA3] text-white border-2 border-white shadow-xl hover:bg-[#d55d91] hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#E86FA3] text-white border-2 border-white shadow-lg hover:bg-[#d55d91] hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center group shrink-0"
                 title="Volver arriba"
               >
                 <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5 group-hover:-translate-y-0.5 transition-transform" />
