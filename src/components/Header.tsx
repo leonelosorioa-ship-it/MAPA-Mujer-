@@ -177,10 +177,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* FIXED / STICKY HEADER WITH ROSA/MAGENTA COLOR (#E86FA3) MATCHING SCREENSHOT */}
+      {/* FIXED / STICKY HEADER WITH ROSA/MAGENTA COLOR (#E86FA3) MATCHING SCREENSHOT - HALF HEIGHT */}
       <header 
         id="app_header" 
-        className="sticky top-0 z-50 w-full bg-[#E86FA3] text-white shadow-xl border-b border-white/20 px-3 py-4 sm:px-6 sm:py-5 transition-all"
+        className="sticky top-0 z-50 w-full bg-[#E86FA3] text-white shadow-lg border-b border-white/20 px-3 py-2 sm:px-5 sm:py-2.5 transition-all"
       >
         {/* HIDDEN INPUT FOR PROFILE PICTURE UPLOAD */}
         <input
@@ -191,55 +191,86 @@ export const Header: React.FC<HeaderProps> = ({
           className="hidden"
         />
 
-        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-center relative">
+        <div className="max-w-3xl mx-auto flex flex-col items-center justify-center text-center relative">
           
           {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER) */}
           <button
             type="button"
             onClick={() => setIsSideMenuOpen(true)}
-            className="absolute left-0 top-0 w-10 h-10 rounded-2xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-sm cursor-pointer focus:outline-none z-10"
+            className="absolute left-0 top-0.5 w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-xs cursor-pointer focus:outline-none z-10"
             title="Abrir Menú Principal M.A.P.A.™"
             aria-label="Abrir Menú de Navegación"
           >
-            <Menu className="w-5 h-5 text-white stroke-[2.5]" />
+            <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.5]" />
           </button>
 
-          {/* TOP CENTER ANIMATED COMPASS LOGO */}
+          {/* TOP CENTER MAIN HERO USER PROFILE PHOTO (PROTAGONIST AVATAR WITH DOUBLE ANIMATED RINGS) */}
           <motion.div 
-            onClick={() => setPhase?.("DASHBOARD")}
-            className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/15 cursor-pointer mb-2.5 group select-none shrink-0"
+            onClick={() => {
+              if (!currentUserEmail) {
+                setLoginEmail?.("");
+                setPhase?.("LOGIN");
+              } else {
+                fileInputRef.current?.click();
+              }
+            }}
+            className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-md shadow-black/15 cursor-pointer mb-1 group select-none shrink-0"
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
-            title="M.A.P.A.™ Mujer"
+            title="Haz clic para cambiar tu foto de perfil de usuaria"
           >
             {/* Outer Spinning Ring */}
-            <div className="absolute inset-0.5 rounded-full border-2 border-dashed border-[#36C4D8]/60 animate-spin" style={{ animationDuration: '14s' }} />
+            <div className="absolute -inset-1 rounded-full border-2 border-dashed border-white/80 animate-spin" style={{ animationDuration: '14s' }} />
             {/* Inner Reverse Spinning Ring */}
-            <div className="absolute inset-1.5 rounded-full border border-dotted border-[#E86FA3]/50 animate-spin" style={{ animationDuration: '8s', animationDirection: 'reverse' }} />
-            
-            {/* Center Compass Icon */}
-            <Compass className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 text-[#36C4D8] animate-pulse group-hover:scale-110 transition-transform" />
+            <div className="absolute -inset-0.5 rounded-full border border-dotted border-[#36C4D8] animate-spin" style={{ animationDuration: '8s', animationDirection: 'reverse' }} />
+
+            {/* USER PHOTO / EMOJI / INITIALS */}
+            <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-[#FFF0F5] relative">
+              {currentUserEmail && programProgress?.customAvatar?.type === "image" ? (
+                <img
+                  src={programProgress.customAvatar.value}
+                  alt={`Foto de ${userName}`}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              ) : currentUserEmail && programProgress?.customAvatar?.type === "emoji" ? (
+                <span className="text-xl sm:text-2xl select-none group-hover:scale-110 transition-transform">
+                  {programProgress.customAvatar.value}
+                </span>
+              ) : (
+                <span className="font-display font-black text-sm sm:text-base text-[#E86FA3] uppercase">
+                  {userInitials}
+                </span>
+              )}
+
+              {/* Camera Hover Overlay */}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center text-white">
+                <Camera className="w-4 h-4 text-white drop-shadow" />
+              </div>
+            </div>
+
+            {/* Active Dot indicator */}
+            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-white shadow-xs z-10" title="Usuaria Activa">
+              <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
+            </span>
           </motion.div>
 
-          {/* MAIN BRAND TITLE */}
-          <div className="flex items-center justify-center gap-2 mb-0.5">
-            <h1 className="font-display font-black text-2xl sm:text-3xl md:text-4xl tracking-wider text-white drop-shadow-sm">
+          {/* MAIN BRAND TITLE & SUBTITLE */}
+          <div className="flex flex-col items-center justify-center mb-1.5">
+            <h1 className="font-display font-black text-lg sm:text-xl md:text-2xl tracking-wider text-white drop-shadow-xs leading-none">
               M.A.P.A. <span className="text-[#3E1B5A] font-extrabold">Mujer</span>
             </h1>
+            <span className="text-[9px] sm:text-[10px] text-white/95 font-mono tracking-widest uppercase font-black drop-shadow-xs mt-0.5">
+              MAPA DE ACTIVACIÓN Y PROTECCIÓN EMOCIONAL
+            </span>
           </div>
 
-          {/* SUBTITLE LEYENDA */}
-          <span className="block text-[10px] sm:text-xs text-white/95 font-mono tracking-widest uppercase font-black mb-3 drop-shadow-xs">
-            MAPA DE ACTIVACIÓN Y PROTECCIÓN EMOCIONAL
-          </span>
-
           {/* BOTTOM INTERACTIVE PILLS RAIL */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 w-full max-w-xl">
+          <div className="flex flex-wrap items-center justify-center gap-2 w-full max-w-lg">
             
-            {/* PILL 1: USER PROFILE & PHOTO AVATAR BADGE */}
-            <div className="inline-flex items-center gap-2 bg-white text-[#411F66] rounded-full py-1.5 px-3 sm:px-4 text-xs font-bold shadow-md border border-white/60">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Usuaria Activa" />
+            {/* PILL 1: USER NAME & COMPASS BADGE */}
+            <div className="inline-flex items-center gap-1.5 bg-white text-[#411F66] rounded-full py-1 px-3 text-xs font-bold shadow-sm border border-white/60">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Usuaria Activa" />
               
               {isEditingName ? (
                 <form onSubmit={handleSaveName} className="flex items-center gap-1">
@@ -247,64 +278,46 @@ export const Header: React.FC<HeaderProps> = ({
                     type="text"
                     value={tempName}
                     onChange={(e) => setTempName(e.target.value)}
-                    className="border-b border-[#E86FA3] text-[#411F66] bg-transparent font-sans font-black text-xs focus:outline-none max-w-[100px] px-1 py-0"
+                    className="border-b border-[#E86FA3] text-[#411F66] bg-transparent font-sans font-black text-xs focus:outline-none max-w-[90px] px-0.5 py-0"
                     autoFocus
                     maxLength={30}
                   />
                   <button type="submit" className="text-emerald-600 font-bold text-xs p-0.5">
-                    <Check className="w-3.5 h-3.5" />
+                    <Check className="w-3 h-3" />
                   </button>
                   <button type="button" onClick={() => setIsEditingName(false)} className="text-red-500 font-bold text-xs p-0.5">
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-3 h-3" />
                   </button>
                 </form>
               ) : (
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <span 
                     onClick={() => {
                       setTempName(userName);
                       setIsEditingName(true);
                     }}
-                    className="font-black text-xs sm:text-sm text-[#411F66] truncate max-w-[110px] sm:max-w-[160px] cursor-pointer hover:underline flex items-center gap-1"
+                    className="font-black text-xs text-[#411F66] truncate max-w-[100px] sm:max-w-[140px] cursor-pointer hover:underline flex items-center gap-0.5"
                     title="Haz clic para editar tu nombre"
                   >
                     <span>{userName}</span>
-                    <Edit2 className="w-3 h-3 text-[#E86FA3] opacity-75 shrink-0" />
+                    <Edit2 className="w-2.5 h-2.5 text-[#E86FA3] opacity-75 shrink-0" />
                   </span>
 
                   {/* Completed days badge */}
-                  <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-2 py-0.5 rounded-full font-mono text-[10px] font-black flex items-center gap-0.5 shrink-0" title="Días completados">
+                  <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-1.5 py-0.2 rounded-full font-mono text-[9px] font-black flex items-center gap-0.5 shrink-0" title="Días completados">
                     <span>{completedCount}</span>
                     <span>✓</span>
                   </span>
                 </div>
               )}
 
-              {/* ANCHORED USER PROFILE AVATAR PHOTO BUTTON */}
+              {/* INTERACTIVE COMPASS AVATAR BADGE IN PILL */}
               <div 
-                onClick={() => fileInputRef.current?.click()}
-                className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[#E86FA3] bg-[#FFF0F5] flex items-center justify-center cursor-pointer overflow-hidden group shrink-0 ml-0.5 shadow-xs"
-                title="Haz clic para cambiar tu foto de perfil"
+                onClick={() => setPhase?.("DASHBOARD")}
+                className="w-5 h-5 rounded-full bg-[#36C4D8]/20 flex items-center justify-center cursor-pointer text-[#27A1B2] hover:bg-[#36C4D8]/30 transition-colors shrink-0 ml-0.5"
+                title="Brújula M.A.P.A.™"
               >
-                {currentUserEmail && programProgress?.customAvatar?.type === "image" ? (
-                  <img
-                    src={programProgress.customAvatar.value}
-                    alt={`Foto de ${userName}`}
-                    className="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform"
-                  />
-                ) : currentUserEmail && programProgress?.customAvatar?.type === "emoji" ? (
-                  <span className="text-sm select-none group-hover:scale-110 transition-transform">
-                    {programProgress.customAvatar.value}
-                  </span>
-                ) : (
-                  <span className="font-display font-black text-[10px] text-[#E86FA3] uppercase">
-                    {userInitials}
-                  </span>
-                )}
-
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                  <Camera className="w-3 h-3 text-white" />
-                </div>
+                <Compass className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
               </div>
             </div>
 
@@ -312,11 +325,11 @@ export const Header: React.FC<HeaderProps> = ({
             <motion.span 
               animate={{ 
                 boxShadow: [
-                  "0px 2px 8px rgba(255,255,255,0.4), 0 0 0 1px rgba(255,255,255,0.3)",
-                  "0px 6px 20px rgba(255,255,255,0.85), 0 0 0 3px rgba(255,255,255,0.5)",
-                  "0px 2px 8px rgba(255,255,255,0.4), 0 0 0 1px rgba(255,255,255,0.3)"
+                  "0px 2px 6px rgba(255,255,255,0.4), 0 0 0 1px rgba(255,255,255,0.3)",
+                  "0px 4px 14px rgba(255,255,255,0.85), 0 0 0 2px rgba(255,255,255,0.5)",
+                  "0px 2px 6px rgba(255,255,255,0.4), 0 0 0 1px rgba(255,255,255,0.3)"
                 ],
-                scale: [1, 1.03, 1]
+                scale: [1, 1.02, 1]
               }}
               transition={{ 
                 duration: 2.5, 
@@ -324,18 +337,18 @@ export const Header: React.FC<HeaderProps> = ({
                 ease: "easeInOut" 
               }}
               whileHover={{ 
-                scale: 1.06, 
+                scale: 1.05, 
                 backgroundColor: "rgba(255, 255, 255, 1)",
-                boxShadow: "0px 8px 24px rgba(255,255,255,0.95), 0 0 0 4px rgba(255,255,255,0.6)"
+                boxShadow: "0px 6px 18px rgba(255,255,255,0.95), 0 0 0 3px rgba(255,255,255,0.6)"
               }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center space-x-1.5 bg-white text-[#411F66] rounded-full py-1.5 px-3.5 sm:px-4 text-xs font-mono font-black shadow-md border border-white/60 cursor-pointer select-none transition-all shrink-0"
+              className="inline-flex items-center space-x-1.5 bg-white text-[#411F66] rounded-full py-1 px-3 text-[10px] sm:text-xs font-mono font-black shadow-sm border border-white/60 cursor-pointer select-none transition-all shrink-0"
             >
-              <span className="relative flex h-2.5 w-2.5">
+              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-80" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span className="tracking-widest uppercase font-black text-[11px] sm:text-xs">
+              <span className="tracking-widest uppercase font-black text-[10px] sm:text-[11px]">
                 SISTEMA ACTIVO
               </span>
             </motion.span>
