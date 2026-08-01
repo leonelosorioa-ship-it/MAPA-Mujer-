@@ -6,6 +6,7 @@ export interface InAppNotificationSystemProps {
   userName?: string;
   currentDay?: number;
   isDayLocked?: boolean;
+  isProgramCompleted?: boolean;
   onGoToTest?: () => void;
   onOpenTool?: (toolId: string) => void;
   onOpenClaraLuzChat?: () => void;
@@ -46,6 +47,7 @@ export const InAppNotificationSystem: React.FC<InAppNotificationSystemProps> = (
   userName = "Querida Usuaria",
   currentDay = 1,
   isDayLocked = false,
+  isProgramCompleted = false,
   onGoToTest,
   onOpenTool,
   onOpenClaraLuzChat
@@ -105,8 +107,8 @@ export const InAppNotificationSystem: React.FC<InAppNotificationSystemProps> = (
     const buildPool = (): NotificationItem[] => {
       const pool: NotificationItem[] = [];
 
-      // 1. Clinical / Assistance (Test del Día Listo) - if unlocked
-      if (!isDayLocked) {
+      // 1. Clinical / Assistance (Test del Día Listo) - if unlocked and program not finished
+      if (!isDayLocked && !isProgramCompleted) {
         pool.push({
           id: `test_ready_day_${currentDay}`,
           type: "clinical",

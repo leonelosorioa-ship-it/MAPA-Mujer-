@@ -196,7 +196,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
         userName={userShortName}
         currentDay={programProgress.currentDay}
         isDayLocked={currentChronoState.isLocked}
+        isProgramCompleted={programProgress.completedDays?.length >= 7}
         onGoToTest={() => {
+          if (programProgress.completedDays?.length >= 7) return;
           changeTab("program");
         }}
         onOpenTool={(toolId) => {
@@ -256,7 +258,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     ¡Bienvenida, {userShortName}!
                   </h2>
                   <p className="text-[#56346F]/80 text-xs sm:text-sm font-sans max-w-xl leading-relaxed">
-                    Tu panel de regulación emocional está activo. Cada día responderás 7 preguntas breves diseñadas para calmar tu mente y reducir la tensión corporal.
+                    {programProgress.completedDays?.length >= 7
+                      ? "¡Felicitaciones! Has completado con éxito tu ciclo completo de 7 Días. Tu expediente con todos tus logros, informes, audios de calma y lecturas está 100% disponible."
+                      : "Tu panel de regulación emocional está activo. Cada día responderás 7 preguntas breves diseñadas para calmar tu mente y reducir la tensión corporal."}
                   </p>
 
                   {/* Archetype Badge */}
@@ -284,16 +288,33 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             {/* QUICK PROGRAM ACTION BANNER */}
-            <div className="bg-gradient-to-r from-[#6E488A] via-[#E86FA3] to-[#36C4D8] rounded-3xl p-5 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className={`rounded-3xl p-5 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 ${
+              programProgress.completedDays?.length >= 7
+                ? "bg-gradient-to-r from-emerald-600 via-[#6E488A] to-[#36C4D8]"
+                : "bg-gradient-to-r from-[#6E488A] via-[#E86FA3] to-[#36C4D8]"
+            }`}>
               <div className="space-y-1 text-center sm:text-left">
-                <span className="text-[10px] font-mono uppercase font-bold text-white/80 tracking-wider block">
-                  DÍA {programProgress.currentDay} ACTIVO
+                <span className="text-[10px] font-mono uppercase font-bold text-white/90 tracking-wider flex items-center gap-1.5 justify-center sm:justify-start">
+                  {programProgress.completedDays?.length >= 7 ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-300 inline shrink-0" />
+                      PROGRAMA COMPLETO DE 7 DÍAS
+                    </>
+                  ) : (
+                    `DÍA ${programProgress.currentDay} ACTIVO`
+                  )}
                 </span>
                 <h3 className="font-display font-bold text-lg sm:text-xl">
-                  {currentChronoState.isLocked ? "Periodo de Asimilación Neuro-Emocional" : "Continúa con tu Test Diario M.A.P.A.™"}
+                  {programProgress.completedDays?.length >= 7
+                    ? "¡Has finalizado con éxito tu ciclo de 7 Días!"
+                    : currentChronoState.isLocked 
+                    ? "Periodo de Asimilación Neuro-Emocional" 
+                    : "Continúa con tu Test Diario M.A.P.A.™"}
                 </h3>
                 <p className="text-xs text-white/90 font-sans">
-                  {currentChronoState.isLocked 
+                  {programProgress.completedDays?.length >= 7
+                    ? "Todos tus informes, libros, audios y logros están 100% desbloqueados y guardados en tu panel."
+                    : currentChronoState.isLocked 
                     ? `Siguiente sesión disponible en: ${getTimeRemainingForDay(programProgress.currentDay)}`
                     : "Solo te tomará 2 minutos responder las 7 preguntas de hoy."}
                 </p>
@@ -305,7 +326,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 onClick={() => changeTab("program")}
                 className="bg-white text-[#6E488A] font-sans font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-md hover:bg-gray-50 shrink-0 flex items-center gap-1.5 cursor-pointer"
               >
-                <span>Ver Mi Programa</span>
+                <span>{programProgress.completedDays?.length >= 7 ? "Ver Mis Logros e Informes" : "Ver Mi Programa"}</span>
                 <ArrowRight className="w-4 h-4" />
               </motion.button>
             </div>

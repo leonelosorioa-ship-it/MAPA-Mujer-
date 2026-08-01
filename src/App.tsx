@@ -995,6 +995,15 @@ export default function App() {
   ]);
 
   // Daily test countdown reminder check
+  // Enforce DASHBOARD phase for users who completed 7 days process
+  useEffect(() => {
+    if (currentUserEmail && programProgress?.completedDays && programProgress.completedDays.length >= 7) {
+      if (phase === "WIZARD" || phase === "SCAN_TEST" || phase === "SCAN_RESULTS" || phase === "LOADING" || phase === "RESULTS") {
+        setPhase("DASHBOARD");
+      }
+    }
+  }, [currentUserEmail, programProgress?.completedDays, phase]);
+
   useEffect(() => {
     if (!programProgress.activationDate) return;
     const chrono = getChronologicalState();
@@ -1667,6 +1676,10 @@ export default function App() {
 
   // Start the 7-Question Free Scan Initial test
   const startFreeScanTest = () => {
+    if (currentUserEmail && programProgress.completedDays && programProgress.completedDays.length >= 7) {
+      setPhase("DASHBOARD");
+      return;
+    }
     setPhase("SCAN_TEST");
   };
 
@@ -1858,6 +1871,11 @@ export default function App() {
       }
     }
 
+    if (programProgress.completedDays && programProgress.completedDays.length >= 7) {
+      setPhase("DASHBOARD");
+      return;
+    }
+
     const nowStr = new Date().toISOString();
     const newProg = {
       activationDate: nowStr,
@@ -1877,6 +1895,10 @@ export default function App() {
 
   // Launch questionnaire for the active day
   const launchDailyQuiz = () => {
+    if (programProgress.completedDays && programProgress.completedDays.length >= 7) {
+      setPhase("DASHBOARD");
+      return;
+    }
     const day = programProgress.currentDay;
     // Load previously answered responses for this day if any exist, otherwise empty
     const existing = programProgress.responses[day] || [];
@@ -3390,6 +3412,10 @@ export default function App() {
   };
 
   const handleRestart = () => {
+    if (programProgress.completedDays && programProgress.completedDays.length >= 7) {
+      setPhase("DASHBOARD");
+      return;
+    }
     setUserResponses([]);
     setCurrentQuestionIndex(0);
     setIsEvaluationReady(false);
@@ -3581,7 +3607,9 @@ export default function App() {
                       <div className="space-y-1 drop-shadow-[0_1.5px_1.5px_rgba(255,255,255,1)]">
                         <span className="text-[10px] font-mono text-[#D6448D] uppercase tracking-wider font-extrabold flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                          ¡VIAJE EN PROGRESO DETECTADO!
+                          {programProgress.completedDays.length >= 7
+                            ? "¡PROGRAMA DE 7 DÍAS COMPLETADO! 🎉"
+                            : "¡VIAJE EN PROGRESO DETECTADO!"}
                           {currentUserEmail?.toLowerCase() === "contacto@tupodermental.club" && (
                             <button
                               onClick={(e) => {
@@ -3595,9 +3623,15 @@ export default function App() {
                             </button>
                           )}
                         </span>
-                        <h4 className="text-sm font-display font-black text-[#3A185C]">Tienes un autodiagnóstico activo</h4>
+                        <h4 className="text-sm font-display font-black text-[#3A185C]">
+                          {programProgress.completedDays.length >= 7
+                            ? "Has completado con éxito tu ciclo de 7 Días"
+                            : "Tienes un autodiagnóstico activo"}
+                        </h4>
                         <p className="text-xs text-black font-sans font-bold">
-                          Día de hoy: <strong className="text-[#3A185C] font-black">Día {programProgress.currentDay}</strong> • Completados: <strong className="font-black">{programProgress.completedDays.length} de 7 días</strong>.
+                          {programProgress.completedDays.length >= 7
+                            ? "Todos tus informes, resultados, audios y logros están 100% disponibles."
+                            : `Día de hoy: Día ${programProgress.currentDay} • Completados: ${programProgress.completedDays.length} de 7 días.`}
                         </p>
                       </div>
                       <div className="flex flex-col items-center gap-2 w-full sm:w-auto shrink-0">
@@ -3615,11 +3649,15 @@ export default function App() {
                           }}
                           className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#411F66] to-[#E86FA3] text-white font-display font-extrabold text-xs tracking-wider flex items-center justify-center space-x-2 cursor-pointer transition-all border-2 border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),_0_4px_12px_rgba(65,31,102,0.15)] hover:scale-[1.02] btn-neon-pulse"
                         >
-                          <span>IR A MI PANEL</span>
+                          <span>{programProgress.completedDays.length >= 7 ? "VER MI PANEL DE ARCHIVOS Y LOGROS" : "IR A MI PANEL"}</span>
                           <Compass className="w-3.5 h-3.5 text-white" />
                         </button>
                         <span className="text-xs font-mono font-black text-black text-center bg-yellow-400 border-2 border-yellow-600 px-2.5 py-1 rounded-md shadow-xs drop-shadow-[0_1.5px_1.5px_rgba(255,255,255,1)] w-full">
-                          {chrono.isLocked ? (
+                          {programProgress.completedDays.length >= 7 ? (
+                            <span className="text-emerald-900 font-black">
+                              ¡7 Días Completados 100%! 🎉
+                            </span>
+                          ) : chrono.isLocked ? (
                             chrono.msRemaining < 30 * 60 * 1000 ? (
                               <motion.span
                                 animate={{ scale: [1, 1.05, 1] }}
@@ -3633,7 +3671,7 @@ export default function App() {
                             )
                           ) : (
                             <span className="text-emerald-900 font-black">
-                              {programProgress.completedDays.length === 7 ? "¡7 Días Completados! 🎉" : "¡Siguiente prueba disponible!"}
+                              ¡Siguiente prueba disponible!
                             </span>
                           )}
                         </span>
@@ -3818,6 +3856,20 @@ export default function App() {
                   {currentUserEmail ? (
                     (() => {
                       const chrono = getChronologicalState();
+                      if (programProgress.completedDays.length >= 7) {
+                        return (
+                          <button
+                            onClick={() => {
+                              setPhase("DASHBOARD");
+                            }}
+                            className="w-full sm:w-auto px-8 py-4 rounded-xl font-display font-black tracking-wider text-white bg-gradient-to-r from-emerald-600 via-[#411F66] to-[#36C4D8] btn-neon-pulse flex items-center justify-center space-x-3 cursor-pointer text-base border-2 border-[#262222] shadow-xl"
+                          >
+                            <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                            <span>Ver Mi Panel de Logros y Archivos (7 Días Completados) 🎉</span>
+                            <Compass className="w-5 h-5 text-white shrink-0" />
+                          </button>
+                        );
+                      }
                       if (chrono.isLocked) {
                         return (
                           <div className="flex flex-col items-center gap-2 w-full sm:w-auto">

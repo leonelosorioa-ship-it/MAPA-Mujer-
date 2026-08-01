@@ -259,7 +259,19 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
 
         {/* RESPONSIVE ACTION BUTTON OR STATUS BANNER */}
         <div className="pt-2 w-full min-w-0">
-          {isSelectedActive && !isLocked ? (
+          {isSelectedCompleted || completedDays.length >= 7 ? (
+            <div className="bg-emerald-50 border border-emerald-200/80 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">
+              <span className="text-xs font-mono font-bold text-emerald-800 flex items-center justify-center gap-1">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                ¡Excelente trabajo, {userShortName}!
+              </span>
+              <p className="text-xs text-emerald-900/80 leading-tight break-words">
+                {completedDays.length >= 7 
+                  ? `Has completado exitosamente la evaluación del Día ${selectedDay} y el programa completo de 7 Días. Todos tus datos, archivos e informes están disponibles en tu expediente.`
+                  : `Has completado la evaluación del Día ${selectedDay}. Los resultados se han integrado en tu expediente M.A.P.A.™`}
+              </p>
+            </div>
+          ) : isSelectedActive && !isLocked ? (
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
@@ -280,16 +292,6 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
               <span className="font-mono font-black text-base sm:text-lg text-amber-900 block pt-0.5">
                 {timeRemainingText || "Calculando..."}
               </span>
-            </div>
-          ) : isSelectedCompleted ? (
-            <div className="bg-emerald-50 border border-emerald-200/80 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">
-              <span className="text-xs font-mono font-bold text-emerald-800 flex items-center justify-center gap-1">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                ¡Excelente trabajo, {userShortName}!
-              </span>
-              <p className="text-xs text-emerald-900/80 leading-tight break-words">
-                Has completado la evaluación del Día {selectedDay}. Los resultados se han integrado en tu expediente M.A.P.A.™
-              </p>
             </div>
           ) : (
             <div className="bg-gray-50 border border-gray-200 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">
