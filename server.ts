@@ -2693,6 +2693,17 @@ app.patch("/api/user/update-profile-picture", authenticateJWT, (req: any, res: a
   });
 });
 
+// Alias endpoints for PATCH and POST /api/user/profile-picture
+app.post("/api/user/profile-picture", authenticateJWT, (req: any, res: any) => {
+  req.url = "/api/user/update-profile-picture";
+  return app._router.handle(req, res);
+});
+
+app.patch("/api/user/profile-picture", authenticateJWT, (req: any, res: any) => {
+  req.url = "/api/user/update-profile-picture";
+  return app._router.handle(req, res);
+});
+
 // ==========================================
 // PERSISTENCIA: RECUPERAR AVANCE DEL USUARIO
 // ==========================================

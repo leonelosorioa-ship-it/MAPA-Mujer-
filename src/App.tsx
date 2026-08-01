@@ -39,7 +39,10 @@ import {
   VolumeX,
   Play,
   Square,
-  MessageCircle
+  MessageCircle,
+  Camera,
+  UserCheck,
+  Upload
 } from "lucide-react";
 import { QUESTIONS } from "./questions";
 import { EmotionalProfile, QuizResponse, LeadInfo } from "./types";
@@ -525,6 +528,7 @@ export default function App() {
   const [isAdminLoggingIn, setIsAdminLoggingIn] = useState<boolean>(false);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [tempName, setTempName] = useState<string>("");
+  const headerFileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Email sending states for the final report
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
@@ -734,6 +738,67 @@ export default function App() {
     } catch (e) {
       console.error("Error syncing custom avatar to server:", e);
     }
+  };
+
+  const handleHeaderFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!validTypes.includes(file.type.toLowerCase())) {
+      alert("Por favor selecciona una imagen válida (PNG, JPG o WEBP).");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("La imagen no debe superar los 5 MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const TARGET_SIZE = 360;
+        canvas.width = TARGET_SIZE;
+        canvas.height = TARGET_SIZE;
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const minDim = Math.min(img.width, img.height);
+          const startX = (img.width - minDim) / 2;
+          const startY = (img.height - minDim) / 2;
+
+          ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, TARGET_SIZE, TARGET_SIZE);
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.88);
+
+          // Update local state and sync
+          saveCustomAvatar({ type: "image", value: compressedBase64 });
+
+          // Sync directly with profile picture backend endpoint
+          if (currentUserEmail) {
+            const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+
+            fetch("/api/user/update-profile-picture", {
+              method: "POST",
+              headers,
+              body: JSON.stringify({
+                email: currentUserEmail,
+                profilePicture: compressedBase64,
+                customAvatar: { type: "image", value: compressedBase64 }
+              })
+            }).catch((err) => console.error("Error updating profile picture from header:", err));
+          }
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
   };
 
   useEffect(() => {
@@ -3339,42 +3404,78 @@ export default function App() {
       {!(focusMode && phase === "DASHBOARD") && (
         <header id="app_header" className="relative z-10 w-full border-b-2 border-[#6E488A]/15 bg-[#E86FA3] shadow-[0_4px_20px_rgba(232,111,163,0.15)] px-4 py-4 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
+            {/* HIDDEN INPUT FOR DIRECT HEADER PHOTO UPLOAD */}
+            <input 
+              type="file" 
+              ref={headerFileInputRef} 
+              onChange={handleHeaderFileChange} 
+              accept="image/png, image/jpeg, image/jpg, image/webp" 
+              className="hidden" 
+            />
+
+            {/* INTERACTIVE HEADER AVATAR / PROFILE PICTURE */}
             <motion.div 
               onClick={() => {
                 if (!currentUserEmail) {
                   setLoginEmail("");
                   setPhase("LOGIN");
+                } else {
+                  setIsProfileSettingsOpen(true);
                 }
               }}
-              className="relative w-14 h-14 rounded-full border-2 border-white/60 bg-gradient-to-b from-white to-[#EDE0F0] flex items-center justify-center shadow-lg shadow-white/10 cursor-pointer overflow-hidden group select-none shrink-0"
-              whileHover={{ scale: 1.15, rotate: 10, boxShadow: "0 10px 25px rgba(255,255,255,0.4)" }}
-              whileTap={{ scale: 0.92 }}
+              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-3 border-white bg-gradient-to-tr from-[#EDE0F0] via-white to-[#36C4D8]/20 flex items-center justify-center shadow-xl shadow-black/15 cursor-pointer overflow-hidden group select-none shrink-0"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.94 }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              title={!currentUserEmail ? "Identificación M.A.P.A." : undefined}
+              title={currentUserEmail ? "Haz clic para cambiar tu foto de perfil o avatar" : "Identificación M.A.P.A."}
             >
-              {/* Compass outer dial ring (spinning slowly) */}
-              <div className="absolute inset-1 rounded-full border border-dashed border-[#36C4D8]/40 animate-spin" style={{ animationDuration: '10s' }} />
-              <div className="absolute inset-2 rounded-full border border-dotted border-[#E36DB4]/30 animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
-              
-              {/* Brain division background color split */}
-              <div className="absolute inset-2 rounded-full overflow-hidden flex opacity-65">
-                <div className="w-1/2 h-full bg-[#36C4D8]/15 border-r border-[#36C4D8]/20" />
-                <div className="w-1/2 h-full bg-[#E36DB4]/15" />
-              </div>
-
-              {/* Shiny compass needle rotater */}
-              <div className="absolute inset-0 flex items-center justify-center animate-spin" style={{ animationDuration: '6s' }}>
-                <div className="relative h-10 w-0.5 flex items-center justify-center">
-                  {/* Needle point */}
-                  <div className="absolute -top-0.5 w-1.5 h-1.5 bg-[#36C4D8] rotate-45 rounded" />
-                  {/* Needle line */}
-                  <div className="w-[1.5px] h-full bg-gradient-to-b from-[#36C4D8] via-transparent to-[#E36DB4]" />
-                  {/* Needle gold/pink terminal */}
-                  <div className="absolute -bottom-0.5 w-1.5 h-1.5 bg-[#E36DB4] rounded-full" />
+              {currentUserEmail && programProgress.customAvatar?.type === "image" ? (
+                <img 
+                  src={programProgress.customAvatar.value} 
+                  alt="Foto de Perfil de Usuaria" 
+                  className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : currentUserEmail && programProgress.customAvatar?.type === "emoji" ? (
+                <span className="text-3xl sm:text-4xl transition-transform duration-300 group-hover:scale-110 select-none">
+                  {programProgress.customAvatar.value}
+                </span>
+              ) : currentUserEmail ? (
+                <div className="flex flex-col items-center justify-center text-[#6E488A]">
+                  <span className="font-display font-black text-xl sm:text-2xl tracking-wider uppercase">
+                    {(leadInfo.nombre || "Usuaria").slice(0, 2).toUpperCase()}
+                  </span>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Compass default for unauthenticated */}
+                  <div className="absolute inset-1 rounded-full border border-dashed border-[#36C4D8]/40 animate-spin" style={{ animationDuration: '10s' }} />
+                  <div className="absolute inset-2 rounded-full border border-dotted border-[#E36DB4]/30 animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
+                  <Compass className="relative z-10 w-7 h-7 text-[#36C4D8] animate-pulse group-hover:scale-110 transition-transform" />
+                </>
+              )}
 
-              <Compass className="relative z-10 w-7 h-7 text-[#36C4D8] animate-pulse group-hover:scale-110 transition-transform" />
+              {/* Camera Badge overlay for logged in user */}
+              {currentUserEmail && (
+                <>
+                  {/* Hover dark overlay with camera text */}
+                  <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-white text-[9px] sm:text-[10px] font-black gap-0.5 rounded-full">
+                    <Camera className="w-4 h-4 animate-bounce text-[#36C4D8]" />
+                    <span>Cambiar</span>
+                  </div>
+
+                  {/* Floating corner Camera badge icon */}
+                  <div 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      headerFileInputRef.current?.click();
+                    }}
+                    className="absolute bottom-0 right-0 bg-gradient-to-r from-[#6E488A] to-[#E86FA3] text-white p-1.5 rounded-full border-2 border-white shadow-md hover:scale-115 transition-transform cursor-pointer"
+                    title="Subir nueva foto directamente"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                  </div>
+                </>
+              )}
             </motion.div>
             <div className="flex flex-col items-center sm:items-start">
               <span className="font-display font-black text-2xl sm:text-3xl tracking-wider text-white block">
@@ -3432,17 +3533,28 @@ export default function App() {
                     </button>
                   </form>
                 ) : (
-                  <span 
-                    onClick={() => {
-                      setTempName(leadInfo.nombre || "");
-                      setIsEditingName(true);
-                    }}
-                    className="text-[#6E488A] font-sans font-black text-xs sm:text-sm max-w-[110px] xs:max-w-[155px] sm:max-w-none truncate whitespace-nowrap cursor-pointer hover:underline flex items-center gap-1"
-                    title="Haz clic para cambiar tu nombre"
-                  >
-                    <span>{leadInfo.nombre || "Usuaria"}</span>
-                    <span className="text-[10px] text-[#6E488A]/60 opacity-75 hover:opacity-100 shrink-0">✏️</span>
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span 
+                      onClick={() => {
+                        setTempName(leadInfo.nombre || "");
+                        setIsEditingName(true);
+                      }}
+                      className="text-[#6E488A] font-sans font-black text-xs sm:text-sm max-w-[110px] xs:max-w-[155px] sm:max-w-none truncate whitespace-nowrap cursor-pointer hover:underline flex items-center gap-1"
+                      title="Haz clic para cambiar tu nombre"
+                    >
+                      <span>{leadInfo.nombre || "Usuaria"}</span>
+                      <span className="text-[10px] text-[#6E488A]/60 opacity-75 hover:opacity-100 shrink-0">✏️</span>
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsProfileSettingsOpen(true)}
+                      className="text-[#E86FA3] hover:text-[#6E488A] bg-[#EDE0F0]/60 p-1 rounded-full transition-all cursor-pointer hover:scale-110 shrink-0 border border-[#6E488A]/10"
+                      title="Configurar Foto de Perfil y Avatar"
+                    >
+                      <Camera className="w-3 h-3" />
+                    </button>
+                  </div>
                 )}
 
                 <span className="bg-[#36C4D8]/15 text-[#27A1B2] px-1.5 py-0.5 rounded-lg font-mono text-[9px] font-black flex items-center space-x-0.5 shrink-0" title="Sesiones de regulación completadas">
