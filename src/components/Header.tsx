@@ -211,17 +211,20 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="max-w-3xl mx-auto flex flex-col items-center justify-center text-center relative">
           
-          {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER) */}
+          {/* HAMBURGER MENU BUTTON (TOP-LEFT CORNER WITH HIGH VISIBILITY & REPRESENTATION) */}
           <button
             type="button"
             onClick={() => setIsSideMenuOpen(true)}
-            className={`absolute left-0 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 border border-white/40 flex items-center justify-center text-white transition-all shadow-xs cursor-pointer focus:outline-none z-10 ${
-              isScrolled ? "top-0.5 w-8 h-8" : "top-1 sm:top-1.5 w-9 h-9 sm:w-10 sm:h-10"
+            className={`absolute left-0 bg-white text-[#3E1B5A] hover:bg-[#FAF0FB] active:scale-95 border-2 border-white shadow-md rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer focus:outline-none z-10 ${
+              isScrolled 
+                ? "top-0.5 px-2.5 py-1 text-[11px] sm:text-xs font-black" 
+                : "top-0.5 sm:top-1 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-black"
             }`}
             title="Abrir Menú Principal M.A.P.A.™"
             aria-label="Abrir Menú de Navegación"
           >
-            <Menu className={isScrolled ? "w-4 h-4 text-white stroke-[2.5]" : "w-5 h-5 text-white stroke-[2.5]"} />
+            <Menu className={isScrolled ? "w-4 h-4 text-[#3E1B5A] stroke-[2.8]" : "w-4.5 h-4.5 text-[#3E1B5A] stroke-[2.8]"} />
+            <span className="font-display font-black text-[#3E1B5A] tracking-wide">Menú</span>
           </button>
 
           {/* TOP CENTER MAIN HERO USER PROFILE PHOTO (PROTAGONIST AVATAR WITH DOUBLE ANIMATED RINGS & BREATHING ROOM) */}

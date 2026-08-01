@@ -116,26 +116,50 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
 
   return (
     <>
-      {/* Floating Trigger Button at bottom left */}
+      {/* Floating Trigger Controls at bottom left: Volver/Anterior + Ayuda & Soporte */}
       {externalIsOpen === undefined && (
-        <button
-          onClick={handleOpen}
-          className={
-            triggerClassName ||
-            (isLoggedIn
-              ? "fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[998] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white border border-[#128C7E] font-display font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95"
-              : "fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[998] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-white/95 backdrop-blur-md border border-[#6E488A]/25 text-[#56346F] font-display font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl hover:bg-[#56346F] hover:text-white transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95")
-          }
-          aria-label={isLoggedIn ? "Abrir guía de uso del programa M.A.P.A." : "Abrir centro de ayuda técnica y soporte"}
-        >
-          <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-            isLoggedIn ? "bg-white/20 text-white" : "bg-[#6E488A]/10 text-[#6E488A] group-hover:bg-white/20 group-hover:text-white"
-          }`}>
-            <LifeBuoy className="w-3.5 h-3.5" />
-          </div>
-          <span className="hidden xs:inline font-bold">{isLoggedIn ? "Ayuda • Guía M.A.P.A." : "Ayuda & Soporte"}</span>
-          <span className="xs:hidden font-bold">Ayuda</span>
-        </button>
+        <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[998] flex items-center gap-2 sm:gap-2.5">
+          {/* 1. PERSISTENT "VOLVER / ANTERIOR" NAVIGATION BUTTON */}
+          <button
+            type="button"
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+            className="px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-[#3E1B5A] hover:bg-[#2C1242] text-white border-2 border-white/90 shadow-xl font-display font-black text-xs sm:text-sm flex items-center gap-2 cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 group"
+            title="Regresar a la sección anterior o devolverse"
+            aria-label="Volver o regresar a la sección anterior"
+          >
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:-translate-x-0.5 transition-transform">
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
+            </div>
+            <span className="font-extrabold tracking-wide">Volver</span>
+          </button>
+
+          {/* 2. PERSISTENT "AYUDA & SOPORTE" BUTTON */}
+          <button
+            type="button"
+            onClick={handleOpen}
+            className={
+              triggerClassName ||
+              (isLoggedIn
+                ? "px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white border-2 border-white/90 font-display font-bold text-xs sm:text-sm shadow-xl transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95"
+                : "px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-white/95 backdrop-blur-md border border-[#6E488A]/25 text-[#56346F] font-display font-bold text-xs sm:text-sm shadow-xl hover:bg-[#56346F] hover:text-white transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95")
+            }
+            aria-label={isLoggedIn ? "Abrir guía de uso del programa M.A.P.A." : "Abrir centro de ayuda técnica y soporte"}
+          >
+            <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-colors ${
+              isLoggedIn ? "bg-white/20 text-white" : "bg-[#6E488A]/10 text-[#6E488A] group-hover:bg-white/20 group-hover:text-white"
+            }`}>
+              <LifeBuoy className="w-3.5 h-3.5" />
+            </div>
+            <span className="hidden xs:inline font-bold">{isLoggedIn ? "Ayuda • Guía M.A.P.A." : "Ayuda & Soporte"}</span>
+            <span className="xs:hidden font-bold">Ayuda</span>
+          </button>
+        </div>
       )}
 
       {/* Gentle Slide-up Drawer/Modal with Soft Colors */}
