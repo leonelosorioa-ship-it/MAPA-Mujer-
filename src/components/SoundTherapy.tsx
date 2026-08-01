@@ -131,6 +131,23 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
 
+  const playerIdRef = useRef<string>(src + "_" + title);
+
+  // Global Audio Mutual Exclusion Listener
+  useEffect(() => {
+    const handleStopAll = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.sourceId !== playerIdRef.current) {
+        if (audioRef.current && !audioRef.current.paused) {
+          audioRef.current.pause();
+        }
+        setIsPlaying(false);
+      }
+    };
+    window.addEventListener("mapa-stop-all-audios", handleStopAll);
+    return () => window.removeEventListener("mapa-stop-all-audios", handleStopAll);
+  }, []);
+
   // Screen Wake Lock API to keep the screen active when audio is playing
   useEffect(() => {
     let wakeLock: any = null;
@@ -208,6 +225,8 @@ const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
       audio.pause();
       setIsPlaying(false);
     } else {
+      // Discontinue any currently playing audio across the app
+      window.dispatchEvent(new CustomEvent("mapa-stop-all-audios", { detail: { sourceId: playerIdRef.current } }));
       audio.play().catch(e => console.warn("MP3 URL is a placeholder in development:", e));
       setIsPlaying(true);
     }
@@ -454,6 +473,20 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
     };
   }, [isPlaying, selectedTrack]);
 
+  // Listen to global stop all audios event for main synthesizer
+  useEffect(() => {
+    const handleStopAll = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.sourceId !== "sound_therapy_synth") {
+        if (isPlaying) {
+          stopAllSoundsAndClean();
+        }
+      }
+    };
+    window.addEventListener("mapa-stop-all-audios", handleStopAll);
+    return () => window.removeEventListener("mapa-stop-all-audios", handleStopAll);
+  }, [isPlaying]);
+
   // Clean up Web Audio on component unmount
   useEffect(() => {
     return () => {
@@ -598,6 +631,9 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
 
   // Main Synthesizer router utilizing perfect soft-volume Web Audio API nodes
   const startSynthesizer = (track: SoundExperience) => {
+    // Stop any other audio sources playing in the app
+    window.dispatchEvent(new CustomEvent("mapa-stop-all-audios", { detail: { sourceId: "sound_therapy_synth" } }));
+
     // 1. Terminate all ongoing tracks completely to ensure NO overlapping
     stopAllSoundsAndClean();
 

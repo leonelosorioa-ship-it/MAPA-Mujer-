@@ -1161,6 +1161,17 @@ export default function App() {
       setAmbientMuted(true);
     }
 
+    const handleStopAll = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.sourceId !== "ambient_audio") {
+        if (ambientAudioRef.current && !ambientAudioRef.current.paused) {
+          ambientAudioRef.current.pause();
+          setIsAmbientPlaying(false);
+        }
+      }
+    };
+    window.addEventListener("mapa-stop-all-audios", handleStopAll);
+
     const startAudio = () => {
       if (audio.paused && !savedMuted) {
         audio.play().then(() => {
@@ -1196,6 +1207,7 @@ export default function App() {
     return () => {
       audio.pause();
       audio.removeEventListener("ended", handleEnded);
+      window.removeEventListener("mapa-stop-all-audios", handleStopAll);
       window.removeEventListener("click", handleGesture);
       window.removeEventListener("touchstart", handleGesture);
       window.removeEventListener("keydown", handleGesture);
@@ -1211,6 +1223,7 @@ export default function App() {
       localStorage.setItem("MAPA_AMBIENT_MUTED", "true");
       setAmbientMuted(true);
     } else {
+      window.dispatchEvent(new CustomEvent("mapa-stop-all-audios", { detail: { sourceId: "ambient_audio" } }));
       audio.muted = false;
       audio.play().then(() => {
         setIsAmbientPlaying(true);
@@ -1256,6 +1269,58 @@ export default function App() {
     setPhase,
     setDashboardNotice
   });
+
+  // Global Hardware Back Button (popstate) Handler for App.tsx
+  useEffect(() => {
+    const handlePopState = () => {
+      // 1. Check if App.tsx level drawers or modals are open
+      if (isClaraProfileOpen) {
+        setIsClaraProfileOpen(false);
+        return;
+      }
+      if (isProfileSettingsOpen) {
+        setIsProfileSettingsOpen(false);
+        return;
+      }
+      if (isAvatarModalOpen) {
+        setIsAvatarModalOpen(false);
+        return;
+      }
+      if (isAdminLoginModalOpen) {
+        setIsAdminLoginModalOpen(false);
+        return;
+      }
+      if (unlockedAudioModal.isOpen) {
+        setUnlockedAudioModal({ isOpen: false, type: null });
+        return;
+      }
+      if (milestoneModal.isOpen) {
+        setMilestoneModal({ isOpen: false, daysCount: 3 });
+        return;
+      }
+
+      // 2. Check phase navigation
+      if (phase === "WIZARD" || phase === "SCAN_TEST" || phase === "SCAN_RESULTS" || phase === "ADMIN" || phase === "LOGIN") {
+        if (currentUserEmail) {
+          setPhase("DASHBOARD");
+        } else {
+          setPhase("LANDING");
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [
+    isClaraProfileOpen,
+    isProfileSettingsOpen,
+    isAvatarModalOpen,
+    isAdminLoginModalOpen,
+    unlockedAudioModal.isOpen,
+    milestoneModal.isOpen,
+    phase,
+    currentUserEmail
+  ]);
 
   // Synchronize to Cache Storage for Service Worker push notification dynamic state check
   useEffect(() => {

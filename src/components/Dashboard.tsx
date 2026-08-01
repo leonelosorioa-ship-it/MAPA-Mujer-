@@ -21,6 +21,7 @@ import {
   Clock, 
   Flame,
   ArrowRight,
+  ArrowLeft,
   Zap,
   TrendingUp,
   Settings
@@ -95,6 +96,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [activeNavTab, setActiveNavTab] = useState<NavTab>("home");
   const [activeToolModal, setActiveToolModal] = useState<string | null>(null);
 
+  // Helper to change activeNavTab and push history state
+  const changeTab = (newTab: NavTab) => {
+    if (newTab !== activeNavTab) {
+      if (typeof window !== "undefined" && window.history) {
+        window.history.pushState({ mapaTab: newTab }, "", `#${newTab}`);
+      }
+      setActiveNavTab(newTab);
+    }
+  };
+
   // Listen for navigation events from top-left compact menu
   useEffect(() => {
     const handleNavEvent = (e: any) => {
@@ -102,13 +113,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
         if (e.detail === "profile") {
           setIsProfileSettingsOpen(true);
         } else {
-          setActiveNavTab(e.detail as NavTab);
+          changeTab(e.detail as NavTab);
         }
       }
     };
     window.addEventListener("mapa_nav_tab", handleNavEvent);
     return () => window.removeEventListener("mapa_nav_tab", handleNavEvent);
-  }, [setIsProfileSettingsOpen]);
+  }, [setIsProfileSettingsOpen, activeNavTab]);
+
+  // Handle mobile hardware back button (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (activeToolModal) {
+        setActiveToolModal(null);
+        return;
+      }
+      if (activeNavTab !== "home") {
+        setActiveNavTab("home");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [activeNavTab, activeToolModal]);
 
   const userShortName = getUserShortName(leadInfo);
   const archetypeSlug = getUserArchetypeSlug();
@@ -161,7 +188,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         exerciseLogs={programProgress.exerciseLogs}
         onGoToDay={(dayNum) => {
           setSelectedDayPreview(dayNum);
-          setActiveNavTab("program");
+          changeTab("program");
         }}
       />
 
@@ -170,10 +197,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         currentDay={programProgress.currentDay}
         isDayLocked={currentChronoState.isLocked}
         onGoToTest={() => {
-          setActiveNavTab("program");
+          changeTab("program");
         }}
         onOpenTool={(toolId) => {
-          setActiveNavTab("tools");
+          changeTab("tools");
           setActiveToolModal(toolId);
         }}
         onOpenClaraLuzChat={() => {
@@ -183,6 +210,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
           );
         }}
       />
+
+      {/* UNIVERSAL TOP BACK BUTTON BAR FOR INTERNAL SECTIONS */}
+      {activeNavTab !== "home" && (
+        <motion.div 
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between bg-white/95 backdrop-blur-md border-2 border-[#E86FA3]/30 rounded-2xl p-2.5 sm:p-3.5 shadow-sm mb-4 sticky top-14 z-30"
+        >
+          <button
+            type="button"
+            onClick={() => changeTab("home")}
+            className="flex items-center gap-2 px-3.5 py-2 bg-[#FFF0F5] hover:bg-[#E86FA3] hover:text-white active:scale-95 text-[#E86FA3] rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border border-[#E86FA3]/30 shadow-xs group"
+          >
+            <ArrowLeft className="w-4 h-4 text-[#E86FA3] group-hover:text-white transition-colors" />
+            <span>Volver al Inicio / Panel Principal</span>
+          </button>
+          <span className="text-[10px] sm:text-xs font-mono font-bold text-[#E86FA3] uppercase tracking-wider hidden sm:inline-block">
+            {activeNavTab === "program" ? "Programa de 7 Días" : activeNavTab === "tools" ? "Herramientas & Audios" : "Mi Perfil"}
+          </span>
+        </motion.div>
+      )}
 
       {/* DYNAMIC TABBED CONTENT */}
       <AnimatePresence mode="wait">
@@ -254,7 +302,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveNavTab("program")}
+                onClick={() => changeTab("program")}
                 className="bg-white text-[#6E488A] font-sans font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-md hover:bg-gray-50 shrink-0 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Ver Mi Programa</span>
@@ -269,7 +317,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   Herramientas Recomendadas
                 </h3>
                 <button
-                  onClick={() => setActiveNavTab("tools")}
+                  onClick={() => changeTab("tools")}
                   className="text-xs font-mono font-bold text-[#E86FA3] hover:underline cursor-pointer"
                 >
                   Ver Todas &gt;
@@ -282,7 +330,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => {
-                    setActiveNavTab("tools");
+                    changeTab("tools");
                     if (onOpenPanicButton) onOpenPanicButton();
                   }}
                   className="bg-white border-2 border-[#6E488A]/10 rounded-2xl p-4 flex items-center justify-between shadow-xs hover:shadow-md transition-all cursor-pointer group"
@@ -307,7 +355,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <motion.div
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setActiveNavTab("tools")}
+                  onClick={() => changeTab("tools")}
                   className="bg-white border-2 border-[#6E488A]/10 rounded-2xl p-4 flex items-center justify-between shadow-xs hover:shadow-md transition-all cursor-pointer group"
                 >
                   <div className="flex items-center space-x-3.5">
@@ -330,7 +378,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <motion.div
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setActiveNavTab("tools")}
+                  onClick={() => changeTab("tools")}
                   className="bg-white border-2 border-[#6E488A]/10 rounded-2xl p-4 flex items-center justify-between shadow-xs hover:shadow-md transition-all cursor-pointer group"
                 >
                   <div className="flex items-center space-x-3.5">
