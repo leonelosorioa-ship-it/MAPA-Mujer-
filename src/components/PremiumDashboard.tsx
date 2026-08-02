@@ -1048,7 +1048,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 </button>
               )}
               <a
-                href={`https://wa.me/573207739761?text=${encodeURIComponent("¡Hola, Clara Luz! 🌸\nSoy " + (userName || "usuaria de M.A.P.A.") + " y me gustaría conversar contigo.")}`}
+                href={`https://wa.me/573005149055?text=${encodeURIComponent("¡Hola, Clara Luz! 🌸\nSoy " + (userName || "usuaria de M.A.P.A.") + " y me gustaría conversar contigo.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#1fbe5b] text-white font-mono font-bold text-xs transition-all shadow-md cursor-pointer flex items-center justify-center space-x-2 active:scale-95"

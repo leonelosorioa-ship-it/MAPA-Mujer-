@@ -136,7 +136,7 @@ export const ClaraLuzProfileModal: React.FC<ClaraLuzProfileModalProps> = ({
             {/* Action Button: WhatsApp Conversation */}
             <div className="pt-1">
               <a
-                href={`https://wa.me/573207739761?text=${whatsappMessage}`}
+                href={`https://wa.me/573005149055?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#20bd5a] hover:to-[#0e7569] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center space-x-2 border border-emerald-400/30 hover:scale-[1.01] active:scale-[0.98]"

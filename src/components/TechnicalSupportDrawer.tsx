@@ -110,7 +110,7 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
     setInternalIsOpen(true);
   };
 
-  const supportWhatsAppUrl = `https://wa.me/573207739761?text=${encodeURIComponent(
+  const supportWhatsAppUrl = `https://wa.me/573005149055?text=${encodeURIComponent(
     `¡Hola, Clara! 🫶\nNecesito ayuda técnica con mi acceso a M.A.P.A.™ Mujer.\nMi correo de registro es: ${userEmail || ""}`
   )}`;
 

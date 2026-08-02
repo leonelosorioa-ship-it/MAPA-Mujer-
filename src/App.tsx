@@ -2759,7 +2759,7 @@ export default function App() {
     }
 
     const waMsg = encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.");
-    const waUrl = `https://wa.me/573207739761?text=${waMsg}`;
+    const waUrl = `https://wa.me/573005149055?text=${waMsg}`;
 
     // Construct HTML content with clean white background and soft pastel styling
     const htmlReport = `<!DOCTYPE html>
@@ -4309,7 +4309,7 @@ export default function App() {
                     Si eres compradora y tienes inconvenientes para iniciar sesión o conseguir tu código, no te preocupes. Clara Luz • Mentora M.A.P.A.™ Mujer te ayudará de inmediato.
                   </p>
                   <a
-                    href={`https://wa.me/573207739761?text=${encodeURIComponent(`¡Hola, Clara Luz! 🫶\nNecesito ayuda técnica con mi acceso a M.A.P.A.™ Mujer.\nMi correo de registro es: ${loginEmail || ""}`)}`}
+                    href={`https://wa.me/573005149055?text=${encodeURIComponent(`¡Hola, Clara Luz! 🫶\nNecesito ayuda técnica con mi acceso a M.A.P.A.™ Mujer.\nMi correo de registro es: ${loginEmail || ""}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 px-4 rounded-xl font-sans font-black text-xs sm:text-sm text-white bg-[#25D366] hover:bg-[#20BA56] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm no-underline"
@@ -5669,7 +5669,7 @@ export default function App() {
                   </div>
                   <div>
                     <a
-                      href={`https://wa.me/573207739761?text=${encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.")}`}
+                      href={`https://wa.me/573005149055?text=${encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.")}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-display font-bold tracking-wider text-white bg-gradient-to-r from-[#36C4D8] to-emerald-500 hover:scale-105 active:scale-95 transition-all cursor-pointer text-xs uppercase inline-flex items-center justify-center space-x-2 text-center decoration-none border-2 border-[#262222]"
@@ -5699,7 +5699,7 @@ export default function App() {
                   </p>
                   <div className="pt-2">
                     <a
-                      href={`https://wa.me/573207739761?text=${encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.")}`}
+                      href={`https://wa.me/573005149055?text=${encodeURIComponent("😀 ¡Hola! He completado mi proceso de 7 días en M.A.P.A. Mujer y deseo continuar con el proceso completo en M.A.P.A.™ Care Ecosistema Clínico de Contención Femenina.")}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl font-display font-bold text-xs text-white bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-md decoration-none border-2 border-[#262222]"

@@ -373,7 +373,7 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
                 </div>
                 <div className="pt-1.5">
                   <a
-                    href={`https://wa.me/573207739761?text=${encodeURIComponent(
+                    href={`https://wa.me/573005149055?text=${encodeURIComponent(
                       `¡Hola, Clara Luz! Me regalas por favor el código de acceso a mi M.A.P.A.™ Mujer. Mi correo de registro es: ${email ? email.trim() : ""}`
                     )}`}
                     target="_blank"

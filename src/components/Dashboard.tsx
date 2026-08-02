@@ -207,7 +207,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         }}
         onOpenClaraLuzChat={() => {
           window.open(
-            `https://wa.me/573207739761?text=${encodeURIComponent("¡Hola, Clara! 😊\nSoy " + userShortName + " y me gustaría conversar contigo.")}`,
+            `https://wa.me/573005149055?text=${encodeURIComponent("¡Hola, Clara! 😊\nSoy " + userShortName + " y me gustaría conversar contigo.")}`,
             "_blank"
           );
         }}
