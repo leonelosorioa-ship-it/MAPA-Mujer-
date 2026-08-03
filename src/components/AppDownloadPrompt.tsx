@@ -149,8 +149,8 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
         </button>
       </div>
 
-      <p className="text-xs text-[#56346F]/80 leading-relaxed font-sans max-w-2xl">
-        Lleva tu bitácora de descompresión neuro-sensorial siempre a mano. Instálala en tu <strong className="text-[#6E488A]">Móvil, Tablet, PC o Portátil</strong> para acceder de forma instantánea sin depender de un navegador tradicional, logrando una experiencia 100% inmersiva, limpia y ágil.
+      <p className="text-xs text-[#56346F] leading-relaxed font-sans max-w-2xl font-medium">
+        Descarga la App para llevar mejor tu proceso de 7 días.
       </p>
 
       {/* Selector Tabs */}

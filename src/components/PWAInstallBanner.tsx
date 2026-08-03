@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Download, Smartphone, Monitor, Plus, Share2, X, Check } from "lucide-react";
+import { Smartphone, X, Download } from "lucide-react";
 
 interface PWAInstallBannerProps {
   currentUserEmail?: string;
@@ -16,18 +16,11 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(false);
-  const [platformInfo, setPlatformInfo] = useState({
-    isIOS: false,
-    isMac: false,
-    isSafari: false,
-    isFirefox: false,
-    isMobile: false,
-  });
-
   const [isDismissedPermanently, setIsDismissedPermanently] = useState(() => {
-    return localStorage.getItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT") === "true" ||
-           localStorage.getItem("mapa_downloaded_pwa") === "true";
+    return (
+      localStorage.getItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT") === "true" ||
+      localStorage.getItem("mapa_downloaded_pwa") === "true"
+    );
   });
 
   // Load progress dynamically when currentUserEmail changes to see if downloaded
@@ -49,10 +42,10 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
   }, [currentUserEmail]);
 
   useEffect(() => {
-    // 1. Check if running in standalone mode (already installed & opened as app)
+    // 1. Check standalone mode (already installed & opened as standalone app)
     const checkStandalone = () => {
-      const isStandaloneMode = 
-        window.matchMedia("(display-mode: standalone)").matches || 
+      const isStandaloneMode =
+        window.matchMedia("(display-mode: standalone)").matches ||
         (window.navigator as any).standalone === true ||
         document.referrer.includes("android-app://");
       
@@ -62,48 +55,40 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
 
     const standalone = checkStandalone();
 
-    // 2. Capture platform information for custom step-by-step instructions
-    const ua = window.navigator.userAgent.toLowerCase();
-    const isIOS = /iphone|ipad|ipod/.test(ua);
-    const isMac = /macintosh|mac os x/.test(ua) && !isIOS;
-    const isSafari = /safari/.test(ua) && !/chrome|crios|crmo|firefox|fxios/.test(ua);
-    const isFirefox = /firefox|fxios/.test(ua);
-    const isMobile = /iphone|ipad|ipod|android|webos|blackberry|iemobile|opera mini/.test(ua);
-
-    setPlatformInfo({ isIOS, isMac, isSafari, isFirefox, isMobile });
-
-    // 3. Listen for Chromium's native PWA install prompt
-    const isTestUrl = window.location.hostname.includes("run.app") || window.location.hostname.includes("localhost") || window.location.search.includes("test=true");
+    // 2. Listen for Chromium's native PWA install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      
-      const isDismissedThisSession = sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") === "true";
-      const isAlreadyDownloaded = hasDownloadedApp || isDismissedPermanently;
-      if (!standalone && !isAlreadyDownloaded && (!isDismissedThisSession || isTestUrl)) {
-        setIsVisible(true);
-      }
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    // 4. Fallback show for non-Chromium browsers (Safari iOS/macOS, Firefox etc)
+    // 3. Set EXACT 8-second delay (8000ms) before making banner visible
     const isDismissedThisSession = sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") === "true";
     const isAlreadyDownloaded = hasDownloadedApp || isDismissedPermanently;
-    if (!standalone && !isAlreadyDownloaded && (!isDismissedThisSession || isTestUrl)) {
-      const delay = isTestUrl ? 500 : 3000;
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, delay);
-      return () => clearTimeout(timer);
+
+    let timer: NodeJS.Timeout | null = null;
+
+    if (!standalone && !isAlreadyDownloaded && !isDismissedThisSession) {
+      timer = setTimeout(() => {
+        const isDismissedNow = sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") === "true";
+        const isDownloadedNow =
+          localStorage.getItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT") === "true" ||
+          localStorage.getItem("mapa_downloaded_pwa") === "true";
+
+        if (!isDismissedNow && !isDownloadedNow) {
+          setIsVisible(true);
+        }
+      }, 8000);
     }
 
     return () => {
+      if (timer) clearTimeout(timer);
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
   }, [isStandalone, hasDownloadedApp, isDismissedPermanently]);
 
-  // Listen to successful installations to hide banner permanently
+  // Listen for successful installations
   useEffect(() => {
     const handleAppInstalled = () => {
       console.log("[PWA] App successfully installed!");
@@ -128,7 +113,6 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
       deferredPrompt.prompt();
       try {
         const { outcome } = await deferredPrompt.userChoice;
-        console.log(`[PWA] Installation prompt user decision: ${outcome}`);
         if (outcome === "accepted") {
           setDeferredPrompt(null);
           setIsVisible(false);
@@ -143,18 +127,17 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
         console.error("Error executing prompt", err);
       }
     } else {
-      setShowInstructions(true);
+      alert("Para instalar M.A.P.A.™ en tu dispositivo, abre el menú de tu navegador (tres puntos u opción de compartir) y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'.");
     }
   };
 
   const handleDismiss = () => {
-    // Dismiss permanently to never annoy the user again
+    sessionStorage.getItem("MAPA_PWA_BANNER_DISMISSED") || sessionStorage.setItem("MAPA_PWA_BANNER_DISMISSED", "true");
     localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
     setIsDismissedPermanently(true);
     setIsVisible(false);
   };
 
-  // Do not render anything if already installed/standalone or dismissed permanently
   if (isStandalone || hasDownloadedApp || isDismissedPermanently) return null;
 
   return (
@@ -162,120 +145,50 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
       {isVisible && (
         <motion.div
           id="pwa_install_banner"
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 100 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-2xl bg-gradient-to-r from-[#07111F] via-[#0D1F38] to-[#07111F] border border-[#7EF9FF]/30 rounded-3xl p-5 shadow-2xl shadow-cyan-500/10 backdrop-blur-xl"
+          initial={{ opacity: 0, y: 60, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 60, scale: 0.95 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-lg bg-gradient-to-br from-[#FFF5F9] via-white to-[#FAF0F6] border-2 border-[#F0A5CB] rounded-3xl p-4 sm:p-5 shadow-2xl shadow-[#411F66]/15 backdrop-blur-xl text-left"
         >
-          {/* White 'X' close button at the absolute top-left corner */}
+          {/* Close button top-right */}
           <button
             onClick={handleDismiss}
-            className="absolute top-3 left-3 z-[60] p-1.5 bg-white/20 hover:bg-white/35 border-2 border-white text-white rounded-full transition-all cursor-pointer shadow-lg shadow-white/5 flex items-center justify-center"
-            title="Cerrar y no recordar de nuevo"
+            className="absolute top-3 right-3 z-10 p-1.5 bg-white/80 hover:bg-[#F0A5CB]/20 border border-[#F0A5CB]/40 text-[#411F66] rounded-full transition-all cursor-pointer shadow-sm flex items-center justify-center"
+            title="Cerrar"
             id="pwa_banner_close_button"
           >
-            <X className="w-4 h-4 text-white" style={{ color: "#ffffff", strokeWidth: 3 }} />
+            <X className="w-4 h-4 text-[#411F66]" />
           </button>
 
-          {!showInstructions ? (
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-3 pl-7 sm:pl-9">
-              <div className="flex items-center space-x-3.5 text-left">
-                <div className="w-12 h-12 rounded-2xl bg-[#113A63]/70 border border-[#7EF9FF]/30 flex items-center justify-center shrink-0 shadow-lg shadow-cyan-500/20">
-                  <Download className="w-6 h-6 text-[#7EF9FF] animate-bounce" />
-                </div>
-                <div>
-                  <h4 className="font-display font-bold text-sm sm:text-base !text-white flex flex-wrap items-center gap-1.5" style={{ color: "#ffffff" }}>
-                    Instalar M.A.P.A.™ en tu Dispositivo
-                    <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-emerald-accent" style={{ color: "#34d399", borderColor: "rgba(16, 185, 129, 0.2)" }}>
-                      Recomendado
-                    </span>
-                  </h4>
-                  <p className="text-white text-xs mt-1 leading-relaxed max-w-md text-gray-accent" style={{ color: "#ffffff" }}>
-                    Descarga la aplicación oficial gratis para acceder sin límites, guardar tu progreso sin Internet y recibir notificaciones instantáneas de tus retos diarios.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2.5 w-full md:w-auto justify-end shrink-0">
-                <button
-                  onClick={handleInstallClick}
-                  className="flex-1 md:flex-initial py-2.5 px-5 bg-gradient-to-r from-[#7EF9FF] to-[#00D4FF] hover:opacity-95 text-slate-900 font-display font-bold text-xs rounded-xl tracking-wider hover:scale-103 active:scale-97 transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg shadow-cyan-400/20 btn-install-text"
-                  style={{ color: "#0f172a" }}
-                >
-                  {platformInfo.isMobile ? <Smartphone className="w-4 h-4 text-slate-900 btn-install-text" style={{ color: "#0f172a" }} /> : <Monitor className="w-4 h-4 text-slate-900 btn-install-text" style={{ color: "#0f172a" }} />}
-                  <span className="btn-install-text" style={{ color: "#0f172a" }}>INSTALAR AHORA</span>
-                </button>
-              </div>
+          <div className="flex items-center gap-3.5 pr-6">
+            <div className="w-12 h-12 rounded-2xl bg-[#F0A5CB]/20 border border-[#F0A5CB]/50 flex items-center justify-center shrink-0 shadow-sm text-[#E86FA3]">
+              <Download className="w-6 h-6 text-[#E86FA3] animate-bounce" />
             </div>
-          ) : (
-            <div className="space-y-4 text-left pt-3 pl-7 sm:pl-9">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h4 className="font-display font-bold text-sm sm:text-base !text-white flex items-center gap-2" style={{ color: "#ffffff" }}>
-                  <Smartphone className="w-5 h-5 text-sky-accent" />
-                  Instrucciones de Instalación
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <h4 className="font-display font-extrabold text-sm sm:text-base text-[#411F66]">
+                  Descarga M.A.P.A.™ Mujer
                 </h4>
-                <button
-                  onClick={() => setShowInstructions(false)}
-                  className="p-1 hover:bg-white/5 text-gray-400 hover:text-white rounded-lg transition-colors cursor-pointer"
-                >
-                  <X className="w-4.5 h-4.5 text-gray-400" />
-                </button>
+                <span className="bg-[#E86FA3]/15 text-[#E86FA3] border border-[#E86FA3]/30 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider">
+                  Recomendado
+                </span>
               </div>
-
-              <div className="text-xs space-y-3 leading-relaxed text-white text-gray-accent" style={{ color: "#ffffff" }}>
-                {platformInfo.isIOS && platformInfo.isSafari && (
-                  <div className="space-y-2">
-                    <p className="font-semibold text-sky-accent" style={{ color: "#7EF9FF" }}>Para instalar en tu iPhone o iPad (Safari):</p>
-                    <ol className="list-decimal pl-5 space-y-2 text-white" style={{ color: "#ffffff" }}>
-                      <li style={{ color: "#ffffff" }}>Presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#ffffff" }}>Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span> en la barra inferior del navegador.</li>
-                      <li style={{ color: "#ffffff" }}>Desplázate hacia abajo y selecciona <span className="font-bold text-[#7EF9FF] flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded text-sky-accent" style={{ color: "#7EF9FF" }}>Agregar a la pantalla de inicio <Plus className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
-                      <li style={{ color: "#ffffff" }}>Presiona <span className="font-bold text-emerald-400 text-emerald-accent" style={{ color: "#34d399" }}>Agregar</span> en la esquina superior derecha y ¡listo!</li>
-                    </ol>
-                  </div>
-                )}
-
-                {platformInfo.isMac && platformInfo.isSafari && (
-                  <div className="space-y-2">
-                    <p className="font-semibold text-sky-accent" style={{ color: "#7EF9FF" }}>Para instalar en tu Mac (Safari):</p>
-                    <ol className="list-decimal pl-5 space-y-2 text-white" style={{ color: "#ffffff" }}>
-                      <li style={{ color: "#ffffff" }}>Haz clic en <span className="font-bold text-white" style={{ color: "#ffffff" }}>Archivo</span> en la barra superior o presiona el botón de <span className="font-bold text-white flex inline-flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded" style={{ color: "#ffffff" }}>Compartir <Share2 className="w-3.5 h-3.5 text-sky-400 inline" /></span>.</li>
-                      <li style={{ color: "#ffffff" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded text-sky-accent" style={{ color: "#7EF9FF" }}>Agregar al Dock...</span> en la lista.</li>
-                      <li style={{ color: "#ffffff" }}>Confirma haciendo clic en <span className="font-bold text-emerald-400 text-emerald-accent" style={{ color: "#34d399" }}>Agregar</span> para anclar M.A.P.A.™ junto a tus aplicaciones de escritorio.</li>
-                    </ol>
-                  </div>
-                )}
-
-                {!(platformInfo.isSafari && (platformInfo.isIOS || platformInfo.isMac)) && (
-                  <div className="space-y-2">
-                    <p className="font-semibold text-sky-accent" style={{ color: "#7EF9FF" }}>Guía de descarga e instalación rápida:</p>
-                    <ol className="list-decimal pl-5 space-y-2 text-white" style={{ color: "#ffffff" }}>
-                      <li style={{ color: "#ffffff" }}>Busca el ícono de <span className="font-bold text-white" style={{ color: "#ffffff" }}>Instalar Aplicación</span> (una pantalla con una flecha hacia abajo o un signo <span className="font-bold">+</span>) en la barra de direcciones de tu navegador (Chrome, Edge, Firefox u Opera).</li>
-                      <li style={{ color: "#ffffff" }}>Alternativamente, haz clic en el menú secundario <span className="font-bold text-white" style={{ color: "#ffffff" }}>⋮</span> (tres puntos) en la esquina superior derecha de tu navegador.</li>
-                      <li style={{ color: "#ffffff" }}>Selecciona <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded text-sky-accent" style={{ color: "#ffffff" }}>Instalar M.A.P.A.™</span> o <span className="font-bold text-[#7EF9FF] bg-white/10 px-1.5 py-0.5 rounded text-sky-accent" style={{ color: "#ffffff" }}>Guardar en Pantalla de Inicio</span>.</li>
-                    </ol>
-                  </div>
-                )}
-
-                <div className="bg-[#113A63]/30 border border-[#7EF9FF]/20 p-3 rounded-2xl flex items-start gap-2.5 mt-2 text-[11px] text-white">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5 text-emerald-accent" />
-                  <p className="text-white text-gray-accent" style={{ color: "#ffffff" }}>
-                    Una vez completada la instalación, podrás iniciar M.A.P.A.™ directamente desde el ícono de tu pantalla de inicio o Dock como una aplicación nativa segura.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-1">
-                <button
-                  onClick={() => setShowInstructions(false)}
-                  className="py-2 px-4 bg-white/5 hover:bg-white/10 text-white font-mono text-xs rounded-xl transition-all cursor-pointer"
-                  style={{ color: "#ffffff" }}
-                >
-                  Volver
-                </button>
-              </div>
+              <p className="text-[#56346F] text-xs sm:text-sm leading-snug font-medium">
+                Descarga la App para llevar mejor tu proceso de 7 días.
+              </p>
             </div>
-          )}
+          </div>
+
+          <div className="mt-3.5 pt-3 border-t border-[#F0A5CB]/25 flex justify-end">
+            <button
+              onClick={handleInstallClick}
+              className="w-full sm:w-auto py-2.5 px-6 bg-gradient-to-r from-[#E86FA3] via-[#F0A5CB] to-[#E36DB4] hover:opacity-95 text-white font-mono font-bold text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md border border-white/30"
+            >
+              <Smartphone className="w-4 h-4 text-white" />
+              <span>DESCARGAR APP</span>
+            </button>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
