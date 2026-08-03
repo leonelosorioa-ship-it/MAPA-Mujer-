@@ -148,13 +148,14 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
           initial={{ opacity: 0, y: -60, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -60, scale: 0.95 }}
+          whileHover={{ scale: 1.015 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-lg bg-[#C6EAEC] border-2 border-black rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-md text-left text-white"
+          className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-lg bg-[#5FBABE] border-2 border-black rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-md text-left text-white transition-shadow duration-300 hover:shadow-[0_15px_35px_rgba(86,52,111,0.45)]"
         >
           {/* Close button top-right */}
           <button
             onClick={handleDismiss}
-            className="absolute top-3 right-3 z-10 p-1.5 bg-black/80 hover:bg-black text-white border border-black rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
+            className="absolute top-3 right-3 z-10 p-1.5 bg-[#56346F] hover:bg-[#412556] text-white border border-black rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
             title="Cerrar"
             id="pwa_banner_close_button"
           >
@@ -162,19 +163,19 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
           </button>
 
           <div className="flex items-center gap-3.5 pr-8">
-            <div className="w-12 h-12 rounded-2xl bg-[#1C0630] border border-black flex items-center justify-center shrink-0 shadow-md text-white">
+            <div className="w-12 h-12 rounded-2xl bg-[#56346F] border border-black flex items-center justify-center shrink-0 shadow-md text-white">
               <Download className="w-6 h-6 text-white animate-bounce" />
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h4 className="font-display font-black text-base sm:text-lg text-white drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.8)] leading-tight">
-                  Descarga M.A.P.A.™ Mujer
+                <h4 className="font-display font-black text-base sm:text-lg text-[#56346F] leading-tight">
+                  M.A.P.A.™ Mujer
                 </h4>
-                <span className="bg-[#1C0630] text-white border border-black rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm">
+                <span className="bg-[#56346F] text-white border border-black rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm">
                   RECOMENDADO
                 </span>
               </div>
-              <p className="text-white drop-shadow-[0_1.2px_2px_rgba(0,0,0,0.8)] text-xs sm:text-sm leading-snug font-bold">
+              <p className="text-[#56346F] text-xs sm:text-sm leading-snug font-bold">
                 Descarga la App para llevar mejor tu proceso de 7 días.
               </p>
             </div>
@@ -183,10 +184,10 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
           <div className="mt-3.5 pt-3 border-t border-black/20 flex justify-end">
             <button
               onClick={handleInstallClick}
-              className="w-full sm:w-auto py-2.5 px-6 bg-[#1C0630] hover:bg-[#2B094A] text-white font-mono font-black text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg border-2 border-black"
+              className="w-full sm:w-auto py-3 px-6 bg-[#56346F] hover:bg-[#412556] text-white font-mono font-black text-xs sm:text-sm rounded-xl tracking-wider hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg border-2 border-black"
             >
               <Smartphone className="w-4 h-4 text-white" />
-              <span className="text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">DESCARGAR APP</span>
+              <span className="text-white">Descarga Aquí Tu App de M.A.P.A</span>
             </button>
           </div>
         </motion.div>
