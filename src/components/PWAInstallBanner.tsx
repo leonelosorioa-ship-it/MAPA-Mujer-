@@ -145,48 +145,48 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
       {isVisible && (
         <motion.div
           id="pwa_install_banner"
-          initial={{ opacity: 0, y: 60, scale: 0.95 }}
+          initial={{ opacity: 0, y: -60, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 60, scale: 0.95 }}
+          exit={{ opacity: 0, y: -60, scale: 0.95 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-lg bg-gradient-to-br from-[#FFF5F9] via-white to-[#FAF0F6] border-2 border-[#F0A5CB] rounded-3xl p-4 sm:p-5 shadow-2xl shadow-[#411F66]/15 backdrop-blur-xl text-left"
+          className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-lg bg-[#C6EAEC] border-2 border-black rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-md text-left text-white"
         >
           {/* Close button top-right */}
           <button
             onClick={handleDismiss}
-            className="absolute top-3 right-3 z-10 p-1.5 bg-white/80 hover:bg-[#F0A5CB]/20 border border-[#F0A5CB]/40 text-[#411F66] rounded-full transition-all cursor-pointer shadow-sm flex items-center justify-center"
+            className="absolute top-3 right-3 z-10 p-1.5 bg-black/80 hover:bg-black text-white border border-black rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
             title="Cerrar"
             id="pwa_banner_close_button"
           >
-            <X className="w-4 h-4 text-[#411F66]" />
+            <X className="w-4 h-4 text-white" />
           </button>
 
-          <div className="flex items-center gap-3.5 pr-6">
-            <div className="w-12 h-12 rounded-2xl bg-[#F0A5CB]/20 border border-[#F0A5CB]/50 flex items-center justify-center shrink-0 shadow-sm text-[#E86FA3]">
-              <Download className="w-6 h-6 text-[#E86FA3] animate-bounce" />
+          <div className="flex items-center gap-3.5 pr-8">
+            <div className="w-12 h-12 rounded-2xl bg-[#1C0630] border border-black flex items-center justify-center shrink-0 shadow-md text-white">
+              <Download className="w-6 h-6 text-white animate-bounce" />
             </div>
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <h4 className="font-display font-extrabold text-sm sm:text-base text-[#411F66]">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h4 className="font-display font-black text-base sm:text-lg text-white drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.8)] leading-tight">
                   Descarga M.A.P.A.™ Mujer
                 </h4>
-                <span className="bg-[#E86FA3]/15 text-[#E86FA3] border border-[#E86FA3]/30 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider">
-                  Recomendado
+                <span className="bg-[#1C0630] text-white border border-black rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm">
+                  RECOMENDADO
                 </span>
               </div>
-              <p className="text-[#56346F] text-xs sm:text-sm leading-snug font-medium">
+              <p className="text-white drop-shadow-[0_1.2px_2px_rgba(0,0,0,0.8)] text-xs sm:text-sm leading-snug font-bold">
                 Descarga la App para llevar mejor tu proceso de 7 días.
               </p>
             </div>
           </div>
 
-          <div className="mt-3.5 pt-3 border-t border-[#F0A5CB]/25 flex justify-end">
+          <div className="mt-3.5 pt-3 border-t border-black/20 flex justify-end">
             <button
               onClick={handleInstallClick}
-              className="w-full sm:w-auto py-2.5 px-6 bg-gradient-to-r from-[#E86FA3] via-[#F0A5CB] to-[#E36DB4] hover:opacity-95 text-white font-mono font-bold text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md border border-white/30"
+              className="w-full sm:w-auto py-2.5 px-6 bg-[#1C0630] hover:bg-[#2B094A] text-white font-mono font-black text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg border-2 border-black"
             >
               <Smartphone className="w-4 h-4 text-white" />
-              <span>DESCARGAR APP</span>
+              <span className="text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">DESCARGAR APP</span>
             </button>
           </div>
         </motion.div>
