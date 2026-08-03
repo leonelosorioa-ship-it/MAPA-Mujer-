@@ -4305,9 +4305,27 @@ export default function App() {
                 </div>
 
                 <div className="bg-[#FAF7FC] border-2 border-[#1C0630]/15 p-4 rounded-2xl space-y-3 text-center">
-                  <p className="text-xs sm:text-sm text-[#1C0630] font-black leading-relaxed">
-                    Si eres compradora y tienes inconvenientes para iniciar sesión o conseguir tu código, no te preocupes. Clara Luz • Mentora M.A.P.A.™ Mujer te ayudará de inmediato.
-                  </p>
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-white">
+                      <img
+                        src="/clara_luz.jpg"
+                        alt="Clara Luz Mentora"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.includes('/clara_luz.jpg')) {
+                            target.src = '/clara-luz-profile.jpg';
+                          } else if (target.src.includes('/clara-luz-profile.jpg')) {
+                            target.src = '/assets/clara-luz-profile.jpg';
+                          }
+                        }}
+                        className="w-full h-full object-cover object-center rounded-full"
+                      />
+                    </div>
+                    <p className="text-xs sm:text-sm text-[#1C0630] font-black leading-relaxed">
+                      Si eres compradora y tienes inconvenientes para iniciar sesión o conseguir tu código, no te preocupes. Clara Luz • Mentora M.A.P.A.™ Mujer te ayudará de inmediato.
+                    </p>
+                  </div>
                   <a
                     href={`https://wa.me/573005149055?text=${encodeURIComponent(`¡Hola, Clara Luz! 🫶\nNecesito ayuda técnica con mi acceso a M.A.P.A.™ Mujer.\nMi correo de registro es: ${loginEmail || ""}`)}`}
                     target="_blank"

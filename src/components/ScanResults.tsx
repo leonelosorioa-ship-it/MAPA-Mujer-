@@ -380,8 +380,23 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
                     rel="noopener noreferrer"
                     className="w-full py-2.5 px-3 rounded-xl font-display font-bold text-xs text-white bg-[#25D366] hover:bg-[#20ba5a] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center space-x-2 shadow-sm decoration-none border border-[#128C7E]"
                   >
-                    <Smartphone className="w-4 h-4 text-white shrink-0" />
-                    <span>Solicita Aquí Tu Codigo de Acceso</span>
+                    <div className="w-6 h-6 rounded-full overflow-hidden border border-white shrink-0 bg-white">
+                      <img
+                        src="/clara_luz.jpg"
+                        alt="Clara Luz"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.includes('/clara_luz.jpg')) {
+                            target.src = '/clara-luz-profile.jpg';
+                          } else if (target.src.includes('/clara-luz-profile.jpg')) {
+                            target.src = '/assets/clara-luz-profile.jpg';
+                          }
+                        }}
+                        className="w-full h-full object-cover object-center rounded-full"
+                      />
+                    </div>
+                    <span>Solicita Tu Código con Clara Luz</span>
                   </a>
                 </div>
               </div>
