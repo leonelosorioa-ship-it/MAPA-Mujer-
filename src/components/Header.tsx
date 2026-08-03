@@ -193,10 +193,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* FIXED / STICKY INTERACTIVE HEADER WITH FLAT #da5ef2 COLOR - DYNAMICALLY COLLAPSIBLE ON SCROLL */}
+      {/* FIXED / STICKY INTERACTIVE HEADER WITH FLAT #F0A5CB COLOR - DYNAMICALLY COLLAPSIBLE ON SCROLL */}
       <header 
         id="app_header" 
-        className={`sticky top-0 z-50 w-full bg-[#da5ef2] text-white shadow-md border-b border-white/30 transition-all duration-300 ${
+        className={`sticky top-0 z-50 w-full bg-[#F0A5CB] text-white shadow-md border-b border-white/30 transition-all duration-300 ${
           isScrolled ? "px-3 py-1.5 sm:px-5 sm:py-2" : "px-4 py-3.5 sm:px-6 sm:py-4.5"
         }`}
       >
@@ -414,8 +414,8 @@ export const Header: React.FC<HeaderProps> = ({
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
               className="relative w-80 max-w-[85vw] bg-white text-[#411F66] h-full shadow-2xl flex flex-col z-10 overflow-y-auto"
             >
-              {/* DRAWER HEADER WITH FLAT #da5ef2 COLOR */}
-              <div className="bg-[#da5ef2] p-5 text-white flex items-center justify-between border-b border-white/20">
+              {/* DRAWER HEADER WITH FLAT #F0A5CB COLOR */}
+              <div className="bg-[#F0A5CB] p-5 text-white flex items-center justify-between border-b border-white/20">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
                     <Compass className="w-6 h-6 text-white animate-spin" style={{ animationDuration: "16s" }} />
