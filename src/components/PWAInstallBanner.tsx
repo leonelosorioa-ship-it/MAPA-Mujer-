@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Smartphone, X, Download } from "lucide-react";
+import { Smartphone, X, Bell, Share, PlusSquare, CheckCircle2 } from "lucide-react";
 
 interface PWAInstallBannerProps {
   currentUserEmail?: string;
@@ -16,6 +16,8 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(false);
+  const [notificationGranted, setNotificationGranted] = useState(false);
   const [isDismissedPermanently, setIsDismissedPermanently] = useState(() => {
     return (
       localStorage.getItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT") === "true" ||
@@ -94,6 +96,7 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
       console.log("[PWA] App successfully installed!");
       setIsStandalone(true);
       setIsVisible(false);
+      setShowGuideModal(false);
       localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
       localStorage.setItem("mapa_downloaded_pwa", "true");
       setIsDismissedPermanently(true);
@@ -108,14 +111,38 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
     };
   }, [onConfirmDownloaded]);
 
+  // Request Notification Permissions & Trigger PWA Install Flow
   const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
+    // 1. Ask for notification permission automatically
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
       try {
+        const perm = await Notification.requestPermission();
+        if (perm === "granted") {
+          setNotificationGranted(true);
+        }
+      } catch (err) {
+        console.log("[PWA] Notification permission error", err);
+      }
+    }
+
+    // 2. Ensure Service Worker is registered
+    if ("serviceWorker" in navigator) {
+      try {
+        await navigator.serviceWorker.register("/sw.js");
+      } catch (e) {
+        console.log("[SW] Registration check", e);
+      }
+    }
+
+    // 3. Trigger native install prompt or guide modal
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === "accepted") {
           setDeferredPrompt(null);
           setIsVisible(false);
+          setShowGuideModal(false);
           localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
           localStorage.setItem("mapa_downloaded_pwa", "true");
           setIsDismissedPermanently(true);
@@ -125,9 +152,22 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
         }
       } catch (err) {
         console.error("Error executing prompt", err);
+        setShowGuideModal(true);
       }
     } else {
-      alert("Para instalar M.A.P.A.™ en tu dispositivo, abre el menú de tu navegador (tres puntos u opción de compartir) y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'.");
+      // iOS / Desktop / Non-Chromium Fallback
+      setShowGuideModal(true);
+    }
+  };
+
+  const handleConfirmManualInstall = () => {
+    localStorage.setItem("MAPA_PWA_BANNER_DISMISSED_PERMANENT", "true");
+    localStorage.setItem("mapa_downloaded_pwa", "true");
+    setIsDismissedPermanently(true);
+    setIsVisible(false);
+    setShowGuideModal(false);
+    if (onConfirmDownloaded) {
+      onConfirmDownloaded();
     }
   };
 
@@ -140,58 +180,145 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
 
   if (isStandalone || hasDownloadedApp || isDismissedPermanently) return null;
 
+  const isIOS = typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          id="pwa_install_banner"
-          initial={{ opacity: 0, y: -60, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -60, scale: 0.95 }}
-          whileHover={{ scale: 1.015 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md bg-[#B0DCE2] border-2 border-black rounded-2xl p-2.5 sm:p-3.5 shadow-xl backdrop-blur-md text-left text-[#1C0630] transition-all duration-300 hover:shadow-[0_12px_28px_rgba(243,143,186,0.6)]"
-        >
-          {/* Close button top-right */}
-          <button
-            onClick={handleDismiss}
-            className="absolute top-2 right-2 z-10 p-1 bg-[#F38FBA] hover:bg-[#e47ba6] text-white border border-black rounded-full transition-all cursor-pointer shadow-sm flex items-center justify-center"
-            title="Cerrar"
-            id="pwa_banner_close_button"
+    <>
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            id="pwa_install_banner"
+            initial={{ opacity: 0, y: -60, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -60, scale: 0.95 }}
+            whileHover={{ scale: 1.015 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md bg-[#B0DCE2] border-2 border-black rounded-2xl p-2.5 sm:p-3.5 shadow-xl backdrop-blur-md text-left text-[#1C0630] transition-all duration-300 hover:shadow-[0_12px_28px_rgba(243,143,186,0.6)]"
           >
-            <X className="w-3.5 h-3.5 text-white" />
-          </button>
-
-          <div className="flex items-center gap-2.5 pr-7">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#F38FBA] border border-black flex items-center justify-center shrink-0 shadow-sm text-white">
-              <Download className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-bounce" />
-            </div>
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <h4 className="font-display font-black text-xs sm:text-sm text-[#1C0630] leading-tight">
-                  M.A.P.A.™ Mujer
-                </h4>
-                <span className="bg-[#F38FBA] text-white border border-black rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm">
-                  RECOMENDADO
-                </span>
-              </div>
-              <p className="text-[#1C0630] text-[11px] sm:text-xs leading-tight font-bold">
-                Descarga la App para llevar mejor tu proceso de 7 días.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-2.5 pt-2 border-t border-black/15 flex justify-end">
+            {/* Close button top-right */}
             <button
-              onClick={handleInstallClick}
-              className="w-full sm:w-auto py-2 px-4 bg-[#F38FBA] hover:bg-[#e47ba6] text-white font-mono font-black text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md border-2 border-black"
+              onClick={handleDismiss}
+              className="absolute top-2 right-2 z-10 p-1 bg-[#F38FBA] hover:bg-[#e47ba6] text-white border border-black rounded-full transition-all cursor-pointer shadow-sm flex items-center justify-center"
+              title="Cerrar"
+              id="pwa_banner_close_button"
             >
-              <Smartphone className="w-3.5 h-3.5 text-white" />
-              <span className="text-white">Descarga Aquí Tu App de M.A.P.A</span>
+              <X className="w-3.5 h-3.5 text-white" />
             </button>
+
+            <div className="flex items-center gap-2.5 pr-7">
+              {/* 512x512 PWA Avatar Icon */}
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border-2 border-black bg-white shrink-0 shadow-sm">
+                <img
+                  src="/icono-512x512.png"
+                  alt="Icono PWA M.A.P.A.™"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h4 className="font-display font-black text-xs sm:text-sm text-[#1C0630] leading-tight">
+                    M.A.P.A.™ Mujer
+                  </h4>
+                  <span className="bg-[#F38FBA] text-white border border-black rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm">
+                    RECOMENDADO
+                  </span>
+                </div>
+                <p className="text-[#1C0630] text-[11px] sm:text-xs leading-tight font-bold">
+                  Descarga la App para llevar mejor tu proceso de 7 días.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-2.5 pt-2 border-t border-black/15 flex justify-end">
+              <button
+                onClick={handleInstallClick}
+                className="w-full sm:w-auto py-2 px-4 bg-[#F38FBA] hover:bg-[#e47ba6] text-white font-mono font-black text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md border-2 border-black"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-white" />
+                <span className="text-white">Descarga Aquí Tu App de M.A.P.A</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Installation Step-By-Step Guidance Modal */}
+      <AnimatePresence>
+        {showGuideModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-[#FFF5F9] border-2 border-black rounded-3xl p-5 sm:p-6 max-w-sm w-full text-left shadow-2xl text-[#1C0630] relative overflow-hidden"
+            >
+              <button
+                onClick={() => setShowGuideModal(false)}
+                className="absolute top-3 right-3 p-1.5 bg-[#F38FBA] text-white border border-black rounded-full hover:bg-[#e47ba6] transition-all"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-black bg-white shrink-0 shadow-md">
+                  <img src="/icono-512x512.png" alt="M.A.P.A.™ Logo" className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <h3 className="font-display font-black text-base text-[#1C0630]">
+                    Instalar M.A.P.A.™ Mujer
+                  </h3>
+                  <p className="text-xs font-bold text-[#F38FBA]">
+                    {isIOS ? "Para iPhone / iPad (Safari)" : "Para Móvil, Tablet o PC"}
+                  </p>
+                </div>
+              </div>
+
+              {isIOS ? (
+                <div className="space-y-3 text-xs font-medium text-[#411F66] bg-white/80 p-3.5 rounded-2xl border border-black/15">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">1</div>
+                    <p className="pt-0.5">Toca el botón <strong className="text-[#1C0630]">Compartir</strong> <Share className="w-3.5 h-3.5 inline text-[#F38FBA]" /> en la barra de tu navegador Safari.</p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">2</div>
+                    <p className="pt-0.5">Desplázate hacia abajo y selecciona <strong className="text-[#1C0630]">Añadir a la pantalla de inicio</strong> <PlusSquare className="w-3.5 h-3.5 inline text-[#F38FBA]" />.</p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">3</div>
+                    <p className="pt-0.5">Pulsa <strong className="text-[#1C0630]">Añadir</strong> en la esquina superior derecha para finalizar.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 text-xs font-medium text-[#411F66] bg-white/80 p-3.5 rounded-2xl border border-black/15">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">1</div>
+                    <p className="pt-0.5">Abre el menú de tu navegador (los <strong className="text-[#1C0630]">tres puntos ⋮</strong> o la barra de direcciones).</p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">2</div>
+                    <p className="pt-0.5">Selecciona <strong className="text-[#1C0630]">"Instalar aplicación"</strong> o <strong className="text-[#1C0630]">"Guardar en pantalla principal"</strong>.</p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">3</div>
+                    <p className="pt-0.5">Confirma la instalación para disfrutar de tu acceso directo y notificaciones.</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4 pt-3 border-t border-black/10 flex flex-col gap-2">
+                <button
+                  onClick={handleConfirmManualInstall}
+                  className="w-full py-2.5 px-4 bg-[#F38FBA] hover:bg-[#e47ba6] text-white font-mono font-black text-xs rounded-xl transition-all cursor-pointer shadow-md border-2 border-black flex items-center justify-center gap-2"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-white" />
+                  <span>¡Ya la Instalé! Entendido</span>
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
+
