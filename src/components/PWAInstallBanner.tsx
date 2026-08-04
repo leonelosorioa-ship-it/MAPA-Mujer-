@@ -193,50 +193,60 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
             exit={{ opacity: 0, y: -60, scale: 0.95 }}
             whileHover={{ scale: 1.015 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md bg-[#B0DCE2] border-2 border-black rounded-2xl p-2.5 sm:p-3.5 shadow-xl backdrop-blur-md text-left text-[#1C0630] transition-all duration-300 hover:shadow-[0_12px_28px_rgba(243,143,186,0.6)]"
+            className="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md p-[3px] rounded-2xl overflow-hidden shadow-[0_0_25px_rgba(69,179,183,0.75)] backdrop-blur-md text-left transition-all duration-300 hover:shadow-[0_0_35px_rgba(243,143,186,0.9)]"
           >
-            {/* Close button top-right */}
-            <button
-              onClick={handleDismiss}
-              className="absolute top-2 right-2 z-10 p-1 bg-[#F38FBA] hover:bg-[#e47ba6] text-white border border-black rounded-full transition-all cursor-pointer shadow-sm flex items-center justify-center"
-              title="Cerrar"
-              id="pwa_banner_close_button"
-            >
-              <X className="w-3.5 h-3.5 text-white" />
-            </button>
+            {/* MOVING GLOWING BORDER / BORDE CON BRILLO GIRATORIO */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+              className="absolute -inset-[150%] bg-[conic-gradient(from_0deg,#F38FBA,#FFFFFF,#7BE3EC,#FFE58F,#F38FBA)] opacity-100"
+            />
 
-            <div className="flex items-center gap-2.5 pr-7">
-              {/* 512x512 PWA Avatar Icon */}
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border-2 border-black bg-white shrink-0 shadow-sm">
-                <img
-                  src="/icono-512x512.png"
-                  alt="Icono PWA M.A.P.A.™"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <h4 className="font-display font-black text-xs sm:text-sm text-[#1C0630] leading-tight">
-                    M.A.P.A.™ Mujer
-                  </h4>
-                  <span className="bg-[#F38FBA] text-white border border-black rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm">
-                    RECOMENDADO
-                  </span>
-                </div>
-                <p className="text-[#1C0630] text-[11px] sm:text-xs leading-tight font-bold">
-                  Descarga la App para llevar mejor tu proceso de 7 días.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-2.5 pt-2 border-t border-black/15 flex justify-end">
+            {/* INNER CONTAINER WITH BACKGROUND #45B3B7 */}
+            <div className="relative bg-[#45B3B7] rounded-[13px] p-2.5 sm:p-3.5 text-left text-white overflow-hidden shadow-inner">
+              {/* Close button top-right */}
               <button
-                onClick={handleInstallClick}
-                className="w-full sm:w-auto py-2 px-4 bg-[#F38FBA] hover:bg-[#e47ba6] text-white font-mono font-black text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md border-2 border-black"
+                onClick={handleDismiss}
+                className="absolute top-2 right-2 z-10 p-1 bg-[#F38FBA] hover:bg-[#e47ba6] text-white border border-white/60 rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
+                title="Cerrar"
+                id="pwa_banner_close_button"
               >
-                <Smartphone className="w-3.5 h-3.5 text-white" />
-                <span className="text-white">Descarga Aquí Tu App de M.A.P.A</span>
+                <X className="w-3.5 h-3.5 text-white" />
               </button>
+
+              <div className="flex items-center gap-2.5 pr-7">
+                {/* 512x512 PWA Avatar Icon */}
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border-2 border-white/80 bg-white shrink-0 shadow-sm">
+                  <img
+                    src="/icono-512x512.png"
+                    alt="Icono PWA M.A.P.A.™"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h4 className="font-display font-black text-xs sm:text-sm text-white leading-tight">
+                      M.A.P.A.™ Mujer
+                    </h4>
+                    <span className="bg-[#F38FBA] text-white border border-white/60 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm">
+                      RECOMENDADO
+                    </span>
+                  </div>
+                  <p className="text-white/95 text-[11px] sm:text-xs leading-tight font-bold">
+                    Descarga la App para llevar mejor tu proceso de 7 días.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-2.5 pt-2 border-t border-white/20 flex justify-end">
+                <button
+                  onClick={handleInstallClick}
+                  className="w-full sm:w-auto py-2 px-4 bg-[#F38FBA] hover:bg-[#e47ba6] text-white font-mono font-black text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md border-2 border-white/70"
+                >
+                  <Smartphone className="w-3.5 h-3.5 text-white" />
+                  <span className="text-white">Descarga Aquí Tu App de M.A.P.A</span>
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

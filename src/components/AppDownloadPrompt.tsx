@@ -118,40 +118,49 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      className="bg-white border border-[#6E488A]/12 rounded-3xl p-6 text-left space-y-6 shadow-sm relative overflow-hidden"
+      className="p-[3px] rounded-3xl overflow-hidden shadow-[0_0_25px_rgba(69,179,183,0.75)] relative"
       id="app_download_daily_prompt"
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-[#36C4D8]/5 rounded-full blur-2xl pointer-events-none" />
-      
-      {/* Alert Header */}
-      <div className="flex justify-between items-start gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="p-2.5 bg-[#EDE0F0] border border-[#6E488A]/15 rounded-2xl animate-bounce" style={{ animationDuration: '3s' }}>
-            <Download className="w-5 h-5 text-[#6E488A]" />
-          </div>
-          <div>
-            <div className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-[#EDE0F0] text-[#6E488A] border border-[#6E488A]/15 text-[9px] font-mono font-bold uppercase tracking-wider mb-1">
-              <Sparkles className="w-3 h-3 text-[#E36DB4]" />
-              <span>Instalación Recomendada</span>
-            </div>
-            <h3 className="font-display font-bold text-lg text-[#6E488A]">Instala la App de M.A.P.A.™ en tu dispositivo</h3>
-          </div>
-        </div>
-        
-        {/* Dismiss trigger */}
-        <button 
-          onClick={handleDismissToday}
-          className="p-1.5 bg-[#FAF7F9] hover:bg-[#EDE0F0]/50 text-[#56346F]/60 hover:text-[#56346F] rounded-lg transition-all cursor-pointer border-none"
-          title="Ocultar esta sugerencia por hoy"
-          id="btn_dismiss_download_today"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
+      {/* MOVING GLOWING BORDER / BORDE CON BRILLO GIRATORIO */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+        className="absolute -inset-[150%] bg-[conic-gradient(from_0deg,#F38FBA,#FFFFFF,#7BE3EC,#FFE58F,#F38FBA)] opacity-100"
+      />
 
-      <p className="text-xs text-[#56346F] leading-relaxed font-sans max-w-2xl font-medium">
-        Descarga la App para llevar mejor tu proceso de 7 días.
-      </p>
+      {/* INNER CONTAINER WITH BACKGROUND #45B3B7 */}
+      <div className="relative bg-[#45B3B7] rounded-[21px] p-6 text-left space-y-6 shadow-inner text-white overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+        
+        {/* Alert Header */}
+        <div className="flex justify-between items-start gap-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 bg-white/20 border border-white/40 rounded-2xl animate-bounce" style={{ animationDuration: '3s' }}>
+              <Download className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#F38FBA] text-white border border-white/60 text-[9px] font-mono font-bold uppercase tracking-wider mb-1 shadow-sm">
+                <Sparkles className="w-3 h-3 text-white" />
+                <span>Instalación Recomendada</span>
+              </div>
+              <h3 className="font-display font-bold text-lg text-white">Instala la App de M.A.P.A.™ en tu dispositivo</h3>
+            </div>
+          </div>
+          
+          {/* Dismiss trigger */}
+          <button 
+            onClick={handleDismissToday}
+            className="p-1.5 bg-[#F38FBA] hover:bg-[#e47ba6] text-white rounded-full transition-all cursor-pointer border border-white/60 shadow-md"
+            title="Ocultar esta sugerencia por hoy"
+            id="btn_dismiss_download_today"
+          >
+            <X className="w-4 h-4 text-white" />
+          </button>
+        </div>
+
+        <p className="text-xs text-white/95 leading-relaxed font-sans max-w-2xl font-bold">
+          Descarga la App para llevar mejor tu proceso de 7 días.
+        </p>
 
       {/* Selector Tabs */}
       <div className="flex space-x-2 border-b border-[#6E488A]/10 pb-3">
@@ -236,6 +245,7 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
             <span>Confirmar Descarga</span>
           </button>
         </div>
+      </div>
       </div>
     </motion.div>
   );

@@ -193,11 +193,11 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* FIXED / STICKY INTERACTIVE HEADER WITH DYNAMIC COLOR - #FBC2E7 WHEN MENU IS OPEN */}
+      {/* FIXED / STICKY INTERACTIVE HEADER WITH DYNAMIC COLOR - #F48EB5 WHEN MENU IS OPEN */}
       <header 
         id="app_header" 
         className={`sticky top-0 z-50 w-full text-white shadow-md border-b border-white/30 transition-all duration-300 ${
-          isSideMenuOpen ? "bg-[#FBC2E7]" : "bg-[#F0A5CB]"
+          isSideMenuOpen ? "bg-[#F48EB5]" : "bg-[#F0A5CB]"
         } ${
           isScrolled ? "px-3 py-1.5 sm:px-5 sm:py-2" : "px-4 py-3.5 sm:px-6 sm:py-4.5"
         }`}
@@ -416,8 +416,8 @@ export const Header: React.FC<HeaderProps> = ({
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
               className="relative w-80 max-w-[85vw] bg-white text-[#411F66] h-full shadow-2xl flex flex-col z-10 overflow-y-auto"
             >
-              {/* DRAWER HEADER WITH #FBC2E7 COLOR */}
-              <div className="bg-[#FBC2E7] p-5 text-white flex items-center justify-between border-b border-white/20">
+              {/* DRAWER HEADER WITH #F48EB5 COLOR */}
+              <div className="bg-[#F48EB5] p-5 text-white flex items-center justify-between border-b border-white/20">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
                     <Compass className="w-6 h-6 text-white animate-spin" style={{ animationDuration: "16s" }} />

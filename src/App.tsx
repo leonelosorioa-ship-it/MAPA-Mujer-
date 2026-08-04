@@ -64,6 +64,7 @@ import { MilestoneModal } from "./components/MilestoneModal";
 import { WelcomeOnboardingModal } from "./components/WelcomeOnboardingModal";
 import { TechnicalSupportDrawer } from "./components/TechnicalSupportDrawer";
 import { ClaraLuzProfileModal } from "./components/ClaraLuzProfileModal";
+import { CLARA_LUZ_PROFILE } from "./data/claraLuzProfile";
 import { Header } from "./components/Header";
 import { AnimatedProgressNumber } from "./components/AnimatedProgressNumber";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
@@ -4249,7 +4250,7 @@ export default function App() {
                   <div className="flex items-center gap-3 text-left">
                     <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-white">
                       <img
-                        src="/clara_luz.jpg"
+                        src={CLARA_LUZ_PROFILE.image}
                         alt="Clara Luz Mentora"
                         referrerPolicy="no-referrer"
                         onError={(e) => {

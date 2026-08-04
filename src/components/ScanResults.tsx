@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 import { 
   ResponsiveContainer, 
   RadarChart, 
@@ -382,7 +383,7 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
                   >
                     <div className="w-6 h-6 rounded-full overflow-hidden border border-white shrink-0 bg-white">
                       <img
-                        src="/clara_luz.jpg"
+                        src={CLARA_LUZ_PROFILE.image}
                         alt="Clara Luz"
                         referrerPolicy="no-referrer"
                         onError={(e) => {
