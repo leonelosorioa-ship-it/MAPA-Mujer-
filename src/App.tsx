@@ -68,6 +68,7 @@ import { Header } from "./components/Header";
 import { AnimatedProgressNumber } from "./components/AnimatedProgressNumber";
 import { useWhatsAppShare, FUNNEL_URL } from "./utils/useWhatsAppShare";
 import { useAuthSynchronizer } from "./hooks/useAuthSynchronizer";
+import { useAuth } from "./context/AuthContext";
 import { playClickCue, playAlertCue, playSuccessCue } from "./utils/audioCues";
 import {
   ResponsiveContainer,
@@ -294,6 +295,7 @@ export const calculateChronoState = (progress: {
 
 export default function App() {
   const { getShareText, shareToWhatsApp, shareWithFallback } = useWhatsAppShare();
+  const auth = useAuth();
 
   // Navigation Phases: "LANDING" | "SCAN_TEST" | "SCAN_RESULTS" | "LOGIN" | "DASHBOARD" | "WIZARD" | "LOADING" | "RESULTS" | "ADMIN"
   const [phase, setPhase] = useState<"LANDING" | "SCAN_TEST" | "SCAN_RESULTS" | "LOGIN" | "DASHBOARD" | "WIZARD" | "LOADING" | "RESULTS" | "ADMIN">(() => {
@@ -428,7 +430,25 @@ export default function App() {
 
   // Auto-route active users or returning guests from LANDING to DASHBOARD or ADMIN
   useEffect(() => {
-    if (phase === "LANDING") {
+    if (!auth.isLoadingSession && auth.isAuthenticated && auth.currentUserEmail) {
+      if (auth.currentUserEmail !== currentUserEmail) {
+        setCurrentUserEmail(auth.currentUserEmail);
+      }
+      if (auth.userProgress && auth.userProgress.activationDate) {
+        setProgramProgress(auth.userProgress);
+        if (auth.userProgress.leadInfo) {
+          setLeadInfo(auth.userProgress.leadInfo);
+          setLeadCaptured(true);
+        }
+      }
+      if (phase === "LANDING" || phase === "LOGIN") {
+        if (auth.isAdmin) {
+          setPhase("ADMIN");
+        } else if ((auth.userProgress && auth.userProgress.activationDate) || programProgress.activationDate) {
+          setPhase("DASHBOARD");
+        }
+      }
+    } else if (phase === "LANDING") {
       if (currentUserEmail) {
         const adminEmails = ["contacto@tupodermental.club"];
         if (adminEmails.includes(currentUserEmail.toLowerCase().trim())) {
@@ -440,7 +460,7 @@ export default function App() {
         }
       }
     }
-  }, [currentUserEmail, phase, programProgress]);
+  }, [auth.isLoadingSession, auth.isAuthenticated, auth.currentUserEmail, auth.userProgress, auth.isAdmin, currentUserEmail, phase, programProgress]);
 
   // Precise chronological calculations for 24h consecutive lock logic (based on previous day completion)
   const getChronologicalState = () => {
@@ -1403,14 +1423,10 @@ export default function App() {
           const data = await res.json();
           if (res.ok) {
             console.log("Auto-login / auto-activación exitosa:", cleanEmail);
-            localStorage.setItem("MAPA_ACCESS_TOKEN", data.token);
-            localStorage.setItem("MAPA_CURRENT_USER_EMAIL", cleanEmail);
-            setCurrentUserEmail(cleanEmail);
-            
             const loadedProgress = data.userProgress;
+            auth.loginSession(data.token, cleanEmail, loadedProgress, data.isAdmin);
+            setCurrentUserEmail(cleanEmail);
             setProgramProgress(loadedProgress);
-            localStorage.setItem(`MAPA_USER_PROGRESS_${cleanEmail}`, JSON.stringify(loadedProgress));
-            
             setLeadInfo(loadedProgress.leadInfo);
             setLeadCaptured(true);
             
@@ -1531,20 +1547,16 @@ export default function App() {
 
       console.log("Inicio de sesión seguro exitoso:", data);
       
-      // Save secure JWT token and active email session
-      localStorage.setItem("MAPA_ACCESS_TOKEN", data.token);
-      localStorage.setItem("MAPA_CURRENT_USER_EMAIL", emailKey);
-      setCurrentUserEmail(emailKey);
-
-      // Hydrate progress from server
       const loadedProgress = data.userProgress;
       if (loadedProgress && loadedProgress.leadInfo) {
         if (!loadedProgress.leadInfo.alias) {
           loadedProgress.leadInfo.alias = loginAlias.trim() || getUserShortName({ nombre: loadedProgress.leadInfo.nombre });
         }
       }
+
+      auth.loginSession(data.token, emailKey, loadedProgress, data.isAdmin);
+      setCurrentUserEmail(emailKey);
       setProgramProgress(loadedProgress);
-      localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(loadedProgress));
       
       // Sync React states
       setLeadInfo(loadedProgress.leadInfo);
@@ -1613,16 +1625,12 @@ export default function App() {
         return;
       }
 
-      // Save token & email
-      localStorage.setItem("MAPA_ACCESS_TOKEN", data.token);
-      localStorage.setItem("MAPA_CURRENT_USER_EMAIL", emailKey);
-      setCurrentUserEmail(emailKey);
-
       // Hydrate progress
       const loadedProgress = data.userProgress;
+      auth.loginSession(data.token, emailKey, loadedProgress, true);
+      setCurrentUserEmail(emailKey);
       if (loadedProgress) {
         setProgramProgress(loadedProgress);
-        localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(loadedProgress));
         setLeadInfo(loadedProgress.leadInfo || { nombre: "Administrador", email: emailKey, whatsapp: "" });
         setLeadCaptured(true);
       }
@@ -1642,7 +1650,7 @@ export default function App() {
   };
 
   const handleUserLogout = () => {
-    localStorage.removeItem("MAPA_CURRENT_USER_EMAIL");
+    auth.logoutSession();
     setCurrentUserEmail("");
     
     // Reset to brand new progress locally

@@ -2213,8 +2213,8 @@ app.post("/api/auth/login", (req, res) => {
         return res.status(401).json({ error: "Contraseña de administración incorrecta. Acceso denegado." });
       }
 
-      // Generar token JWT de corta duración (2 horas) con flag isAdmin para protección hermética
-      const token = jwt.sign({ email: cleanEmail, isAdmin: true }, JWT_SECRET, { expiresIn: "2h" });
+      // Generar token JWT de larga duración (30 días) con flag isAdmin para sesión persistente
+      const token = jwt.sign({ email: cleanEmail, isAdmin: true }, JWT_SECRET, { expiresIn: "30d" });
 
       const userProgress = {
         activationDate: user.registeredAt || new Date().toISOString(),
@@ -2382,6 +2382,55 @@ function authenticateJWT(req: any, res: any, next: any) {
     return res.status(500).json({ error: "Error interno de validación de sesión." });
   }
 }
+
+// Endpoint de Verificación y Auto-Renovación de Sesión de Larga Duración (30 Días / Refresh Token Auto-Login)
+const verifySessionHandler = (req: any, res: any) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ error: "Usuario no autenticado o sesión expirada." });
+    }
+
+    const cleanEmail = (user.email || "").toLowerCase().trim();
+    const adminEmails = ["contacto@tupodermental.club"];
+    const isSpecialAdmin = adminEmails.includes(cleanEmail) || !!user.isAdmin;
+
+    // Renovar token JWT automáticamente por 30 días adicionales cada vez que abra la aplicación
+    const renewedToken = jwt.sign(
+      { email: cleanEmail, isAdmin: isSpecialAdmin },
+      JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+
+    const userProgress = {
+      activationDate: user.registeredAt || new Date().toISOString(),
+      currentDay: user.currentDay || 1,
+      completedDays: user.completedDays || [],
+      responses: user.responses || {},
+      leadInfo: { nombre: user.nombre, email: user.email, whatsapp: user.whatsapp || "" },
+      leadCaptured: true,
+      completionTimestamps: user.completionTimestamps || {},
+      dailyConclusionText: user.dailyConclusionText || {},
+      hasDownloadedApp: !!user.hasDownloadedApp,
+      unlockedAudios: user.unlockedAudios || [],
+      onboardingCompletado: !!user.onboardingCompletado
+    };
+
+    return res.json({
+      success: true,
+      token: renewedToken,
+      email: cleanEmail,
+      isAdmin: isSpecialAdmin,
+      userProgress
+    });
+  } catch (error) {
+    console.error("Error en verify-session endpoint:", error);
+    return res.status(500).json({ error: "Error al verificar y renovar la sesión del usuario." });
+  }
+};
+
+app.get("/api/user/verify-session", authenticateJWT, verifySessionHandler);
+app.get("/api/auth/verify-session", authenticateJWT, verifySessionHandler);
 
 // Middleware de Autenticación exclusivo para el Administrador Maestro (Protección Hermética)
 function authenticateAdminJWT(req: any, res: any, next: any) {
