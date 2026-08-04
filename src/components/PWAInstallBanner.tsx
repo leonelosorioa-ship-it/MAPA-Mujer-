@@ -215,12 +215,20 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
               </button>
 
               <div className="flex items-center gap-2.5 pr-7">
-                {/* 512x512 PWA Avatar Icon */}
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border-2 border-white/80 bg-white shrink-0 shadow-sm">
+                {/* Clara Luz Profile Avatar */}
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden border-2 border-white/90 bg-white shrink-0 shadow-md">
                   <img
-                    src="/icono-512x512.png"
-                    alt="Icono PWA M.A.P.A.™"
-                    className="w-full h-full object-cover"
+                    src="/clara-luz-profile.jpg"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (target.src.includes('/clara-luz-profile.jpg')) {
+                        target.src = '/clara_luz.jpg';
+                      } else if (target.src.includes('/clara_luz.jpg')) {
+                        target.src = '/assets/clara-luz-profile.jpg';
+                      }
+                    }}
+                    alt="Clara Luz - Mentora M.A.P.A.™"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -228,7 +236,7 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
                     <h4 className="font-display font-black text-xs sm:text-sm text-white leading-tight">
                       M.A.P.A.™ Mujer
                     </h4>
-                    <span className="bg-[#F38FBA] text-white border border-white/60 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm">
+                    <span className="bg-[#E346A1] text-white border border-white/60 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm">
                       RECOMENDADO
                     </span>
                   </div>
@@ -241,10 +249,10 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
               <div className="mt-2.5 pt-2 border-t border-white/20 flex justify-end">
                 <button
                   onClick={handleInstallClick}
-                  className="w-full sm:w-auto py-2 px-4 bg-[#F38FBA] hover:bg-[#e47ba6] text-white font-mono font-black text-xs rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md border-2 border-white/70"
+                  className="w-full sm:w-auto py-2.5 px-5 bg-[#E346A1] hover:bg-[#c9368a] text-white font-mono font-black text-xs sm:text-sm rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg border-2 border-white/80"
                 >
-                  <Smartphone className="w-3.5 h-3.5 text-white" />
-                  <span className="text-white">Descarga Aquí Tu App de M.A.P.A</span>
+                  <Smartphone className="w-4 h-4 text-white" />
+                  <span className="text-white font-bold">Descarga Aquí Tu App de M.A.P.A</span>
                 </button>
               </div>
             </div>
@@ -271,13 +279,25 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-black bg-white shrink-0 shadow-md">
-                  <img src="/icono-512x512.png" alt="M.A.P.A.™ Logo" className="w-full h-full object-cover" />
+                  <img
+                    src="/clara-luz-profile.jpg"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (target.src.includes('/clara-luz-profile.jpg')) {
+                        target.src = '/clara_luz.jpg';
+                      } else if (target.src.includes('/clara_luz.jpg')) {
+                        target.src = '/assets/clara-luz-profile.jpg';
+                      }
+                    }}
+                    alt="Clara Luz - Mentora M.A.P.A.™"
+                    className="w-full h-full object-cover object-top"
+                  />
                 </div>
                 <div>
                   <h3 className="font-display font-black text-base text-[#1C0630]">
                     Instalar M.A.P.A.™ Mujer
                   </h3>
-                  <p className="text-xs font-bold text-[#F38FBA]">
+                  <p className="text-xs font-bold text-[#E346A1]">
                     {isIOS ? "Para iPhone / iPad (Safari)" : "Para Móvil, Tablet o PC"}
                   </p>
                 </div>
@@ -318,7 +338,7 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
               <div className="mt-4 pt-3 border-t border-black/10 flex flex-col gap-2">
                 <button
                   onClick={handleConfirmManualInstall}
-                  className="w-full py-2.5 px-4 bg-[#F38FBA] hover:bg-[#e47ba6] text-white font-mono font-black text-xs rounded-xl transition-all cursor-pointer shadow-md border-2 border-black flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 bg-[#E346A1] hover:bg-[#c9368a] text-white font-mono font-black text-xs sm:text-sm rounded-xl transition-all cursor-pointer shadow-lg border-2 border-black flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 className="w-4 h-4 text-white" />
                   <span>¡Ya la Instalé! Entendido</span>
