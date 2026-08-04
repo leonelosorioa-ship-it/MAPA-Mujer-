@@ -341,7 +341,7 @@ export default function App() {
       }
     }
 
-    return "LANDING";
+    return "SCAN_TEST";
   });
   
   // Landing States
@@ -3790,74 +3790,7 @@ export default function App() {
 
               {!programProgress.activationDate && (
                 <>
-                  {/* FASE 2: IDENTIFICACIÓN - "M.A.P.A. es para ti si..." */}
-                  <section id="landing_identification" className="space-y-8 bg-[#EDE0F0]/50 rounded-3xl p-8 border-2 border-[#1C0630]/20">
-                <div className="text-center space-y-2">
-                  <h2 className="font-display font-black text-3xl text-[#1C0630]">Este M.A.P.A. es para ti si...</h2>
-                  <p className="text-sm sm:text-base text-[#1C0630] max-w-lg mx-auto font-black">Selecciona las tarjetas con las que te sientas identificada hoy para ver la calibración del radar.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {landingCards.map((card) => {
-                    const isChecked = selectedChecks[card.id];
-                    return (
-                      <div
-                        key={card.id}
-                        onClick={() => toggleLandingCheck(card.id)}
-                        className={`p-6 rounded-2xl cursor-pointer transition-all border-2 text-left flex flex-col justify-between h-44 relative ${
-                          isChecked 
-                            ? "bg-white border-[#E86FA3] shadow-[0_0_25px_rgba(232,111,163,0.18)]" 
-                            : "bg-white border-[#1C0630]/20 hover:border-[#1C0630]/55 hover:bg-white"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-mono uppercase bg-[#EDE0F0] text-[#1C0630] px-2 py-0.5 rounded font-black">
-                            {card.tag}
-                          </span>
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                            isChecked ? "bg-[#E86FA3]" : "border-2 border-[#1C0630]/25"
-                          }`}>
-                            {isChecked && <Check className="w-3 h-3 text-white stroke-[3]" />}
-                          </div>
-                        </div>
-
-                        <p className="text-base text-[#1C0630] mt-4 leading-relaxed flex-1 font-bold">
-                          "{card.text}"
-                        </p>
-                        
-                        {isChecked && (
-                          <span className="absolute bottom-3 right-4 flex items-center text-[10px] font-mono text-[#E86FA3] animate-pulse font-black">
-                            ● Alerta calibrando
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {Object.keys(selectedChecks).length > 0 && !currentUserEmail && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-white border border-[#E86FA3]/30 p-4 rounded-xl flex items-center justify-between max-w-xl mx-auto shadow-[0_0_20px_rgba(232,111,163,0.1)]"
-                  >
-                    <div className="flex items-center space-x-3 text-left">
-                      <Activity className="w-4 h-4 text-[#E86FA3] animate-bounce" />
-                      <span className="text-xs text-[#411F66] font-mono font-bold">
-                        Sección detectada. Has seleccionado {Object.keys(selectedChecks).filter(k=>selectedChecks[Number(k)]).length} focos de aviso. Tu M.A.P.A.™ se adaptará dinámicamente.
-                      </span>
-                    </div>
-                    <button 
-                      onClick={startFreeScanTest}
-                      className="text-xs bg-gradient-to-r from-[#411F66] to-[#E86FA3] hover:shadow-[0_0_15px_rgba(54,196,216,0.5)] text-white font-extrabold py-2 px-4 rounded-lg transition-all cursor-pointer"
-                    >
-                      Analizarlos ahora
-                    </button>
-                  </motion.div>
-                )}
-              </section>
-
-              {/* FASE DEL PRINCIPAL LLAMADO A LA ACCIÓN (CTA) */}
+                  {/* FASE DEL PRINCIPAL LLAMADO A LA ACCIÓN (CTA) */}
               <section id="landing_cta_section" className="text-center space-y-6 max-w-4xl mx-auto py-4">
                 {/* Dynamic buttons */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
