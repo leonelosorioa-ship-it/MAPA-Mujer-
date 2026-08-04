@@ -282,16 +282,35 @@ export const SevenDaysRoadmap: React.FC<SevenDaysRoadmapProps> = ({
               <span className="break-words">Iniciar Test Breve de 7 Preguntas • Día {selectedDay}</span>
             </motion.button>
           ) : isSelectedActive && isLocked ? (
-            <div className="bg-amber-50 border border-amber-200/80 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">
-              <span className="text-xs font-mono font-bold text-amber-800 block">
+            <div className="bg-amber-50/90 border-2 border-amber-300/80 p-4 sm:p-5 rounded-2xl text-center space-y-2 w-full min-w-0 shadow-sm">
+              <span className="text-xs sm:text-sm font-mono font-black text-amber-900 flex items-center justify-center gap-1.5">
+                <Clock className="w-4 h-4 text-amber-600 animate-spin shrink-0" />
                 ⏳ Periodo de Asimilación Neuro-Emocional Activo
               </span>
-              <p className="text-xs text-amber-900/80 leading-tight break-words">
-                Tu sistema nervioso requiere consolidar la sesión anterior. El siguiente test se habilitará en:
+              <p className="text-xs sm:text-sm text-amber-900/80 leading-relaxed break-words">
+                Tu sistema nervioso requiere consolidar los efectos de la sesión anterior. El test del Día {selectedDay} se habilitará automáticamente en:
               </p>
-              <span className="font-mono font-black text-base sm:text-lg text-amber-900 block pt-0.5">
-                {timeRemainingText || "Calculando..."}
-              </span>
+              
+              {/* Highlighted Countdown Badge */}
+              <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white font-mono font-black text-lg sm:text-2xl py-2.5 px-6 rounded-2xl shadow-inner inline-flex items-center gap-2 border border-amber-400/50 my-1 tracking-wider">
+                <Clock className="w-5 h-5 animate-pulse text-amber-200" />
+                <span>
+                  {typeof timeRemainingText === "string" && timeRemainingText 
+                    ? timeRemainingText 
+                    : (typeof timeRemainingText === "object" && (timeRemainingText as any)?.text) 
+                    ? (timeRemainingText as any).text 
+                    : "Calculando..."}
+                </span>
+              </div>
+
+              {/* Explicit Disabled Button explaining lock */}
+              <button
+                disabled
+                className="w-full bg-gray-200/90 text-gray-500 font-sans font-bold py-3 px-4 rounded-xl text-xs sm:text-sm border border-gray-300 cursor-not-allowed flex items-center justify-center gap-2 opacity-85 shadow-xs"
+              >
+                <Lock className="w-4 h-4 text-gray-400 shrink-0" />
+                <span>Test Día {selectedDay} Inactivo • Espera a que el contador llegue a cero</span>
+              </button>
             </div>
           ) : (
             <div className="bg-gray-50 border border-gray-200 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-center space-y-1 w-full min-w-0">

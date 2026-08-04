@@ -495,10 +495,10 @@ export default function App() {
     return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
   };
 
-  const getTimeRemainingForDay = (dayNum: number) => {
+  const getTimeRemainingForDay = (dayNum: number): string => {
     const { maxAllowedDay, isLocked, msRemaining } = getChronologicalState();
     if (dayNum <= maxAllowedDay) {
-      return { isLocked: false, hours: 0, minutes: 0, seconds: 0, text: "" };
+      return "";
     }
     
     const currentDay = programProgress.currentDay;
@@ -516,13 +516,7 @@ export default function App() {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
     
-    return {
-      isLocked: true,
-      hours,
-      minutes,
-      seconds,
-      text: `${String(hours).padStart(2, '0')}h : ${String(minutes).padStart(2, '0')}m`
-    };
+    return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
   };
 
   // Keep leads state in sync
@@ -1920,12 +1914,22 @@ export default function App() {
   };
 
   // Launch questionnaire for the active day
-  const launchDailyQuiz = () => {
+  const launchDailyQuiz = (requestedDay?: number) => {
+    const day = requestedDay || programProgress.currentDay;
+    const chrono = getChronologicalState();
+    
+    // Check if current day or requested day is locked chronologically
+    if (day > chrono.maxAllowedDay || (chrono.isLocked && day === programProgress.currentDay)) {
+      setDashboardNotice(`El test del Día ${day} aún se encuentra en periodo de asimilación (24 horas). Por favor espera a que termine el conteo regresivo.`);
+      setPhase("DASHBOARD");
+      return;
+    }
+
     if (programProgress.completedDays && programProgress.completedDays.length >= 7) {
       setPhase("DASHBOARD");
       return;
     }
-    const day = programProgress.currentDay;
+
     // Load previously answered responses for this day if any exist, otherwise empty
     const existing = programProgress.responses[day] || [];
     setUserResponses(existing);
@@ -4325,7 +4329,7 @@ export default function App() {
                 evaluationResult={evaluationResult}
                 selectedDayPreview={selectedDayPreview}
                 setSelectedDayPreview={setSelectedDayPreview}
-                onStartDayTest={() => launchDailyQuiz()}
+                onStartDayTest={(day) => launchDailyQuiz(day)}
                 handleConfirmAppDownloaded={handleConfirmAppDownloaded}
                 setMilestoneModal={setMilestoneModal}
                 setIsClaraProfileOpen={setIsClaraProfileOpen}
