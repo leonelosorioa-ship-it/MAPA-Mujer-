@@ -2143,11 +2143,12 @@ app.post("/api/auth/login", (req, res) => {
 
     const isUnusedInvite = isUnusedInviteCode(cleanInputCode);
 
-    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777" o un código de la lista
+    if (isUnusedInvite) {
+      checkAndConsumeInviteCode(cleanInputCode, cleanEmail);
+    }
+
+    // Auto-creación o actualización de registro si ingresó con el código de invitación o "LEO777"
     if (userIndex === -1 && (isPromoBypass || isUnusedInvite)) {
-      if (isUnusedInvite) {
-        checkAndConsumeInviteCode(cleanInputCode, cleanEmail);
-      }
       const newPromoUser = {
         nombre: "Invitada Especial M.A.P.A.",
         email: cleanEmail,
@@ -2168,6 +2169,10 @@ app.post("/api/auth/login", (req, res) => {
       db.push(newPromoUser);
       writeUsersDB(db);
       userIndex = db.length - 1;
+    } else if (userIndex !== -1 && (isPromoBypass || isUnusedInvite)) {
+      db[userIndex].accessCode = cleanInputCode;
+      db[userIndex].hotmartApproved = true;
+      writeUsersDB(db);
     }
 
     // Auto-creación de registro de administrador si no existiera en la BD local
@@ -2521,12 +2526,14 @@ app.post("/api/register-user", (req, res) => {
     }
 
     const isUnusedInvite = isUnusedInviteCode(cleanAccessCode);
+    const isPromoBypass = cleanAccessCode === "LEO777" || cleanAccessCode === "LE0777";
 
-    // Auto-creación de registro si ingresó con el código de invitación especial "LEO777" o un código de la lista
-    if (userIndex === -1 && (cleanAccessCode === "LEO777" || isUnusedInvite)) {
-      if (isUnusedInvite) {
-        checkAndConsumeInviteCode(cleanAccessCode, cleanEmail);
-      }
+    if (isUnusedInvite) {
+      checkAndConsumeInviteCode(cleanAccessCode, cleanEmail);
+    }
+
+    // Auto-creación o actualización de registro si ingresó con código promocional o código de invitación
+    if (userIndex === -1 && (isPromoBypass || isUnusedInvite)) {
       const newPromoUser = {
         nombre: nombre ? nombre.trim() : "Invitada Especial M.A.P.A.",
         email: cleanEmail,
@@ -2547,6 +2554,10 @@ app.post("/api/register-user", (req, res) => {
       db.push(newPromoUser);
       writeUsersDB(db);
       userIndex = db.length - 1;
+    } else if (userIndex !== -1 && (isPromoBypass || isUnusedInvite)) {
+      db[userIndex].accessCode = cleanAccessCode;
+      db[userIndex].hotmartApproved = true;
+      writeUsersDB(db);
     }
 
     if (userIndex === -1) {
@@ -2606,12 +2617,20 @@ app.post("/api/register-user", (req, res) => {
       }
     } else {
       const dbCode = (user.accessCode || "").trim().toUpperCase();
-      // Permitir de manera ultra-flexible tanto "LEO777" como "LE0777" (letra O vs número 0) para el correo de pruebas leonelosorioa@gmail.com
       const isTestUserWithZero = cleanEmail === "leonelosorioa@gmail.com" && (cleanAccessCode === "LE0777" || cleanAccessCode === "LEO777");
-      const isPromoBypass = cleanAccessCode === "LEO777";
+      const isApprovedUser = user.hotmartApproved === true;
+      const isCodeMatch = cleanAccessCode === dbCode;
+      const hasNoCodeYet = !dbCode;
       
-      if (!isTestUserWithZero && !isPromoBypass && (!dbCode || cleanAccessCode !== dbCode)) {
+      if (!isTestUserWithZero && !isPromoBypass && !isUnusedInvite && !isApprovedUser && !isCodeMatch && !hasNoCodeYet) {
         return res.status(401).json({ error: "El Código de Acceso ingresado es incorrecto. Por favor, verifícalo en tu correo electrónico o digítalo correctamente." });
+      }
+
+      if (hasNoCodeYet || isPromoBypass || isUnusedInvite) {
+        user.accessCode = (isPromoBypass || isUnusedInvite) ? cleanAccessCode : (user.accessCode || generateAccessCode());
+        user.hotmartApproved = true;
+        db[userIndex] = user;
+        writeUsersDB(db);
       }
     }
 
