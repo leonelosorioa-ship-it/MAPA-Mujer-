@@ -196,9 +196,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* FIXED / STICKY INTERACTIVE HEADER WITH DYNAMIC COLOR - #F48EB5 WHEN MENU IS OPEN */}
       <header 
         id="app_header" 
-        className={`sticky top-0 z-50 w-full text-white shadow-md border-b border-white/30 transition-all duration-300 ${
-          isSideMenuOpen ? "bg-[#F48EB5]" : "bg-[#F0A5CB]"
-        } ${
+        className={`sticky top-0 z-50 w-full text-white shadow-md border-b border-white/30 transition-all duration-300 bg-[#F48EB5] ${
           isScrolled ? "px-3 py-1.5 sm:px-5 sm:py-2" : "px-4 py-3.5 sm:px-6 sm:py-4.5"
         }`}
       >
