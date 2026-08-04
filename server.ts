@@ -2232,7 +2232,9 @@ app.post("/api/auth/login", (req, res) => {
         dailyConclusionText: user.dailyConclusionText || {},
         hasDownloadedApp: !!user.hasDownloadedApp,
         unlockedAudios: user.unlockedAudios || [],
-        onboardingCompletado: !!user.onboardingCompletado
+        onboardingCompletado: !!user.onboardingCompletado,
+        profilePicture: user.profilePicture || (user.customAvatar?.type === "image" ? user.customAvatar.value : null),
+        customAvatar: user.customAvatar || (user.profilePicture ? { type: "image", value: user.profilePicture } : null)
       };
 
       return res.json({
@@ -2269,7 +2271,9 @@ app.post("/api/auth/login", (req, res) => {
         dailyConclusionText: user.dailyConclusionText || {},
         hasDownloadedApp: !!user.hasDownloadedApp,
         unlockedAudios: user.unlockedAudios || [],
-        onboardingCompletado: !!user.onboardingCompletado
+        onboardingCompletado: !!user.onboardingCompletado,
+        profilePicture: user.profilePicture || (user.customAvatar?.type === "image" ? user.customAvatar.value : null),
+        customAvatar: user.customAvatar || (user.profilePicture ? { type: "image", value: user.profilePicture } : null)
       };
 
       return res.json({
@@ -2418,7 +2422,9 @@ const verifySessionHandler = (req: any, res: any) => {
       dailyConclusionText: user.dailyConclusionText || {},
       hasDownloadedApp: !!user.hasDownloadedApp,
       unlockedAudios: user.unlockedAudios || [],
-      onboardingCompletado: !!user.onboardingCompletado
+      onboardingCompletado: !!user.onboardingCompletado,
+      profilePicture: user.profilePicture || (user.customAvatar?.type === "image" ? user.customAvatar.value : null),
+      customAvatar: user.customAvatar || (user.profilePicture ? { type: "image", value: user.profilePicture } : null)
     };
 
     return res.json({
@@ -2699,8 +2705,9 @@ app.post("/api/register-user", (req, res) => {
 // ==========================================
 app.post("/api/update-user-progress", authenticateJWT, (req, res) => {
   try {
-    const { email, programProgress } = req.body;
-    if (!email) {
+    const email = req.body.email;
+    const programProgress = req.body.programProgress || req.body.userProgress;
+    if (!email || !programProgress) {
       return res.status(400).json({ error: "Email requerido para sincronizar." });
     }
 

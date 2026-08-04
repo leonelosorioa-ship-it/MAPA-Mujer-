@@ -733,12 +733,14 @@ export default function App() {
   const saveCustomAvatar = async (avatar: { type: "emoji" | "image"; value: string }) => {
     const updatedProgress = {
       ...programProgress,
-      customAvatar: avatar
+      customAvatar: avatar,
+      profilePicture: avatar.type === "image" ? avatar.value : null
     };
     setProgramProgress(updatedProgress);
     
     const emailKey = currentUserEmail ? currentUserEmail.toLowerCase().trim() : "";
     if (emailKey) {
+      localStorage.setItem(`MAPA_USER_AVATAR_${emailKey}`, JSON.stringify(avatar));
       localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey}`, JSON.stringify(updatedProgress));
     }
     localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(updatedProgress));
@@ -746,17 +748,32 @@ export default function App() {
     try {
       const token = localStorage.getItem("MAPA_ACCESS_TOKEN");
       if (token && emailKey) {
-        await fetch("/api/update-user-progress", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            email: emailKey,
-            userProgress: updatedProgress
+        await Promise.all([
+          fetch("/api/update-user-progress", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              email: emailKey,
+              programProgress: updatedProgress,
+              userProgress: updatedProgress
+            })
+          }),
+          fetch("/api/user/update-profile-picture", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              email: emailKey,
+              profilePicture: avatar.type === "image" ? avatar.value : null,
+              customAvatar: avatar
+            })
           })
-        });
+        ]);
       }
     } catch (e) {
       console.error("Error syncing custom avatar to server:", e);

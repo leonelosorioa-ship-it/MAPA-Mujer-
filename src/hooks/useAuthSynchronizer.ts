@@ -13,6 +13,8 @@ export interface ProgramProgress {
   unlockedAudios?: string[];
   dailyConclusionText?: Record<number, string>;
   onboardingCompletado?: boolean;
+  profilePicture?: string | null;
+  customAvatar?: { type: "emoji" | "image"; value: string } | null;
 }
 
 interface UseAuthSynchronizerProps {
@@ -85,7 +87,9 @@ export function useAuthSynchronizer({
       JSON.stringify(p1.unlockedAudios || []) === JSON.stringify(p2.unlockedAudios || []) &&
       JSON.stringify(p1.responses) === JSON.stringify(p2.responses) &&
       p1.hasDownloadedApp === p2.hasDownloadedApp &&
-      p1.onboardingCompletado === p2.onboardingCompletado
+      p1.onboardingCompletado === p2.onboardingCompletado &&
+      JSON.stringify(p1.customAvatar || null) === JSON.stringify(p2.customAvatar || null) &&
+      (p1.profilePicture || null) === (p2.profilePicture || null)
     );
   };
 
@@ -126,6 +130,12 @@ export function useAuthSynchronizer({
         // Ensure standard structure is met
         if (!serverProgress.leadInfo) {
           serverProgress.leadInfo = { nombre: "", email: userEmail, whatsapp: "" };
+        }
+        if (!serverProgress.customAvatar && programProgress.customAvatar) {
+          serverProgress.customAvatar = programProgress.customAvatar;
+        }
+        if (!serverProgress.profilePicture && programProgress.profilePicture) {
+          serverProgress.profilePicture = programProgress.profilePicture;
         }
 
         const serialized = JSON.stringify(serverProgress);

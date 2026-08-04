@@ -256,9 +256,9 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* USER PHOTO / EMOJI / PRETTY WOMAN DEFAULT EMOJI */}
             <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-[#FFF0F5] relative">
-              {programProgress?.customAvatar?.type === "image" && programProgress.customAvatar.value ? (
+              {(programProgress?.customAvatar?.type === "image" && programProgress.customAvatar.value) || (programProgress as any)?.profilePicture ? (
                 <img
-                  src={programProgress.customAvatar.value}
+                  src={(programProgress?.customAvatar?.type === "image" && programProgress.customAvatar.value) ? programProgress.customAvatar.value : (programProgress as any).profilePicture}
                   alt={`Foto de ${userName}`}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
@@ -452,9 +452,9 @@ export const Header: React.FC<HeaderProps> = ({
                   title="Haz clic para cambiar tu foto de perfil"
                 >
                   <div className="relative w-12 h-12 rounded-full border-2 border-[#E86FA3] shrink-0 bg-white overflow-hidden flex items-center justify-center">
-                    {programProgress?.customAvatar?.type === "image" ? (
+                    {(programProgress?.customAvatar?.type === "image" && programProgress.customAvatar.value) || (programProgress as any)?.profilePicture ? (
                       <img
-                        src={programProgress.customAvatar.value}
+                        src={(programProgress?.customAvatar?.type === "image" && programProgress.customAvatar.value) ? programProgress.customAvatar.value : (programProgress as any).profilePicture}
                         alt={`Avatar de ${userName}`}
                         className="w-full h-full object-cover rounded-full"
                       />

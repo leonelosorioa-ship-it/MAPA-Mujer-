@@ -60,6 +60,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem("MAPA_ACCESS_TOKEN", newToken);
     localStorage.setItem("MAPA_CURRENT_USER_EMAIL", cleanEmail);
     if (progress) {
+      if (progress.customAvatar) {
+        localStorage.setItem(`MAPA_USER_AVATAR_${cleanEmail}`, JSON.stringify(progress.customAvatar));
+      }
       localStorage.setItem(`MAPA_USER_PROGRESS_${cleanEmail}`, JSON.stringify(progress));
       localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(progress));
     }
@@ -93,6 +96,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const email = currentUserEmail || (typeof window !== "undefined" ? localStorage.getItem("MAPA_CURRENT_USER_EMAIL") : "") || "";
     if (email) {
       const cleanEmail = email.toLowerCase().trim();
+      if (newProg.customAvatar) {
+        localStorage.setItem(`MAPA_USER_AVATAR_${cleanEmail}`, JSON.stringify(newProg.customAvatar));
+      }
       localStorage.setItem(`MAPA_USER_PROGRESS_${cleanEmail}`, JSON.stringify(newProg));
       localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(newProg));
     }
@@ -133,9 +139,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setCurrentUserEmail(cleanEmail);
 
           if (data.userProgress) {
-            setUserProgress(data.userProgress);
-            localStorage.setItem(`MAPA_USER_PROGRESS_${cleanEmail}`, JSON.stringify(data.userProgress));
-            localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(data.userProgress));
+            let progressToSet = data.userProgress;
+            const cachedAvatarStr = localStorage.getItem(`MAPA_USER_AVATAR_${cleanEmail}`);
+            if (!progressToSet.customAvatar && cachedAvatarStr) {
+              try {
+                const avatar = JSON.parse(cachedAvatarStr);
+                progressToSet = {
+                  ...progressToSet,
+                  customAvatar: avatar,
+                  profilePicture: avatar.type === "image" ? avatar.value : null
+                };
+              } catch (_) {}
+            } else if (progressToSet.customAvatar) {
+              localStorage.setItem(`MAPA_USER_AVATAR_${cleanEmail}`, JSON.stringify(progressToSet.customAvatar));
+            }
+            setUserProgress(progressToSet);
+            localStorage.setItem(`MAPA_USER_PROGRESS_${cleanEmail}`, JSON.stringify(progressToSet));
+            localStorage.setItem("MAPA_7DAY_PROGRESS_V2", JSON.stringify(progressToSet));
           }
 
           setIsAdmin(!!data.isAdmin || cleanEmail === "contacto@tupodermental.club");
