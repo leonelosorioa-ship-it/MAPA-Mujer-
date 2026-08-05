@@ -82,7 +82,14 @@ export const Header: React.FC<HeaderProps> = ({
     if (setPhase) {
       setPhase("DASHBOARD");
     }
-    window.dispatchEvent(new CustomEvent("mapa_nav_tab", { detail: tab }));
+    if (typeof window !== "undefined") {
+      window.location.hash = `#${tab}`;
+      window.dispatchEvent(new CustomEvent("mapa_nav_tab", { detail: tab }));
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("mapa_nav_tab", { detail: tab }));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
+    }
     setIsSideMenuOpen(false);
   };
 

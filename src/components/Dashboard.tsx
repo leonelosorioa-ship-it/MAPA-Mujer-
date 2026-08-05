@@ -93,33 +93,58 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onOpenPanicButton,
   onOpenScanWizard
 }) => {
-  const [activeNavTab, setActiveNavTab] = useState<NavTab>("home");
+  const getInitialTab = (): NavTab => {
+    if (typeof window !== "undefined" && window.location.hash) {
+      const hash = window.location.hash.replace("#", "");
+      if (hash === "program" || hash === "tools" || hash === "profile" || hash === "home") {
+        return hash as NavTab;
+      }
+    }
+    return "home";
+  };
+
+  const [activeNavTab, setActiveNavTab] = useState<NavTab>(getInitialTab);
   const [activeToolModal, setActiveToolModal] = useState<string | null>(null);
 
   // Helper to change activeNavTab and push history state
   const changeTab = (newTab: NavTab) => {
-    if (newTab !== activeNavTab) {
-      if (typeof window !== "undefined" && window.history) {
-        window.history.pushState({ mapaTab: newTab }, "", `#${newTab}`);
-      }
-      setActiveNavTab(newTab);
+    if (typeof window !== "undefined" && window.history) {
+      window.history.pushState({ mapaTab: newTab }, "", `#${newTab}`);
     }
+    setActiveNavTab(newTab);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Listen for navigation events from top-left compact menu
+  // Listen for navigation events from top-left compact menu and location hash
   useEffect(() => {
     const handleNavEvent = (e: any) => {
       if (e.detail) {
         if (e.detail === "profile") {
-          setIsProfileSettingsOpen(true);
-        } else {
-          changeTab(e.detail as NavTab);
+          setActiveNavTab("profile");
+        } else if (e.detail === "home" || e.detail === "program" || e.detail === "tools") {
+          setActiveNavTab(e.detail as NavTab);
+          if (typeof window !== "undefined") {
+            window.location.hash = `#${e.detail}`;
+          }
         }
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     };
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash === "program" || hash === "tools" || hash === "profile" || hash === "home") {
+        setActiveNavTab(hash as NavTab);
+      }
+    };
+
     window.addEventListener("mapa_nav_tab", handleNavEvent);
-    return () => window.removeEventListener("mapa_nav_tab", handleNavEvent);
-  }, [setIsProfileSettingsOpen, activeNavTab]);
+    window.addEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("mapa_nav_tab", handleNavEvent);
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [setIsProfileSettingsOpen]);
 
   // Handle mobile hardware back button (popstate)
   useEffect(() => {
@@ -611,6 +636,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* STICKY BOTTOM NAVIGATION BAR */}
+      <BottomNav
+        activeTab={activeNavTab}
+        onTabChange={(tab) => changeTab(tab)}
+        isAudioPlaying={isAudioPlaying}
+        onToggleAudioPlay={onToggleAudioPlay}
+        activeAudioTitle={activeAudioTitle}
+      />
     </div>
   );
 };
