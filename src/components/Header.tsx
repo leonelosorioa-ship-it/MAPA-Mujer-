@@ -293,7 +293,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* MAIN BRAND TITLE & SUBTITLE */}
           <div className={isScrolled ? "flex items-center justify-center gap-2 my-0.5" : "flex flex-col items-center justify-center my-1"}>
             <h1 className={isScrolled ? "font-display font-black text-sm sm:text-base tracking-wider text-white drop-shadow-xs leading-none" : "font-display font-black text-lg sm:text-xl md:text-2xl tracking-wider text-white drop-shadow-xs leading-none"}>
-              M.A.P.A. <span className="text-[#3E1B5A] font-extrabold">Mujer</span>
+              M.A.P.A. <span className="text-[#3E1B5A] font-extrabold">MUJER ™</span>
             </h1>
             {!isScrolled && (
               <span className="text-[9px] sm:text-[10px] text-white/95 font-mono tracking-widest uppercase font-black drop-shadow-xs mt-1">
@@ -429,7 +429,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="font-display font-black text-xl tracking-wider text-white">
-                      M.A.P.A.™
+                      M.A.P.A. MUJER ™
                     </span>
                     <span className="text-[10px] text-white/90 font-mono font-bold tracking-widest uppercase">
                       Navegación Principal
