@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Download, Check, Smartphone, Monitor, X, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 interface AppDownloadPromptProps {
   userEmail: string;
@@ -137,16 +138,16 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
               <img
-                src="/clara-luz-profile.jpg"
+                src={CLARA_LUZ_PROFILE.image}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  if (target.src.includes('/clara-luz-profile.jpg')) {
+                  if (!target.src.includes('/clara-luz-profile.jpg')) {
+                    target.src = '/clara-luz-profile.jpg';
+                  } else {
                     target.src = '/clara_luz.jpg';
-                  } else if (target.src.includes('/clara_luz.jpg')) {
-                    target.src = '/assets/clara-luz-profile.jpg';
                   }
                 }}
-                alt="Clara Luz"
+                alt="Clara Luz - Mentora M.A.P.A.™"
                 className="w-full h-full object-cover object-top"
               />
             </div>

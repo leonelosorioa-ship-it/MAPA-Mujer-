@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Smartphone, X, Bell, Share, PlusSquare, CheckCircle2 } from "lucide-react";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 interface PWAInstallBannerProps {
   currentUserEmail?: string;
@@ -207,7 +208,7 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
               {/* Close button top-right */}
               <button
                 onClick={handleDismiss}
-                className="absolute top-2 right-2 z-10 p-1 bg-[#F38FBA] hover:bg-[#e47ba6] text-white border border-white/60 rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
+                className="absolute top-2 right-2 z-10 p-1 bg-[#E346A1] hover:bg-[#c9368a] text-white border border-white/60 rounded-full transition-all cursor-pointer shadow-md flex items-center justify-center"
                 title="Cerrar"
                 id="pwa_banner_close_button"
               >
@@ -218,13 +219,13 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
                 {/* Clara Luz Profile Avatar */}
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden border-2 border-white/90 bg-white shrink-0 shadow-md">
                   <img
-                    src="/clara-luz-profile.jpg"
+                    src={CLARA_LUZ_PROFILE.image}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      if (target.src.includes('/clara-luz-profile.jpg')) {
+                      if (!target.src.includes('/clara-luz-profile.jpg')) {
+                        target.src = '/clara-luz-profile.jpg';
+                      } else {
                         target.src = '/clara_luz.jpg';
-                      } else if (target.src.includes('/clara_luz.jpg')) {
-                        target.src = '/assets/clara-luz-profile.jpg';
                       }
                     }}
                     alt="Clara Luz - Mentora M.A.P.A.™"
@@ -272,7 +273,7 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
             >
               <button
                 onClick={() => setShowGuideModal(false)}
-                className="absolute top-3 right-3 p-1.5 bg-[#F38FBA] text-white border border-black rounded-full hover:bg-[#e47ba6] transition-all"
+                className="absolute top-3 right-3 p-1.5 bg-[#E346A1] text-white border border-black rounded-full hover:bg-[#c9368a] transition-all"
               >
                 <X className="w-4 h-4 text-white" />
               </button>
@@ -280,13 +281,13 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-black bg-white shrink-0 shadow-md">
                   <img
-                    src="/clara-luz-profile.jpg"
+                    src={CLARA_LUZ_PROFILE.image}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      if (target.src.includes('/clara-luz-profile.jpg')) {
+                      if (!target.src.includes('/clara-luz-profile.jpg')) {
+                        target.src = '/clara-luz-profile.jpg';
+                      } else {
                         target.src = '/clara_luz.jpg';
-                      } else if (target.src.includes('/clara_luz.jpg')) {
-                        target.src = '/assets/clara-luz-profile.jpg';
                       }
                     }}
                     alt="Clara Luz - Mentora M.A.P.A.™"
@@ -306,30 +307,30 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
               {isIOS ? (
                 <div className="space-y-3 text-xs font-medium text-[#411F66] bg-white/80 p-3.5 rounded-2xl border border-black/15">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">1</div>
-                    <p className="pt-0.5">Toca el botón <strong className="text-[#1C0630]">Compartir</strong> <Share className="w-3.5 h-3.5 inline text-[#F38FBA]" /> en la barra de tu navegador Safari.</p>
+                    <div className="w-6 h-6 rounded-full bg-[#E346A1] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">1</div>
+                    <p className="pt-0.5">Toca el botón <strong className="text-[#1C0630]">Compartir</strong> <Share className="w-3.5 h-3.5 inline text-[#E346A1]" /> en la barra de tu navegador Safari.</p>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">2</div>
-                    <p className="pt-0.5">Desplázate hacia abajo y selecciona <strong className="text-[#1C0630]">Añadir a la pantalla de inicio</strong> <PlusSquare className="w-3.5 h-3.5 inline text-[#F38FBA]" />.</p>
+                    <div className="w-6 h-6 rounded-full bg-[#E346A1] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">2</div>
+                    <p className="pt-0.5">Desplázate hacia abajo y selecciona <strong className="text-[#1C0630]">Añadir a la pantalla de inicio</strong> <PlusSquare className="w-3.5 h-3.5 inline text-[#E346A1]" />.</p>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">3</div>
+                    <div className="w-6 h-6 rounded-full bg-[#E346A1] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">3</div>
                     <p className="pt-0.5">Pulsa <strong className="text-[#1C0630]">Añadir</strong> en la esquina superior derecha para finalizar.</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3 text-xs font-medium text-[#411F66] bg-white/80 p-3.5 rounded-2xl border border-black/15">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">1</div>
+                    <div className="w-6 h-6 rounded-full bg-[#E346A1] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">1</div>
                     <p className="pt-0.5">Abre el menú de tu navegador (los <strong className="text-[#1C0630]">tres puntos ⋮</strong> o la barra de direcciones).</p>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">2</div>
+                    <div className="w-6 h-6 rounded-full bg-[#E346A1] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">2</div>
                     <p className="pt-0.5">Selecciona <strong className="text-[#1C0630]">"Instalar aplicación"</strong> o <strong className="text-[#1C0630]">"Guardar en pantalla principal"</strong>.</p>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-[#F38FBA] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">3</div>
+                    <div className="w-6 h-6 rounded-full bg-[#E346A1] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-black">3</div>
                     <p className="pt-0.5">Confirma la instalación para disfrutar de tu acceso directo y notificaciones.</p>
                   </div>
                 </div>
