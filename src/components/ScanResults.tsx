@@ -23,7 +23,12 @@ import {
   Clock, 
   ChevronRight,
   UserCheck,
-  Smartphone
+  Smartphone,
+  Share2,
+  Copy,
+  Check,
+  MessageCircle,
+  X
 } from "lucide-react";
 
 interface ScanResultsProps {
@@ -54,11 +59,48 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
   isLoadingReg
 }) => {
   const [showSignup, setShowSignup] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copiedText, setCopiedText] = useState(false);
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [emailError, setEmailError] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(true);
+
+  const getShareMessage = () => {
+    const url = typeof window !== "undefined" ? window.location.origin : "";
+    return `🌸 Acabo de realizar mi escaneo de regulación emocional en M.A.P.A.™ Mujer.\n\n📊 Nivel de alerta/sobrecarga detectado: ${metrics.riesgoSobrecarga}%\n✨ Nivel de bienestar: ${metrics.bienestar}%\n\nTe invito a realizar este test breve y descubrir tu estado de regulación emocional aquí:\n👉 ${url}`;
+  };
+
+  const handleShareWhatsApp = () => {
+    const text = getShareMessage();
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const handleCopyShareText = () => {
+    const text = getShareMessage();
+    navigator.clipboard.writeText(text);
+    setCopiedText(true);
+    setTimeout(() => setCopiedText(false), 2500);
+  };
+
+  const handleNativeShare = async () => {
+    const text = getShareMessage();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "M.A.P.A.™ Mujer - Mi Resultado de Escaneo",
+          text: text,
+          url: window.location.origin,
+        });
+      } catch (e) {
+        console.log("Share cancelled or failed", e);
+      }
+    } else {
+      handleCopyShareText();
+    }
+  };
 
   const handleSubmitSignup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,11 +135,21 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
       
       {/* HEADER RESULT CARD */}
       <section className="text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 bg-[#EDE0F0] border border-[#6E488A]/20 p-1.5 px-4 rounded-full">
-          <UserCheck className="w-4 h-4 text-[#411F66]" />
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[#411F66] font-extrabold">
-            ESCANEO FINALIZADO • INFORME INMEDIATO
-          </span>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="inline-flex items-center space-x-2 bg-[#EDE0F0] border border-[#6E488A]/20 p-1.5 px-4 rounded-full">
+            <UserCheck className="w-4 h-4 text-[#411F66]" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#411F66] font-extrabold">
+              ESCANEO FINALIZADO • INFORME INMEDIATO
+            </span>
+          </div>
+          <button
+            onClick={() => setShowShareModal(true)}
+            className="inline-flex items-center space-x-1.5 bg-[#25D366] hover:bg-[#20ba5a] text-white p-1.5 px-3 rounded-full text-[11px] font-bold shadow-xs transition-transform active:scale-95 cursor-pointer border-none"
+            title="Compartir tus hallazgos por WhatsApp o redes"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span>Compartir</span>
+          </button>
         </div>
         <h2 className="font-display font-black text-3xl sm:text-4xl text-[#411F66] tracking-tight leading-snug">
           M.A.P.A.™ <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E86FA3] to-[#36C4D8]">Revelado de Alerta</span>
@@ -255,7 +307,7 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <motion.button
                 onClick={() => setShowSignup(true)}
                 animate={{ 
@@ -273,16 +325,25 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
                 }}
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.97 }}
-                className="group relative overflow-hidden px-6 py-3.5 sm:px-10 sm:py-4 rounded-xl font-display font-extrabold tracking-wider text-white bg-gradient-to-r from-[#411F66] via-[#B23B7C] to-[#E86FA3] flex items-center justify-center space-x-2 cursor-pointer border-2 border-white/30 shadow-2xl duration-300 text-xs sm:text-sm"
+                className="group relative overflow-hidden px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl font-display font-extrabold tracking-wider text-white bg-gradient-to-r from-[#411F66] via-[#B23B7C] to-[#E86FA3] flex items-center justify-center space-x-2 cursor-pointer border-2 border-white/30 shadow-2xl duration-300 text-xs sm:text-sm w-full sm:w-auto"
               >
                 {/* Premium sweep light highlight */}
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect" />
                 <span className="relative z-10">COMENZAR PROGRAMA</span>
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white relative z-10 transition-transform duration-300 group-hover:translate-x-1.5" />
               </motion.button>
+
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="px-5 py-3.5 sm:px-6 sm:py-4 rounded-xl border-2 border-[#25D366]/60 text-[#128C7E] bg-[#E8FADF] hover:bg-[#D3F5C3] text-xs sm:text-sm font-extrabold transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-xs w-full sm:w-auto"
+              >
+                <Share2 className="w-4 h-4 text-[#25D366]" />
+                <span>Compartir resultado</span>
+              </button>
+
               <button
                 onClick={onRestart}
-                className="px-4 py-3 sm:px-6 sm:py-4 rounded-xl border border-[#6E488A]/20 text-[#411F66] hover:bg-[#EDE0F0]/40 text-xs font-bold transition-all cursor-pointer"
+                className="px-4 py-3 sm:px-6 sm:py-4 rounded-xl border border-[#6E488A]/20 text-[#411F66] hover:bg-[#EDE0F0]/40 text-xs font-bold transition-all cursor-pointer w-full sm:w-auto"
               >
                 Hacer otro escaneo
               </button>
@@ -439,6 +500,100 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
               </button>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* MODAL COMPARTIR RESULTADO */}
+      <AnimatePresence>
+        {showShareModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 border-2 border-[#E86FA3]/30 shadow-2xl relative text-left"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowShareModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer border-none"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Modal Header */}
+              <div className="space-y-2">
+                <div className="inline-flex items-center space-x-2 bg-[#E8FADF] border border-[#25D366]/30 px-3 py-1 rounded-full text-[#128C7E] text-xs font-bold">
+                  <Share2 className="w-3.5 h-3.5 text-[#25D366]" />
+                  <span>COMPARTIR RESULTADOS M.A.P.A.™</span>
+                </div>
+                <h3 className="font-display font-black text-2xl text-[#411F66]">
+                  Invita a otras personas a realizar el test
+                </h3>
+                <p className="text-xs text-[#0B152B]/80 font-sans font-medium leading-relaxed">
+                  Comparte tus hallazgos de regulación emocional en WhatsApp o redes sociales con un mensaje preparado.
+                </p>
+              </div>
+
+              {/* Message Preview Box */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-mono font-black text-[#411F66] uppercase tracking-wider block">
+                  Vista previa del mensaje predefinido:
+                </label>
+                <div className="p-4 rounded-2xl bg-[#EDE0F0]/40 border border-[#6E488A]/15 text-xs text-[#0B152B] font-sans font-medium whitespace-pre-line leading-relaxed relative">
+                  {getShareMessage()}
+                </div>
+              </div>
+
+              {/* Sharing Action Buttons */}
+              <div className="space-y-3 pt-1">
+                <button
+                  onClick={handleShareWhatsApp}
+                  className="w-full py-4 px-5 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-display font-black text-sm shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center space-x-3 border-none"
+                >
+                  <MessageCircle className="w-5 h-5 fill-white" />
+                  <span>Compartir por WhatsApp</span>
+                </button>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <button
+                    onClick={handleCopyShareText}
+                    className="w-full py-3 px-4 rounded-xl border-2 border-[#6E488A]/20 bg-white hover:bg-[#EDE0F0]/50 text-[#411F66] font-bold text-xs transition-all cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    {copiedText ? (
+                      <>
+                        <Check className="w-4 h-4 text-[#36C4D8]" />
+                        <span className="text-[#36C4D8]">¡Copiado al portapapeles!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span>Copiar mensaje</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleNativeShare}
+                    className="w-full py-3 px-4 rounded-xl border-2 border-[#E86FA3]/30 bg-[#FFF5F9] hover:bg-[#FFEBF4] text-[#411F66] font-bold text-xs transition-all cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <Smartphone className="w-4 h-4 text-[#E86FA3]" />
+                    <span>Más opciones</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Footer Note */}
+              <div className="text-center pt-1 border-t border-gray-100">
+                <button
+                  onClick={() => setShowShareModal(false)}
+                  className="text-xs font-bold text-[#411F66]/70 hover:text-[#411F66] transition-colors cursor-pointer bg-transparent border-none"
+                >
+                  Cerrar ventana
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
