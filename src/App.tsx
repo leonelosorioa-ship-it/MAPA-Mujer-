@@ -436,10 +436,12 @@ export default function App() {
         setCurrentUserEmail(auth.currentUserEmail);
       }
       if (auth.userProgress && auth.userProgress.activationDate) {
-        setProgramProgress(auth.userProgress);
-        if (auth.userProgress.leadInfo) {
-          setLeadInfo(auth.userProgress.leadInfo);
-          setLeadCaptured(true);
+        if (auth.currentUserEmail !== currentUserEmail || !programProgress.activationDate) {
+          setProgramProgress(auth.userProgress);
+          if (auth.userProgress.leadInfo) {
+            setLeadInfo(auth.userProgress.leadInfo);
+            setLeadCaptured(true);
+          }
         }
       }
       if (phase === "LANDING" || phase === "LOGIN") {
@@ -461,7 +463,7 @@ export default function App() {
         }
       }
     }
-  }, [auth.isLoadingSession, auth.isAuthenticated, auth.currentUserEmail, auth.userProgress, auth.isAdmin, currentUserEmail, phase, programProgress]);
+  }, [auth.isLoadingSession, auth.isAuthenticated, auth.currentUserEmail, auth.userProgress, auth.isAdmin, currentUserEmail, phase, programProgress.activationDate]);
 
   // Precise chronological calculations for 24h consecutive lock logic (based on previous day completion)
   const getChronologicalState = () => {
@@ -524,6 +526,7 @@ export default function App() {
   const [leadCaptured, setLeadCaptured] = useState<boolean>(programProgress.leadCaptured || false);
 
   // Active temporary answers for the CURRENT day's questionnaire
+  const [activeQuizDay, setActiveQuizDay] = useState<number | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [userResponses, setUserResponses] = useState<QuizResponse[]>([]);
   const [isEvaluationReady, setIsEvaluationReady] = useState<boolean>(false);
@@ -1931,6 +1934,7 @@ export default function App() {
     }
 
     // Load previously answered responses for this day if any exist, otherwise empty
+    setActiveQuizDay(day);
     const existing = programProgress.responses[day] || [];
     setUserResponses(existing);
     setCurrentQuestionIndex(0);
@@ -1992,7 +1996,7 @@ export default function App() {
 
   // Active Questions slice based on program context
   const getActiveDayQuestions = () => {
-    const day = programProgress.currentDay;
+    const day = activeQuizDay || programProgress.currentDay;
     return QUESTIONS.slice((day - 1) * 7, day * 7);
   };
 
@@ -2515,7 +2519,7 @@ export default function App() {
   // Complete the current day and return to Dashboard
   const handleDailyComplete = async (overrideResponses?: QuizResponse[]) => {
     const activeResponses = overrideResponses || userResponses;
-    const day = programProgress.currentDay;
+    const day = activeQuizDay || programProgress.currentDay;
     const updatedResponses = {
       ...programProgress.responses,
       [day]: activeResponses
@@ -2523,11 +2527,12 @@ export default function App() {
 
     const updatedCompletedDays = programProgress.completedDays.includes(day)
       ? programProgress.completedDays
-      : [...programProgress.completedDays, day];
+      : [...programProgress.completedDays, day].sort((a, b) => a - b);
 
     let nextDay = day;
     if (updatedCompletedDays.length < 7) {
-      nextDay = Math.min(7, day + 1);
+      const maxComp = Math.max(...updatedCompletedDays, 0);
+      nextDay = Math.min(7, maxComp + 1);
     }
 
     const updatedTimestamps = {
@@ -2616,6 +2621,10 @@ export default function App() {
     const milestoneCount = updatedCompletedDays.length;
 
     setProgramProgress(newProg);
+    if (auth.updateLocalProgress) {
+      auth.updateLocalProgress(newProg);
+    }
+
     const emailKey = leadInfo.email || currentUserEmail;
     if (emailKey) {
       localStorage.setItem(`MAPA_USER_PROGRESS_${emailKey.toLowerCase().trim()}`, JSON.stringify(newProg));
@@ -2628,6 +2637,8 @@ export default function App() {
     setUserResponses([]);
     setCurrentQuestionIndex(0);
     setIsEvaluationReady(false);
+    setSelectedDayPreview(nextDay);
+    setActiveQuizDay(null);
 
     playSuccessCue();
     setDashboardNotice(`¡Excelente! Conclusiones del Día ${day} integradas con éxito en tu M.A.P.A.™`);
@@ -4363,7 +4374,7 @@ export default function App() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-xs sm:text-sm font-mono uppercase bg-[#EDE0F0] text-[#3A185C] border-2 border-[#6E488A]/35 px-3 py-1 rounded-full font-black">
-                          Día {programProgress.currentDay} • Pilar: {
+                          Día {activeQuizDay || programProgress.currentDay} • Pilar: {
                             currentQ.category === "activacion" ? "Nivel de Activación" :
                             currentQ.category === "detonantes" ? "Desencadenantes" :
                             currentQ.category === "patrones" ? "Patrones Mentales" : "Factores de Protección"
@@ -4630,7 +4641,7 @@ export default function App() {
                           <span>Anterior</span>
                         </button>
                         <span className="font-black bg-[#EDE0F0] px-2.5 py-1 rounded-lg text-[#3A185C] border border-[#6E488A]/15">
-                          Día {programProgress.currentDay} / 7 de Autoconocimiento
+                          Día {activeQuizDay || programProgress.currentDay} / 7 de Autoconocimiento
                         </span>
                       </div>
 
@@ -4644,10 +4655,10 @@ export default function App() {
                         className="pt-4 text-center"
                       >
                         <button
-                          onClick={handleDailyComplete}
+                          onClick={() => handleDailyComplete()}
                           className="px-10 py-5 rounded-2xl bg-[#36C4D8] hover:bg-[#2DB3C7] text-white font-display font-bold text-lg shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-3 w-full animate-pulse border-none outline-none"
                         >
-                          <span>GUARDAR Y COMPLETAR EL DÍA {programProgress.currentDay} ➔</span>
+                          <span>GUARDAR Y COMPLETAR EL DÍA {activeQuizDay || programProgress.currentDay} ➔</span>
                           <Sparkles className="w-5 h-5 text-white" />
                         </button>
                       </motion.div>
