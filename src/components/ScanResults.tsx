@@ -388,13 +388,15 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
                         referrerPolicy="no-referrer"
                         onError={(e) => {
                           const target = e.currentTarget;
-                          if (target.src.includes('/clara_luz.jpg')) {
-                            target.src = '/clara-luz-profile.jpg';
-                          } else if (target.src.includes('/clara-luz-profile.jpg')) {
-                            target.src = '/assets/clara-luz-profile.jpg';
+                          if (!target.dataset.triedFallback) {
+                            target.dataset.triedFallback = "true";
+                            target.src = "/clara-luz-profile.jpg";
+                          } else if (!target.dataset.triedSecond) {
+                            target.dataset.triedSecond = "true";
+                            target.src = "/clara_luz.jpg";
                           }
                         }}
-                        className="w-full h-full object-cover object-center rounded-full"
+                        className="w-full h-full object-cover object-top rounded-full"
                       />
                     </div>
                     <span>Solicita Tu Código con Clara Luz</span>

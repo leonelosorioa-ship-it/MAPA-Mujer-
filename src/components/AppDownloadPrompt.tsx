@@ -136,19 +136,22 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
         {/* Alert Header */}
         <div className="flex justify-between items-start gap-4">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
+            <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-white bg-[#56346F] shrink-0 shadow-lg relative group">
               <img
                 src={CLARA_LUZ_PROFILE.image}
                 onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  if (!target.src.includes('/clara-luz-profile.jpg')) {
-                    target.src = '/clara-luz-profile.jpg';
-                  } else {
-                    target.src = '/clara_luz.jpg';
+                  const target = e.currentTarget;
+                  if (!target.dataset.triedFallback) {
+                    target.dataset.triedFallback = "true";
+                    target.src = "/clara-luz-profile.jpg";
+                  } else if (!target.dataset.triedSecond) {
+                    target.dataset.triedSecond = "true";
+                    target.src = "/clara_luz.jpg";
                   }
                 }}
                 alt="Clara Luz - Mentora M.A.P.A.™"
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-110"
+                referrerPolicy="no-referrer"
               />
             </div>
             <div>
@@ -239,22 +242,27 @@ export const AppDownloadPrompt: React.FC<AppDownloadPromptProps> = ({
           <p className="text-[10px] text-[#56346F]/60">Presiona confirmar para registrar la instalación y desactivar los recordatorios.</p>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-2.5 shrink-0">
+        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <button
             onClick={installPromptEvent ? handleNativeInstall : () => handleDismissToday()}
-            className="px-4 py-2.5 bg-[#E346A1] hover:bg-[#c9368a] text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-md select-none border-none outline-none"
+            className="px-6 py-3 bg-gradient-to-r from-[#E346A1] via-[#FF5CB8] to-[#E346A1] hover:from-[#c9368a] hover:to-[#c9368a] text-white font-mono font-black text-sm sm:text-base rounded-2xl transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer shadow-[0_4px_20px_rgba(227,70,161,0.6)] hover:shadow-[0_6px_28px_rgba(255,92,184,0.85)] hover:scale-[1.03] active:scale-[0.97] border-2 border-white group relative overflow-hidden"
             id="btn_trigger_pwa_install"
           >
-            <Download className="w-3.5 h-3.5 text-white" />
-            <span>{isInstalling ? "Instalando..." : "Instalar Aplicación"}</span>
+            <motion.div
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut", repeatDelay: 1 }}
+              className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 pointer-events-none"
+            />
+            <Download className="w-5 h-5 text-white group-hover:bounce transition-transform shrink-0" />
+            <span className="font-extrabold uppercase tracking-wider">{isInstalling ? "Instalando..." : "Descarga Aquí Tu App de M.A.P.A"}</span>
           </button>
           
           <button
             onClick={handleConfirmSuccess}
-            className="px-4 py-2.5 bg-[#E346A1] hover:bg-[#c9368a] text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-md select-none border-none outline-none"
+            className="px-5 py-3 bg-white/20 hover:bg-white/30 text-white font-mono font-bold rounded-2xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98] border border-white/60"
             id="btn_confirm_downloaded_action"
           >
-            <Check className="w-3.5 h-3.5 text-white" />
+            <Check className="w-4 h-4 text-white" />
             <span>Confirmar Descarga</span>
           </button>
         </div>

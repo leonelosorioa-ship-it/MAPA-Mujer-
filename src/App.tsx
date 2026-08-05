@@ -4269,20 +4269,22 @@ export default function App() {
 
                 <div className="bg-[#FAF7FC] border-2 border-[#1C0630]/15 p-4 rounded-2xl space-y-3 text-center">
                   <div className="flex items-center gap-3 text-left">
-                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-white">
+                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-[#56346F]">
                       <img
                         src={CLARA_LUZ_PROFILE.image}
                         alt="Clara Luz Mentora"
                         referrerPolicy="no-referrer"
                         onError={(e) => {
                           const target = e.currentTarget;
-                          if (target.src.includes('/clara_luz.jpg')) {
-                            target.src = '/clara-luz-profile.jpg';
-                          } else if (target.src.includes('/clara-luz-profile.jpg')) {
-                            target.src = '/assets/clara-luz-profile.jpg';
+                          if (!target.dataset.triedFallback) {
+                            target.dataset.triedFallback = "true";
+                            target.src = "/clara-luz-profile.jpg";
+                          } else if (!target.dataset.triedSecond) {
+                            target.dataset.triedSecond = "true";
+                            target.src = "/clara_luz.jpg";
                           }
                         }}
-                        className="w-full h-full object-cover object-center rounded-full"
+                        className="w-full h-full object-cover object-top rounded-full"
                       />
                     </div>
                     <p className="text-xs sm:text-sm text-[#1C0630] font-black leading-relaxed">

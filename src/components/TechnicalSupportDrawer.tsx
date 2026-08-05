@@ -148,20 +148,22 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
             }
             aria-label={isLoggedIn ? "Abrir guía de uso del programa M.A.P.A." : "Abrir centro de ayuda técnica y soporte"}
           >
-            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden border border-white/90 shadow-xs shrink-0 bg-white relative">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden border border-white/90 shadow-sm shrink-0 bg-[#56346F] relative">
               <img
                 src={CLARA_LUZ_PROFILE.image}
                 alt="Clara Luz Mentora"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   const target = e.currentTarget;
-                  if (target.src.includes('/clara_luz.jpg')) {
-                    target.src = '/clara-luz-profile.jpg';
-                  } else if (target.src.includes('/clara-luz-profile.jpg')) {
-                    target.src = '/assets/clara-luz-profile.jpg';
+                  if (!target.dataset.triedFallback) {
+                    target.dataset.triedFallback = "true";
+                    target.src = "/clara-luz-profile.jpg";
+                  } else if (!target.dataset.triedSecond) {
+                    target.dataset.triedSecond = "true";
+                    target.src = "/clara_luz.jpg";
                   }
                 }}
-                className="w-full h-full object-cover object-center rounded-full"
+                className="w-full h-full object-cover object-top rounded-full"
               />
             </div>
             <span className="font-bold text-xs">Ayuda</span>
@@ -229,20 +231,22 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
                 <div className="bg-gradient-to-r from-[#FFF5FA] via-[#F9F0F8] to-[#FFF5FA] rounded-2xl p-5 border border-[#E36DB4]/30 shadow-xs relative overflow-hidden text-left">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 max-w-md">
-                      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-[#FAF0FB] relative">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-[#56346F] relative">
                         <img
                           src={CLARA_LUZ_PROFILE.image}
                           alt={CLARA_LUZ_PROFILE.fullTitle}
                           referrerPolicy="no-referrer"
                           onError={(e) => {
                             const target = e.currentTarget;
-                            if (target.src.includes('/clara_luz.jpg')) {
-                              target.src = '/clara-luz-profile.jpg';
-                            } else if (target.src.includes('/clara-luz-profile.jpg')) {
-                              target.src = '/assets/clara-luz-profile.jpg';
+                            if (!target.dataset.triedFallback) {
+                              target.dataset.triedFallback = "true";
+                              target.src = "/clara-luz-profile.jpg";
+                            } else if (!target.dataset.triedSecond) {
+                              target.dataset.triedSecond = "true";
+                              target.src = "/clara_luz.jpg";
                             }
                           }}
-                          className="w-full h-full object-cover object-center rounded-full"
+                          className="w-full h-full object-cover object-top rounded-full"
                         />
                       </div>
                       <div className="space-y-1">

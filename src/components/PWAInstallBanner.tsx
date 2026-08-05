@@ -217,19 +217,22 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
 
               <div className="flex items-center gap-2.5 pr-7">
                 {/* Clara Luz Profile Avatar */}
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden border-2 border-white/90 bg-white shrink-0 shadow-md">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 border-white bg-[#56346F] shrink-0 shadow-lg relative group">
                   <img
                     src={CLARA_LUZ_PROFILE.image}
                     onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      if (!target.src.includes('/clara-luz-profile.jpg')) {
-                        target.src = '/clara-luz-profile.jpg';
-                      } else {
-                        target.src = '/clara_luz.jpg';
+                      const target = e.currentTarget;
+                      if (!target.dataset.triedFallback) {
+                        target.dataset.triedFallback = "true";
+                        target.src = "/clara-luz-profile.jpg";
+                      } else if (!target.dataset.triedSecond) {
+                        target.dataset.triedSecond = "true";
+                        target.src = "/clara_luz.jpg";
                       }
                     }}
                     alt="Clara Luz - Mentora M.A.P.A.™"
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-110"
+                    referrerPolicy="no-referrer"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -237,7 +240,7 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
                     <h4 className="font-display font-black text-xs sm:text-sm text-white leading-tight">
                       M.A.P.A.™ Mujer
                     </h4>
-                    <span className="bg-[#E346A1] text-white border border-white/60 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm">
+                    <span className="bg-[#E346A1] text-white border border-white/60 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider shadow-sm animate-pulse">
                       RECOMENDADO
                     </span>
                   </div>
@@ -247,13 +250,21 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
                 </div>
               </div>
 
-              <div className="mt-2.5 pt-2 border-t border-white/20 flex justify-end">
+              <div className="mt-3 pt-2.5 border-t border-white/20 flex justify-center sm:justify-end">
                 <button
                   onClick={handleInstallClick}
-                  className="w-full sm:w-auto py-2.5 px-5 bg-[#E346A1] hover:bg-[#c9368a] text-white font-mono font-black text-xs sm:text-sm rounded-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg border-2 border-white/80"
+                  className="w-full sm:w-auto py-3 px-6 bg-gradient-to-r from-[#E346A1] via-[#FF5CB8] to-[#E346A1] hover:from-[#c9368a] hover:to-[#c9368a] text-white font-mono font-black text-sm sm:text-base md:text-lg rounded-2xl tracking-wider hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2.5 shadow-[0_4px_22px_rgba(227,70,161,0.65)] hover:shadow-[0_6px_28px_rgba(255,92,184,0.9)] border-2 border-white group relative overflow-hidden"
+                  id="pwa_banner_main_cta_download"
                 >
-                  <Smartphone className="w-4 h-4 text-white" />
-                  <span className="text-white font-bold">Descarga Aquí Tu App de M.A.P.A</span>
+                  <motion.div
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut", repeatDelay: 1 }}
+                    className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 pointer-events-none"
+                  />
+                  <Smartphone className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:rotate-12 transition-transform duration-300 shrink-0" />
+                  <span className="text-white font-extrabold drop-shadow-sm text-center leading-tight">
+                    Descarga Aquí Tu App de M.A.P.A
+                  </span>
                 </button>
               </div>
             </div>
@@ -279,19 +290,22 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
               </button>
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-black bg-white shrink-0 shadow-md">
+                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-black bg-[#56346F] shrink-0 shadow-md">
                   <img
                     src={CLARA_LUZ_PROFILE.image}
                     onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      if (!target.src.includes('/clara-luz-profile.jpg')) {
-                        target.src = '/clara-luz-profile.jpg';
-                      } else {
-                        target.src = '/clara_luz.jpg';
+                      const target = e.currentTarget;
+                      if (!target.dataset.triedFallback) {
+                        target.dataset.triedFallback = "true";
+                        target.src = "/clara-luz-profile.jpg";
+                      } else if (!target.dataset.triedSecond) {
+                        target.dataset.triedSecond = "true";
+                        target.src = "/clara_luz.jpg";
                       }
                     }}
                     alt="Clara Luz - Mentora M.A.P.A.™"
                     className="w-full h-full object-cover object-top"
+                    referrerPolicy="no-referrer"
                   />
                 </div>
                 <div>
