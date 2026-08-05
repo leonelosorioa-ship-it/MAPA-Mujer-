@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { SevenDaysRoadmap } from "./7DaysRoadmap";
-import { BottomNav, NavTab } from "./BottomNav";
+import type { NavTab } from "./BottomNav";
 import { PremiumDashboard } from "./PremiumDashboard";
 import { SoundTherapy } from "./SoundTherapy";
 import { PushNotificationManager } from "./PushNotificationManager";
@@ -636,15 +636,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* STICKY BOTTOM NAVIGATION BAR */}
-      <BottomNav
-        activeTab={activeNavTab}
-        onTabChange={(tab) => changeTab(tab)}
-        isAudioPlaying={isAudioPlaying}
-        onToggleAudioPlay={onToggleAudioPlay}
-        activeAudioTitle={activeAudioTitle}
-      />
     </div>
   );
 };
