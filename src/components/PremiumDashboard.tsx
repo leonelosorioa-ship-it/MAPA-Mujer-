@@ -1423,8 +1423,23 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               
               {/* Header/Disclaimer banner */}
               <div className="bg-[#EDE0F0]/40 border border-[#6E488A]/20 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row gap-4 shadow-sm items-start md:items-center">
-                <div className="w-10 h-10 rounded-full bg-white border border-[#6E488A]/20 flex items-center justify-center shrink-0 shadow-sm">
-                  <Brain className="w-5.5 h-5.5 text-[#36C4D8] animate-pulse" />
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#E36DB4] shrink-0 shadow-sm bg-[#56346F]">
+                  <img
+                    src={CLARA_LUZ_PROFILE.image}
+                    alt="Clara Luz Mentora"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.triedFallback) {
+                        target.dataset.triedFallback = "true";
+                        target.src = "/clara-luz-profile.jpg";
+                      } else if (!target.dataset.triedSecond) {
+                        target.dataset.triedSecond = "true";
+                        target.src = "/clara_luz.jpg";
+                      }
+                    }}
+                    className="w-full h-full object-cover object-top rounded-full"
+                  />
                 </div>
                 <div className="space-y-1 flex-1 text-left">
                   <h4 className="font-display font-black text-sm md:text-base text-[#6E488A] uppercase tracking-wider flex flex-wrap items-center gap-2">
@@ -1459,12 +1474,29 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                             isCoach ? "mr-auto" : "ml-auto flex-row-reverse"
                           }`}
                         >
-                          <div className={`w-8.5 h-8.5 rounded-full shrink-0 flex items-center justify-center text-sm font-black border shadow-sm ${
+                          <div className={`w-8.5 h-8.5 rounded-full shrink-0 overflow-hidden flex items-center justify-center text-sm font-black border shadow-sm ${
                             isCoach 
-                              ? "bg-[#EDE0F0] text-[#6E488A] border-[#6E488A]/20"
+                              ? "bg-[#EDE0F0] border-[#E36DB4]"
                               : "bg-[#EDE0F0] text-[#36C4D8] border-[#36C4D8]/20"
                           }`}>
-                            {isCoach ? "🧠" : "👤"}
+                            {isCoach ? (
+                              <img
+                                src={CLARA_LUZ_PROFILE.image}
+                                alt="Clara Luz"
+                                referrerPolicy="no-referrer"
+                                onError={(e) => {
+                                  const target = e.currentTarget;
+                                  if (!target.dataset.triedFallback) {
+                                    target.dataset.triedFallback = "true";
+                                    target.src = "/clara-luz-profile.jpg";
+                                  } else if (!target.dataset.triedSecond) {
+                                    target.dataset.triedSecond = "true";
+                                    target.src = "/clara_luz.jpg";
+                                  }
+                                }}
+                                className="w-full h-full object-cover object-top rounded-full"
+                              />
+                            ) : "👤"}
                           </div>
                           
                           <div className="space-y-1 flex-1 min-w-0">

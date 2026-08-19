@@ -4406,8 +4406,23 @@ export default function App() {
 
                     {/* Companion Coaching Avatar UI */}
                     <div className="bg-[#EDE0F0]/50 border-2 border-[#6E488A]/25 rounded-2xl p-5 flex items-start space-x-3.5 text-left shadow-sm">
-                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-2 border-[#6E488A]/30 shadow-xs shrink-0">
-                        <Sparkles className="w-5 h-5 text-[#E36DB4]" />
+                      <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-xs shrink-0 bg-[#56346F]">
+                        <img
+                          src={CLARA_LUZ_PROFILE.image}
+                          alt="Clara Luz Mentora"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (!target.dataset.triedFallback) {
+                              target.dataset.triedFallback = "true";
+                              target.src = "/clara-luz-profile.jpg";
+                            } else if (!target.dataset.triedSecond) {
+                              target.dataset.triedSecond = "true";
+                              target.src = "/clara_luz.jpg";
+                            }
+                          }}
+                          className="w-full h-full object-cover object-top rounded-full"
+                        />
                       </div>
                       <div className="space-y-1">
                         <p className="text-[11px] sm:text-xs font-mono text-[#3A185C] uppercase tracking-wider font-black">Clara Luz • Mentora M.A.P.A.™ Mujer</p>
@@ -5440,7 +5455,7 @@ export default function App() {
                 <section id="lead_capture" className="bg-white border-3 border-[#36C4D8] p-8 rounded-3xl max-w-xl mx-auto text-left space-y-6 relative overflow-hidden shadow-xl">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-[#36C4D8]/10 rounded-full blur-3xl pointer-events-none" />
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="inline-flex items-center space-x-2 bg-[#36C4D8]/20 text-[#127280] py-1 px-3 rounded-full text-xs font-mono uppercase tracking-wider font-black border border-[#36C4D8]/40">
                       <Lock className="w-3.5 h-3.5 animate-pulse" />
                       <span>Reporte Técnico y Clínico Avanzado</span>
@@ -5448,8 +5463,32 @@ export default function App() {
                     <h3 className="font-display font-black text-2xl sm:text-3xl text-[#1C0630] tracking-tight">
                       Desbloquea tus 49 Marcadores Biológicos
                     </h3>
-                    <p className="text-[#1C0630] text-sm sm:text-base leading-relaxed font-bold">
-                      Clara Luz • Mentora M.A.P.A.™ Mujer ha compilado tu informe completo de 12 páginas con tus anclas cerebrales, análisis cognitivo-conductual de reactividad y el plan definitivo de descompresión simpática. Elige tu canal preferido para recibirlo de inmediato: <span className="text-[#E86FA3] font-black">Los datos se solicitan con el único fin de trazabilidad, guardar tu progreso y enviar tus informes personalizados. Si lo prefieres, puedes usar un nombre simbólico para proteger al máximo tu privacidad y total discreción.</span>
+                    <div className="bg-[#FAF7FC] border border-[#E36DB4]/30 rounded-2xl p-3.5 flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#E36DB4] shrink-0 bg-[#56346F] shadow-xs">
+                        <img
+                          src={CLARA_LUZ_PROFILE.image}
+                          alt="Clara Luz Mentora"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (!target.dataset.triedFallback) {
+                              target.dataset.triedFallback = "true";
+                              target.src = "/clara-luz-profile.jpg";
+                            } else if (!target.dataset.triedSecond) {
+                              target.dataset.triedSecond = "true";
+                              target.src = "/clara_luz.jpg";
+                            }
+                          }}
+                          className="w-full h-full object-cover object-top rounded-full"
+                        />
+                      </div>
+                      <p className="text-[#1C0630] text-xs sm:text-sm leading-relaxed font-bold">
+                        <span className="text-[#8A2B68] font-black uppercase text-[11px] block">Compilado por Clara Luz</span>
+                        Tu informe completo de 12 páginas con tus anclas cerebrales y análisis cognitivo-conductual está listo.
+                      </p>
+                    </div>
+                    <p className="text-[#1C0630] text-xs sm:text-sm leading-relaxed font-semibold">
+                      Elige tu canal preferido para recibirlo de inmediato: <span className="text-[#E86FA3] font-black">Los datos se solicitan con el único fin de trazabilidad, guardar tu progreso y enviar tus informes personalizados. Si lo prefieres, puedes usar un nombre simbólico para proteger al máximo tu privacidad y total discreción.</span>
                     </p>
                   </div>
 

@@ -16,6 +16,7 @@ import {
   Edit2,
   Check
 } from "lucide-react";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 export interface HeaderProps {
   currentUserEmail: string | null;
@@ -593,8 +594,23 @@ export const Header: React.FC<HeaderProps> = ({
                   className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold text-[#411F66] hover:bg-[#FFF0F5] hover:text-[#E86FA3] transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#FFF0F5] text-[#E86FA3] group-hover:bg-[#E86FA3] group-hover:text-white transition-colors flex items-center justify-center shrink-0">
-                      <Heart className="w-4 h-4 fill-current" />
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-[#E86FA3] shadow-xs shrink-0 bg-[#56346F]">
+                      <img
+                        src={CLARA_LUZ_PROFILE.image}
+                        alt="Clara Luz Mentora"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.triedFallback) {
+                            target.dataset.triedFallback = "true";
+                            target.src = "/clara-luz-profile.jpg";
+                          } else if (!target.dataset.triedSecond) {
+                            target.dataset.triedSecond = "true";
+                            target.src = "/clara_luz.jpg";
+                          }
+                        }}
+                        className="w-full h-full object-cover object-top rounded-full"
+                      />
                     </div>
                     <div className="flex flex-col text-left">
                       <span>Mentora Clara Luz & Soporte</span>

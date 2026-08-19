@@ -21,6 +21,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 interface SoundExperience {
   id: string;
@@ -1072,9 +1073,24 @@ export const SoundTherapy: React.FC<SoundTherapyProps> = ({ unlockedAudios = [] 
           <div className="absolute top-0 right-0 w-48 h-48 bg-[#E86FA3]/8 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-[#36C4D8]/8 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="flex items-center space-x-2.5 relative z-10">
-            <div className="p-2 bg-[#E86FA3]/10 rounded-xl">
-              <Sparkles className="w-5.5 h-5.5 text-[#E86FA3] animate-pulse" />
+          <div className="flex items-center space-x-3.5 relative z-10">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#E86FA3] shrink-0 bg-[#56346F] shadow-xs">
+              <img
+                src={CLARA_LUZ_PROFILE.image}
+                alt="Clara Luz Mentora"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.dataset.triedFallback) {
+                    target.dataset.triedFallback = "true";
+                    target.src = "/clara-luz-profile.jpg";
+                  } else if (!target.dataset.triedSecond) {
+                    target.dataset.triedSecond = "true";
+                    target.src = "/clara_luz.jpg";
+                  }
+                }}
+                className="w-full h-full object-cover object-top rounded-full"
+              />
             </div>
             <div>
               <span className="text-[10px] font-mono font-black text-[#E86FA3] uppercase tracking-widest bg-[#E86FA3]/10 px-2.5 py-0.5 rounded-full border border-[#E86FA3]/20">

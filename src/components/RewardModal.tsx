@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Award, Trophy, X, Play, Pause, Volume2, Music, CheckCircle, Download, Share2, Save, Loader2, BookOpen, ExternalLink, VolumeX } from "lucide-react";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
 import { AudioWaveVisualizer } from "./AudioWaveVisualizer";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 interface RewardModalProps {
   isOpen: boolean;
@@ -383,13 +384,28 @@ export const RewardModal: React.FC<RewardModalProps> = ({
               <div className="relative inline-flex items-center justify-center">
                 <div className="absolute inset-0 bg-[#EDE0F0]/15 rounded-full blur-xl scale-125 pointer-events-none" />
                 <div 
-                  className="w-20 h-20 rounded-full flex items-center justify-center text-3xl shadow-xl border-2"
-                  style={{ borderColor: `${themeColor}40`, backgroundColor: "#311849" }}
+                  className="w-20 h-20 rounded-full overflow-hidden shadow-xl border-2 p-0.5"
+                  style={{ borderColor: `${themeColor}60`, backgroundColor: "#311849" }}
                 >
-                  {isDay3 ? "🌸" : isDay5 ? "🛡️" : isDay4 ? "📚" : "🎓"}
+                  <img
+                    src={CLARA_LUZ_PROFILE.image}
+                    alt="Clara Luz - Mentora M.A.P.A.™"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.triedFallback) {
+                        target.dataset.triedFallback = "true";
+                        target.src = "/clara-luz-profile.jpg";
+                      } else if (!target.dataset.triedSecond) {
+                        target.dataset.triedSecond = "true";
+                        target.src = "/clara_luz.jpg";
+                      }
+                    }}
+                    className="w-full h-full object-cover object-top rounded-full"
+                  />
                 </div>
-                <div className="absolute -bottom-1 -right-1 bg-white/10 border border-white/20 p-1 rounded-full">
-                  <Sparkles className="w-4 h-4" style={{ color: themeColor }} />
+                <div className="absolute -bottom-1 -right-1 bg-[#311849] border border-white/30 px-1.5 py-0.5 rounded-full shadow-md text-xs">
+                  {isDay3 ? "🌸" : isDay5 ? "🛡️" : isDay4 ? "📚" : "🎓"}
                 </div>
               </div>
 

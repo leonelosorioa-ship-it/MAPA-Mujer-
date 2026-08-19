@@ -35,6 +35,7 @@ import { PushNotificationManager } from "./PushNotificationManager";
 import { InAppNotificationSystem } from "./InAppNotificationSystem";
 import { AppDownloadPrompt } from "./AppDownloadPrompt";
 import { AnimatedProgressNumber } from "./AnimatedProgressNumber";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 import { 
   LineChart, 
   Line, 
@@ -451,8 +452,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   className="bg-white border-2 border-[#6E488A]/10 rounded-2xl p-4 flex items-center justify-between shadow-xs hover:shadow-md transition-all cursor-pointer group"
                 >
                   <div className="flex items-center space-x-3.5">
-                    <div className="w-11 h-11 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <MessageSquare className="w-6 h-6" />
+                    <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-xs shrink-0 bg-[#56346F] group-hover:scale-110 transition-transform">
+                      <img
+                        src={CLARA_LUZ_PROFILE.image}
+                        alt="Clara Luz Mentora"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.triedFallback) {
+                            target.dataset.triedFallback = "true";
+                            target.src = "/clara-luz-profile.jpg";
+                          } else if (!target.dataset.triedSecond) {
+                            target.dataset.triedSecond = "true";
+                            target.src = "/clara_luz.jpg";
+                          }
+                        }}
+                        className="w-full h-full object-cover object-top rounded-full"
+                      />
                     </div>
                     <div>
                       <h4 className="font-bold text-sm text-[#6E488A] group-hover:text-purple-600 transition-colors">

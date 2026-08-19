@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Sparkles, Award, Trophy, X, Compass, CheckCircle2, Star, Share2 } from "lucide-react";
+import { Sparkles, Award, Trophy, X, Compass, CheckCircle2, Star, Share2, Heart } from "lucide-react";
 import { useWhatsAppShare } from "../utils/useWhatsAppShare";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 interface MilestoneModalProps {
   isOpen: boolean;
@@ -241,13 +242,44 @@ export const MilestoneModal: React.FC<MilestoneModalProps> = ({
             </p>
 
             {/* Professional Insight Box */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-5 text-left relative">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-4 text-left relative">
               <div className="absolute -top-3 left-4 px-2 bg-[#1E1135] text-[9px] font-mono text-cyan-300 font-bold uppercase tracking-wider">
                 🔬 REVELACIÓN DE TU M.A.P.A.™
               </div>
               <p className="text-xs text-cyan-100/90 leading-relaxed font-serif italic">
                 "{details.insight}"
               </p>
+            </div>
+
+            {/* Clara Luz Endorsement Card */}
+            <div className="bg-gradient-to-r from-[#EDE0F0]/15 via-white/5 to-[#EDE0F0]/10 border border-[#E36DB4]/30 rounded-2xl p-3.5 mb-5 text-left flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-[#E36DB4] shrink-0 bg-[#56346F] shadow-sm">
+                <img
+                  src={CLARA_LUZ_PROFILE.image}
+                  alt="Clara Luz Mentora"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.triedFallback) {
+                      target.dataset.triedFallback = "true";
+                      target.src = "/clara-luz-profile.jpg";
+                    } else if (!target.dataset.triedSecond) {
+                      target.dataset.triedSecond = "true";
+                      target.src = "/clara_luz.jpg";
+                    }
+                  }}
+                  className="w-full h-full object-cover object-top rounded-full"
+                />
+              </div>
+              <div className="space-y-0.5 min-w-0">
+                <div className="flex items-center gap-1.5 text-[#E86FA3] text-[9px] font-mono font-bold uppercase">
+                  <Heart className="w-3 h-3 fill-current" />
+                  <span>Acompañamiento Personal</span>
+                </div>
+                <p className="text-[11px] text-white/90 font-sans leading-tight font-medium truncate">
+                  Reconocimiento avalado por Clara Luz • Mentora M.A.P.A.™ Mujer
+                </p>
+              </div>
             </div>
 
             {/* Predesigned Social Share Preview Card */}

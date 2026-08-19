@@ -14,6 +14,7 @@ import {
   Heart
 } from "lucide-react";
 import { AudioWaveformVisualizer } from "./AudioWaveformVisualizer";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 interface WelcomeOnboardingModalProps {
   isOpen: boolean;
@@ -262,17 +263,40 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-[#9D4EDD] via-[#B5179E] to-[#7b2cbf] rounded-full" />
 
           {/* Heading */}
-          <div className="text-center space-y-1">
+          <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#9D4EDD]/10 border border-[#9D4EDD]/20 text-[10px] sm:text-xs text-[#7b2cbf] font-mono tracking-wide uppercase font-black">
               <Sparkles className="w-3 h-3 text-[#9D4EDD] animate-pulse" />
               <span>Paso Obligatorio • Bienvenida</span>
             </div>
-            <h2 className="font-display font-black text-lg sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#7b2cbf] via-[#9D4EDD] to-[#B5179E] tracking-tight pt-1 leading-tight">
-              Clara Tu Mentora, te da la bienvenida
-            </h2>
-            <p className="text-[11px] sm:text-xs text-slate-600 font-bold font-sans max-w-sm mx-auto">
-              ¡Bienvenida a M.A.P.A.™ Mujer, {userName || "hermosa"}!
-            </p>
+
+            <div className="flex items-center justify-center gap-3 pt-1">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-[#E36DB4] shadow-md shrink-0 bg-[#56346F]">
+                <img
+                  src={CLARA_LUZ_PROFILE.image}
+                  alt="Clara Luz Mentora"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.triedFallback) {
+                      target.dataset.triedFallback = "true";
+                      target.src = "/clara-luz-profile.jpg";
+                    } else if (!target.dataset.triedSecond) {
+                      target.dataset.triedSecond = "true";
+                      target.src = "/clara_luz.jpg";
+                    }
+                  }}
+                  className="w-full h-full object-cover object-top rounded-full"
+                />
+              </div>
+              <div className="text-left">
+                <h2 className="font-display font-black text-base sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-[#7b2cbf] via-[#9D4EDD] to-[#B5179E] tracking-tight leading-tight">
+                  Clara Tu Mentora, te da la bienvenida
+                </h2>
+                <p className="text-[11px] sm:text-xs text-slate-600 font-bold font-sans">
+                  ¡Bienvenida a M.A.P.A.™ Mujer, {userName || "hermosa"}!
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Core persuasion copy */}

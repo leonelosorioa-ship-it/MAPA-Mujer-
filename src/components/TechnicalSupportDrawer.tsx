@@ -143,12 +143,12 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
             className={
               triggerClassName ||
               (isLoggedIn
-                ? "px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white border-2 border-white/90 font-display font-bold text-xs shadow-lg transition-all duration-200 flex items-center gap-1.5 group cursor-pointer hover:scale-105 active:scale-95 shrink-0"
-                : "px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-[#6E488A]/25 text-[#56346F] font-display font-bold text-xs shadow-lg hover:bg-[#56346F] hover:text-white transition-all duration-200 flex items-center gap-1.5 group cursor-pointer hover:scale-105 active:scale-95 shrink-0")
+                ? "px-3 py-2 sm:px-4 sm:py-2.5 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white border-2 border-white/90 font-display font-bold text-xs shadow-xl transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95 shrink-0"
+                : "px-3 py-2 sm:px-4 sm:py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-[#6E488A]/25 text-[#56346F] font-display font-bold text-xs shadow-xl hover:bg-[#56346F] hover:text-white transition-all duration-200 flex items-center gap-2 group cursor-pointer hover:scale-105 active:scale-95 shrink-0")
             }
             aria-label={isLoggedIn ? "Abrir guía de uso del programa M.A.P.A." : "Abrir centro de ayuda técnica y soporte"}
           >
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden border border-white/90 shadow-sm shrink-0 bg-[#56346F] relative">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0 bg-[#56346F] relative">
               <img
                 src={CLARA_LUZ_PROFILE.image}
                 alt="Clara Luz Mentora"
@@ -166,7 +166,7 @@ export const TechnicalSupportDrawer: React.FC<TechnicalSupportDrawerProps> = ({
                 className="w-full h-full object-cover object-top rounded-full"
               />
             </div>
-            <span className="font-bold text-xs">Ayuda</span>
+            <span className="font-black text-xs tracking-wide">Ayuda</span>
           </button>
         </div>
       )}

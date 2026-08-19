@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Sparkles, Compass, HeartHandshake, MessageCircle, Quote, ChevronRight } from "lucide-react";
+import { CLARA_LUZ_PROFILE } from "../data/claraLuzProfile";
 
 export interface InAppNotificationSystemProps {
   userName?: string;
@@ -268,13 +269,35 @@ export const InAppNotificationSystem: React.FC<InAppNotificationSystemProps> = (
             </div>
 
             {/* Title & Content */}
-            <div className="space-y-1 pr-1">
-              <h4 className="font-display font-bold text-sm text-[#56346F] flex items-center gap-1.5">
-                {currentNotification.title}
-              </h4>
-              <p className="text-xs text-slate-700 leading-relaxed font-normal">
-                {currentNotification.message}
-              </p>
+            <div className="flex items-start gap-3">
+              {currentNotification.type === "clara_luz" && (
+                <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-[#E36DB4] shrink-0 bg-[#56346F] shadow-sm mt-0.5">
+                  <img
+                    src={CLARA_LUZ_PROFILE.image}
+                    alt="Clara Luz Mentora"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.triedFallback) {
+                        target.dataset.triedFallback = "true";
+                        target.src = "/clara-luz-profile.jpg";
+                      } else if (!target.dataset.triedSecond) {
+                        target.dataset.triedSecond = "true";
+                        target.src = "/clara_luz.jpg";
+                      }
+                    }}
+                    className="w-full h-full object-cover object-top rounded-full"
+                  />
+                </div>
+              )}
+              <div className="space-y-1 pr-1 flex-1 min-w-0">
+                <h4 className="font-display font-bold text-sm text-[#56346F] flex items-center gap-1.5">
+                  {currentNotification.title}
+                </h4>
+                <p className="text-xs text-slate-700 leading-relaxed font-normal">
+                  {currentNotification.message}
+                </p>
+              </div>
             </div>
 
             {/* Action CTA Button (If present: NOT for testimonials) */}
